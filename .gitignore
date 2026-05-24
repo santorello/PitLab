@@ -49,6 +49,12 @@ guest_probe_home.png
 **/screenshots/
 **/test-results/
 
+# Local helper scripts and scratch mockups
+/mockup_ux.html
+/qa_and_run.bat
+/run_dev.bat
+/run_dev.sh
+
 # Logs and temporary files
 *.log
 *.tmp
