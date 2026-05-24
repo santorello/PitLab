@@ -1,0 +1,56 @@
+# Local environment and secrets
+.env
+.env.*
+*.local
+*.secret
+*.secrets
+*.key
+*.pem
+app/config/dev.json
+
+# Flutter / Dart
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.pub-cache/
+**/.pub/
+**/build/
+**/coverage/
+**/doc/api/
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+Thumbs.db
+
+# Android local/build artifacts
+**/android/.gradle/
+**/android/captures/
+**/android/local.properties
+**/android/key.properties
+**/*.keystore
+**/*.jks
+**/GeneratedPluginRegistrant.java
+**/.cxx/
+
+# QA runs, probes and generated screenshots
+.qa-temp/
+qa-temp/
+backup/
+_android_*.png
+_android_*_ui.xml
+guest_probe_home.png
+**/--dart-define
+**/--web-port=*
+**/screenshots/
+**/test-results/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.swp

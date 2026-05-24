@@ -1,0 +1,110 @@
+<svg width="1440" height="980" viewBox="0 0 1440 980" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="980" fill="#F6F4EF"/>
+  <rect x="32" y="32" width="1376" height="916" rx="28" fill="#ECE7DE"/>
+  <text x="72" y="94" fill="#1F2329" font-family="IBM Plex Sans, Arial, sans-serif" font-size="34" font-weight="700">PitLap Mockup Direction</text>
+  <text x="72" y="128" fill="#4B5563" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18">Industrial premium, mobile first, information first</text>
+
+  <rect x="72" y="170" width="400" height="744" rx="34" fill="#1F2329"/>
+  <rect x="89" y="189" width="366" height="706" rx="26" fill="#FAF8F3"/>
+  <text x="118" y="229" fill="#1F2329" font-family="Barlow Semi Condensed, Arial Narrow, sans-serif" font-size="30" font-weight="700">HOME</text>
+  <text x="118" y="256" fill="#4B5563" font-family="IBM Plex Sans, Arial, sans-serif" font-size="16">Dove vuoi andare oggi?</text>
+  <rect x="118" y="276" width="250" height="44" rx="14" fill="#FFFFFF" stroke="#D6D9DE"/>
+  <text x="134" y="304" fill="#6B7280" font-family="IBM Plex Sans, Arial, sans-serif" font-size="15">Cerca pista...</text>
+  <rect x="378" y="276" width="50" height="44" rx="14" fill="#1F2329"/>
+  <text x="392" y="304" fill="#F6F4EF" font-family="IBM Plex Sans, Arial, sans-serif" font-size="15" font-weight="700">IT</text>
+
+  <rect x="118" y="338" width="74" height="32" rx="16" fill="#FFE3D2"/>
+  <text x="136" y="359" fill="#C2410C" font-family="IBM Plex Sans, Arial, sans-serif" font-size="13" font-weight="700">Buggy</text>
+  <rect x="198" y="338" width="74" height="32" rx="16" fill="#EAEEF3"/>
+  <text x="220" y="359" fill="#334155" font-family="IBM Plex Sans, Arial, sans-serif" font-size="13" font-weight="700">Mini-Z</text>
+  <rect x="278" y="338" width="70" height="32" rx="16" fill="#EAEEF3"/>
+  <text x="296" y="359" fill="#334155" font-family="IBM Plex Sans, Arial, sans-serif" font-size="13" font-weight="700">Indoor</text>
+  <rect x="354" y="338" width="74" height="32" rx="16" fill="#EAEEF3"/>
+  <text x="371" y="359" fill="#334155" font-family="IBM Plex Sans, Arial, sans-serif" font-size="13" font-weight="700">Outdoor</text>
+
+  <rect x="118" y="390" width="308" height="182" rx="22" fill="#FFFFFF"/>
+  <rect x="118" y="390" width="308" height="10" rx="5" fill="#F97316"/>
+  <text x="138" y="430" fill="#1F2329" font-family="Barlow Semi Condensed, Arial Narrow, sans-serif" font-size="26" font-weight="700">OFFROAD PARMA</text>
+  <text x="138" y="456" fill="#4B5563" font-family="IBM Plex Sans, Arial, sans-serif" font-size="15">Parma</text>
+  <rect x="138" y="474" width="88" height="30" rx="15" fill="#DCFCE7"/>
+  <text x="159" y="494" fill="#166534" font-family="IBM Plex Sans, Arial, sans-serif" font-size="13" font-weight="700">APERTA</text>
+  <text x="246" y="494" fill="#1F2329" font-family="IBM Plex Sans, Arial, sans-serif" font-size="15" font-weight="700">7 arrivi oggi</text>
+  <text x="138" y="526" fill="#4B5563" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">220V  Aria  Tavoli  Bagni</text>
+  <text x="138" y="550" fill="#6B7280" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Fondo asciutto, buona trazione</text>
+  <rect x="138" y="588" width="116" height="40" rx="14" fill="#1F2329"/>
+  <text x="164" y="613" fill="#F6F4EF" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14" font-weight="700">Vedi pista</text>
+  <rect x="266" y="588" width="140" height="40" rx="14" fill="#F97316"/>
+  <text x="287" y="613" fill="#FFFFFF" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14" font-weight="700">Sto arrivando</text>
+
+  <rect x="118" y="592" width="308" height="182" rx="22" fill="#FFFFFF"/>
+  <rect x="118" y="592" width="308" height="10" rx="5" fill="#2563EB"/>
+  <text x="138" y="632" fill="#1F2329" font-family="Barlow Semi Condensed, Arial Narrow, sans-serif" font-size="26" font-weight="700">MINIZ HUB MODENA</text>
+  <text x="138" y="658" fill="#4B5563" font-family="IBM Plex Sans, Arial, sans-serif" font-size="15">Modena</text>
+  <rect x="138" y="676" width="100" height="30" rx="15" fill="#DBEAFE"/>
+  <text x="160" y="696" fill="#1D4ED8" font-family="IBM Plex Sans, Arial, sans-serif" font-size="13" font-weight="700">BAGNATA</text>
+  <text x="252" y="696" fill="#1F2329" font-family="IBM Plex Sans, Arial, sans-serif" font-size="15" font-weight="700">2 arrivi oggi</text>
+  <text x="138" y="728" fill="#4B5563" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Tavoli  Sedie  Bagni</text>
+  <text x="138" y="752" fill="#6B7280" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Sessione serale confermata</text>
+  <rect x="138" y="790" width="116" height="40" rx="14" fill="#1F2329"/>
+  <text x="164" y="815" fill="#F6F4EF" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14" font-weight="700">Vedi pista</text>
+  <rect x="266" y="790" width="140" height="40" rx="14" fill="#F97316"/>
+  <text x="287" y="815" fill="#FFFFFF" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14" font-weight="700">Sto arrivando</text>
+
+  <rect x="522" y="170" width="400" height="744" rx="34" fill="#1F2329"/>
+  <rect x="539" y="189" width="366" height="706" rx="26" fill="#FAF8F3"/>
+  <text x="568" y="229" fill="#1F2329" font-family="Barlow Semi Condensed, Arial Narrow, sans-serif" font-size="30" font-weight="700">TRACK DETAIL</text>
+
+  <rect x="568" y="258" width="308" height="150" rx="24" fill="#1F2329"/>
+  <text x="592" y="300" fill="#F6F4EF" font-family="Barlow Semi Condensed, Arial Narrow, sans-serif" font-size="30" font-weight="700">OFFROAD PARMA</text>
+  <text x="592" y="327" fill="#D6D9DE" font-family="IBM Plex Sans, Arial, sans-serif" font-size="15">Parma, Italia</text>
+  <rect x="757" y="286" width="95" height="30" rx="15" fill="#DCFCE7"/>
+  <text x="778" y="306" fill="#166534" font-family="IBM Plex Sans, Arial, sans-serif" font-size="13" font-weight="700">APERTA</text>
+  <text x="592" y="358" fill="#ECE7DE" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Fondo asciutto, grip medio-alto</text>
+  <rect x="592" y="372" width="132" height="40" rx="14" fill="#F97316"/>
+  <text x="613" y="397" fill="#FFFFFF" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14" font-weight="700">Sto arrivando</text>
+  <rect x="734" y="372" width="92" height="40" rx="14" fill="#313843"/>
+  <text x="758" y="397" fill="#F6F4EF" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14" font-weight="700">Condividi</text>
+
+  <rect x="568" y="432" width="308" height="94" rx="20" fill="#FFFFFF"/>
+  <text x="590" y="463" fill="#1F2329" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14" font-weight="700">SERVIZI</text>
+  <rect x="590" y="478" width="64" height="28" rx="14" fill="#EAEEF3"/><text x="607" y="496" fill="#334155" font-family="IBM Plex Sans, Arial, sans-serif" font-size="12" font-weight="700">220V</text>
+  <rect x="660" y="478" width="62" height="28" rx="14" fill="#EAEEF3"/><text x="680" y="496" fill="#334155" font-family="IBM Plex Sans, Arial, sans-serif" font-size="12" font-weight="700">Aria</text>
+  <rect x="728" y="478" width="70" height="28" rx="14" fill="#EAEEF3"/><text x="745" y="496" fill="#334155" font-family="IBM Plex Sans, Arial, sans-serif" font-size="12" font-weight="700">Tavoli</text>
+  <rect x="804" y="478" width="60" height="28" rx="14" fill="#EAEEF3"/><text x="822" y="496" fill="#334155" font-family="IBM Plex Sans, Arial, sans-serif" font-size="12" font-weight="700">Bagni</text>
+
+  <rect x="568" y="544" width="308" height="108" rx="20" fill="#FFFFFF"/>
+  <text x="590" y="576" fill="#1F2329" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14" font-weight="700">OGGI IN PISTA</text>
+  <text x="590" y="603" fill="#1F2329" font-family="IBM Plex Sans, Arial, sans-serif" font-size="22" font-weight="700">7 arrivi confermati</text>
+  <text x="590" y="627" fill="#6B7280" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Luca, Marco, Ale, Fede, Nico...</text>
+
+  <rect x="568" y="670" width="308" height="90" rx="20" fill="#FFFFFF"/>
+  <text x="590" y="701" fill="#1F2329" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14" font-weight="700">EVENTI</text>
+  <text x="590" y="730" fill="#1F2329" font-family="IBM Plex Sans, Arial, sans-serif" font-size="16" font-weight="700">Domenica 7 Aprile - Prova libera</text>
+
+  <rect x="972" y="170" width="360" height="744" rx="28" fill="#FFFFFF"/>
+  <text x="1006" y="218" fill="#1F2329" font-family="Barlow Semi Condensed, Arial Narrow, sans-serif" font-size="34" font-weight="700">UI Notes</text>
+
+  <rect x="1006" y="248" width="292" height="110" rx="18" fill="#F6F4EF" stroke="#D6D9DE"/>
+  <text x="1030" y="282" fill="#1F2329" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18" font-weight="700">1. Information first</text>
+  <text x="1030" y="312" fill="#4B5563" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Stato, localita', servizi e arrivi</text>
+  <text x="1030" y="334" fill="#4B5563" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">sempre prima di testo decorativo.</text>
+
+  <rect x="1006" y="378" width="292" height="110" rx="18" fill="#F6F4EF" stroke="#D6D9DE"/>
+  <text x="1030" y="412" fill="#1F2329" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18" font-weight="700">2. One strong accent</text>
+  <text x="1030" y="442" fill="#4B5563" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Arancio per CTA e segnali attivi,</text>
+  <text x="1030" y="464" fill="#4B5563" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">non per riempire tutta la UI.</text>
+
+  <rect x="1006" y="508" width="292" height="110" rx="18" fill="#F6F4EF" stroke="#D6D9DE"/>
+  <text x="1030" y="542" fill="#1F2329" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18" font-weight="700">3. Technical but clean</text>
+  <text x="1030" y="572" fill="#4B5563" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Pannelli solidi, badge compatti,</text>
+  <text x="1030" y="594" fill="#4B5563" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">zero effetto social o gaming.</text>
+
+  <rect x="1006" y="638" width="292" height="190" rx="18" fill="#1F2329"/>
+  <text x="1030" y="676" fill="#F6F4EF" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18" font-weight="700">Suggested Tokens</text>
+  <text x="1030" y="710" fill="#D6D9DE" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Graphite   #1F2329</text>
+  <text x="1030" y="736" fill="#D6D9DE" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Warm White #F6F4EF</text>
+  <text x="1030" y="762" fill="#D6D9DE" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Signal Orange #F97316</text>
+  <text x="1030" y="788" fill="#D6D9DE" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Open Green #1F9D55</text>
+  <text x="1030" y="814" fill="#D6D9DE" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Wet Blue #2563EB</text>
+  <text x="1030" y="840" fill="#D6D9DE" font-family="IBM Plex Sans, Arial, sans-serif" font-size="14">Barlow + IBM Plex Sans</text>
+</svg>
