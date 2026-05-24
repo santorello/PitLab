@@ -1922,47 +1922,57 @@ class _MetricCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(11),
-      decoration: BoxDecoration(
-        color: AppColors.panel,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.borderSubtle),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: tint, size: 21),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxHeight < 116;
+        final theme = Theme.of(context).textTheme;
+
+        return Container(
+          padding: EdgeInsets.fromLTRB(11, compact ? 9 : 11, 11, compact ? 9 : 11),
+          decoration: BoxDecoration(
+            color: AppColors.panel,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.borderSubtle),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, color: tint, size: compact ? 19 : 21),
+              SizedBox(height: compact ? 7 : 12),
+              Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: (compact ? theme.titleSmall : theme.titleMedium)?.copyWith(
                   color: AppColors.graphite,
                   fontWeight: FontWeight.w800,
+                  height: 1.05,
                 ),
-          ),
-          const SizedBox(height: 1),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              ),
+              SizedBox(height: compact ? 0 : 1),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.labelMedium?.copyWith(
                   color: AppColors.graphite,
                   fontWeight: FontWeight.w800,
+                  height: 1.05,
                 ),
-          ),
-          Text(
-            hint,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              ),
+              Text(
+                hint,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.labelSmall?.copyWith(
                   color: AppColors.steel,
+                  height: 1.05,
                 ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
