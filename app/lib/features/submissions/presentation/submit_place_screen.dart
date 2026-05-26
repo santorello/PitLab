@@ -836,11 +836,10 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
           accuracy: LocationAccuracy.high,
         ),
       );
-      final placemarks = await placemarkFromCoordinates(
+      final placemark = await _safePlacemarkFromCoordinates(
         position.latitude,
         position.longitude,
       );
-      final placemark = placemarks.isEmpty ? null : placemarks.first;
       final city = [
         placemark?.locality,
         placemark?.subAdministrativeArea,
@@ -917,6 +916,19 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
         });
       }
     }
+  }
+}
+
+Future<Placemark?> _safePlacemarkFromCoordinates(
+  double latitude,
+  double longitude,
+) async {
+  try {
+    final placemarks = await placemarkFromCoordinates(latitude, longitude);
+    return placemarks.isEmpty ? null : placemarks.first;
+  } catch (error) {
+    debugPrint('[SubmitPlace] Reverse geocoding unavailable: $error');
+    return null;
   }
 }
 
