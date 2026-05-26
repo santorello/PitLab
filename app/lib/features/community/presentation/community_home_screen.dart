@@ -344,7 +344,6 @@ class _WeatherStrip extends StatelessWidget {
       children: [
         const _SectionTitle(
           title: 'Meteo alle tue piste',
-          actionLabel: 'Open-Meteo',
         ),
         const SizedBox(height: 10),
         SizedBox(
