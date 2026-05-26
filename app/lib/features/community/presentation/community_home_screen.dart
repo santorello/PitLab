@@ -161,8 +161,6 @@ class CommunityHomeScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 18),
                       _BuildOfWeekSection(buildAsync: buildOfWeekAsync),
-                      const SizedBox(height: 18),
-                      const _ComingSoonStories(),
                       featuredAsync.maybeWhen(
                         data: (track) => track == null
                             ? const SizedBox.shrink()
@@ -1461,13 +1459,15 @@ class _LeaderboardSection extends StatelessWidget {
         else
           _SurfaceCard(
             child: Column(
-              children: entries.take(3).map((entry) {
+              children: entries.take(3).indexed.map((indexedEntry) {
+                final position = indexedEntry.$1 + 1;
+                final entry = indexedEntry.$2;
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: CircleAvatar(
                     backgroundColor: AppColors.orange50,
                     child: Text(
-                      '${entry.rank}',
+                      '$position',
                       style: const TextStyle(
                         color: AppColors.orangeText,
                         fontWeight: FontWeight.w800,

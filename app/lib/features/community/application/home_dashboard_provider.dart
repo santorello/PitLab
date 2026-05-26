@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -63,10 +65,7 @@ class HomeBuildOfWeek {
       ownerId: map['owner_id'] as String? ?? '',
       title: map['title'] as String? ?? '',
       meta: map['meta'] as String? ?? '',
-      imageUrls: (map['image_urls'] as List<dynamic>? ?? const [])
-          .whereType<String>()
-          .where((url) => url.trim().isNotEmpty)
-          .toList(),
+      imageUrls: _parseImageUrls(map['image_urls']),
       authorName: displayName.trim().isEmpty ? 'Pilota PitLap' : displayName.trim(),
       authorSlug: fallbackSlug,
       weeklyVotes: (map['weekly_votes'] as num?)?.toInt() ?? 0,
@@ -338,19 +337,94 @@ final pitcoinPublicLeaderboardProvider =
     final response = await client
         .from('pitcoin_public_leaderboard')
         .select()
-        .order('rank')
+        .order('total_points', ascending: false)
+        .order('display_name')
         .limit(5);
 
-    return (response as List<dynamic>)
+    final entries = (response as List<dynamic>)
         .whereType<Map<String, dynamic>>()
         .map(PitcoinLeaderboardEntry.fromMap)
         .where((entry) => entry.publicSlug.isNotEmpty)
         .toList();
+    entries.sort((a, b) {
+      final pointsComparison = b.totalPoints.compareTo(a.totalPoints);
+      if (pointsComparison != 0) return pointsComparison;
+      return a.displayName.toLowerCase().compareTo(b.displayName.toLowerCase());
+    });
+    return entries;
   } catch (error) {
     debugPrint('[HomeDashboard] pitcoin_public_leaderboard unavailable: $error');
     return const [];
   }
 });
+
+List<String> _parseImageUrls(dynamic value) {
+  if (value is List) {
+    return value
+        .whereType<String>()
+        .map((url) => url.trim())
+        .where((url) => url.isNotEmpty)
+        .toList();
+  }
+
+  if (value is! String || value.trim().isEmpty) {
+    return const [];
+  }
+
+  final raw = value.trim();
+  if (raw.startsWith('[')) {
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is List) {
+        return decoded
+            .whereType<String>()
+            .map((url) => url.trim())
+            .where((url) => url.isNotEmpty)
+            .toList();
+      }
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  if (!raw.startsWith('{') || !raw.endsWith('}')) {
+    return [raw];
+  }
+
+  final content = raw.substring(1, raw.length - 1);
+  final items = <String>[];
+  final buffer = StringBuffer();
+  var inQuotes = false;
+  var escaped = false;
+
+  for (final codeUnit in content.codeUnits) {
+    final char = String.fromCharCode(codeUnit);
+    if (escaped) {
+      buffer.write(char);
+      escaped = false;
+      continue;
+    }
+    if (char == '\\') {
+      escaped = true;
+      continue;
+    }
+    if (char == '"') {
+      inQuotes = !inQuotes;
+      continue;
+    }
+    if (char == ',' && !inQuotes) {
+      final item = buffer.toString().trim();
+      if (item.isNotEmpty && item.toUpperCase() != 'NULL') items.add(item);
+      buffer.clear();
+      continue;
+    }
+    buffer.write(char);
+  }
+
+  final last = buffer.toString().trim();
+  if (last.isNotEmpty && last.toUpperCase() != 'NULL') items.add(last);
+  return items.where((url) => url.isNotEmpty).toList();
+}
 
 final homeBuildOfWeekProvider = FutureProvider<HomeBuildOfWeek?>((ref) async {
   final client = ref.watch(authClientProvider);
