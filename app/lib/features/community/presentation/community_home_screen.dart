@@ -1511,7 +1511,6 @@ class _FeedSection extends StatelessWidget {
       children: [
         const _SectionTitle(
           title: 'Novita dalla community',
-          actionLabel: 'filtra',
         ),
         const SizedBox(height: 12),
         ...items.take(8).map(
