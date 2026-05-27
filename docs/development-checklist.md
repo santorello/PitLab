@@ -415,6 +415,9 @@ Checklist cross-platform da tenere attiva su ogni nuova schermata o componente:
 - separare visibilita' del garage nel suo insieme e visibilita' della singola build
 - collegare garage pubblico al profilo utente in ottica social leggera
 - permettere in futuro la ricerca di altri garage pubblici e profili pubblici
+- introdurre `Segui profilo`: un utente autenticato puo' seguire un altro profilo pubblico e ricevere notifiche quando quel profilo pubblica attivita' pubbliche rilevanti
+- progettare `profile_follows` come relazione user-to-user privacy-safe: niente follow su profili privati, niente auto-follow, blocco duplicati e RLS coerente con visibilita' pubblica
+- collegare `Segui profilo` a un sistema notifiche opt-in, iniziando da notifiche interne/in-app e rimandando push/email a una fase successiva
 - valutare feed o vetrina profili senza trasformare subito il prodotto in social completo
 - mantenere il garage vicino a una vetrina personale con foto e dettagli tecnici leggeri
 - evitare tono da social rumoroso: piu' showcase che feed
@@ -457,6 +460,10 @@ Checklist cross-platform da tenere attiva su ogni nuova schermata o componente:
 - decidere moderazione, visibilita' e ownership degli eventi creati dalla community
 - portare gli eventi creati dal salvataggio locale per utente a tabella remota con ownership esplicita
 - mantenere gli eventi creati pubblici di default, con eventuale revisione futura su moderazione/stato pubblicazione
+- introdurre `Crea gruppo`: un utente puo' creare un gruppo di amici PitLap per restare aggiornati e ricevere inviti coordinati
+- permettere all'owner di un evento di invitare uno o piu' gruppi creati/gestiti da lui, evitando inviti manuali utente-per-utente
+- progettare membership gruppo con consenso esplicito degli invitati, ruoli minimi owner/member, uscita libera dal gruppo e privacy visibile ai soli membri
+- collegare gruppi e inviti evento a notifiche opt-in: in-app come prima iterazione, push/email solo quando il sistema notifiche sara' maturo
 - evolvere `Condividi` da copia link a pannello completo: Web Share API, copia link, QR e canali rapidi se utili al target
 - rifinire `Condividi` come esperienza premium e tracciabile, non solo come CTA tecnica di copia-link
 - decidere provider/UX per luogo reale: autocomplete indirizzo, mappa di supporto e fallback manuale
@@ -554,6 +561,9 @@ Checklist cross-platform da tenere attiva su ogni nuova schermata o componente:
 - consentire gestione servizi essenziali
 - consentire al gestore di modificare descrizione breve/lunga, cover, gallery e label specifiche della pista
 - consentire al gestore di creare e gestire eventi collegati alla propria pista
+- introdurre notifiche operative per organizzatori/gestori pista: nuove iscrizioni o interesse sugli eventi, messaggi/richieste utenti, promemoria evento, modifiche richieste dall'admin e alert su dati pista incompleti
+- introdurre notifiche per chi crea un evento, anche se non gestore pista: inviti accettati/rifiutati, aggiornamenti partecipanti, richieste informazioni e reminder pre-evento
+- progettare un centro notifiche in-app con preferenze per ruolo (`pilota`, `gestore pista`, `creator evento`, `admin`) prima di abilitare push/email
 - decidere la checklist minima di una scheda pista completa per far apparire una card pubblica credibile
 - preparare gestione immagini galleria
 - distinguere pannello gestore ownership-based e pannello admin globale
@@ -565,6 +575,12 @@ Checklist cross-platform da tenere attiva su ogni nuova schermata o componente:
 - creare una sezione `Approvazioni` per gestire spot, piste e negozi in stato `pending`
 - definire workflow unico `draft -> pending -> approved/rejected -> published/archived` per entita' approvabili
 - distinguere chiaramente cio' che puo' essere creato dal gestore/utente da cio' che diventa pubblico solo dopo approvazione admin
+- progettare commenti utenti su negozi, piste, eventi e spot, con modello unico legato a entita' tipizzate e ownership chiara
+- dare senso operativo ai pulsanti `Commenti` nelle card community: apertura thread commenti, conteggio reale, stato vuoto e permessi guest/autenticato
+- dare senso operativo ai pulsanti `Condividi` nelle card community: link canonico all'entita', Web Share API dove disponibile, copia link fallback e tracking privacy-safe
+- definire moderazione commenti: stati `visible`, `pending`, `hidden`, `removed`, segnalazione abuso, audit admin e regole anti-spam
+- decidere se i commenti di nuovi utenti vanno in moderazione preventiva o pubblicati con post-moderazione e possibilita' di segnalazione
+- collegare i commenti a notifiche operative per owner/gestori/creator, rispettando preferenze utente e privacy
 - prevedere notifiche interne o badge operativi quando arrivano nuove entita' da approvare
 - decidere canale di notifica iniziale per l'admin: inbox interna, badge `Admin/Approvazioni`, email o combinazione minima
 - mostrare in approvazione dati essenziali, media, owner, timestamp e azioni rapide `approva`, `rifiuta`, `richiedi modifiche`

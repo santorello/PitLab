@@ -335,81 +335,126 @@ class _SpotlightBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFF6EFE3), Colors.white, Color(0xFFF2F4F7)],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 4),
-              Text(
-                l10n.homeExploreTitle,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: AppColors.graphite,
-                ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 640;
+        final spotlightTracks = tracksAsync.maybeWhen(
+          data: (tracks) => tracks.take(3).toList(),
+          orElse: () => const <TrackListItem>[],
+        );
+
+        return Card(
+          clipBehavior: Clip.antiAlias,
+          margin: EdgeInsets.zero,
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFFF6EFE3), Colors.white, Color(0xFFF2F4F7)],
               ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.homeExploreBody,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.steel,
-                ),
-              ),
-              const SizedBox(height: 18),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final spotlightTracks = tracksAsync.maybeWhen(
-                    data: (tracks) => tracks.take(3).toList(),
-                    orElse: () => const <TrackListItem>[],
-                  );
-                  if (spotlightTracks.isEmpty) {
-                    return Text(
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(isCompact ? 14 : 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.bolt_rounded,
+                        size: 20,
+                        color: AppColors.signalOrange,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          l10n.homeExploreTitle,
+                          style:
+                              (isCompact
+                                      ? Theme.of(context).textTheme.titleMedium
+                                      : Theme.of(context).textTheme.titleLarge)
+                                  ?.copyWith(
+                                    color: AppColors.graphite,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (!isCompact) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.homeExploreBody,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.steel,
+                      ),
+                    ),
+                  ],
+                  SizedBox(height: isCompact ? 10 : 18),
+                  if (spotlightTracks.isEmpty)
+                    Text(
                       l10n.noTracksAvailable,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.steel,
                       ),
-                    );
-                  }
-                  final isWide = constraints.maxWidth >= 820;
-                  final itemWidth = isWide
-                      ? (constraints.maxWidth - 24) / 3
-                      : constraints.maxWidth;
-                  return Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    children: spotlightTracks
-                        .map(
-                          (t) => SizedBox(
-                            width: itemWidth,
+                    )
+                  else if (isCompact)
+                    SizedBox(
+                      height: 76,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: spotlightTracks.length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 10),
+                        itemBuilder: (context, index) {
+                          final t = spotlightTracks[index];
+                          return SizedBox(
+                            width: (constraints.maxWidth * 0.72).clamp(
+                              220.0,
+                              300.0,
+                            ) as double,
                             child: _SpotlightCard(
                               title: t.name,
                               body: t.statusMessage.isNotEmpty
                                   ? t.statusMessage
                                   : t.shortDescription,
                               statusColor: _spotlightStatusColor(t.status),
-                              onTap: () =>
-                                  context.go('/track/${t.slug}'),
+                              compact: true,
+                              onTap: () => context.go('/track/${t.slug}'),
                             ),
-                          ),
-                        )
-                        .toList(),
-                  );
-                },
+                          );
+                        },
+                      ),
+                    )
+                  else
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: spotlightTracks
+                          .map(
+                            (t) => SizedBox(
+                              width: constraints.maxWidth >= 820
+                                  ? (constraints.maxWidth - 24) / 3
+                                  : constraints.maxWidth,
+                              child: _SpotlightCard(
+                                title: t.name,
+                                body: t.statusMessage.isNotEmpty
+                                    ? t.statusMessage
+                                    : t.shortDescription,
+                                statusColor: _spotlightStatusColor(t.status),
+                                onTap: () => context.go('/track/${t.slug}'),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -433,12 +478,14 @@ class _SpotlightCard extends StatelessWidget {
     required this.body,
     required this.statusColor,
     required this.onTap,
+    this.compact = false,
   });
 
   final String title;
   final String body;
   final Color statusColor;
   final VoidCallback onTap;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -447,7 +494,7 @@ class _SpotlightCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       color: Colors.white.withAlpha(210),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(compact ? 16 : 20),
         side: BorderSide(color: AppColors.concrete),
       ),
       child: InkWell(
@@ -456,17 +503,25 @@ class _SpotlightCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Strip colorata per stato (top) — sostituisce il border top non uniforme
-            Container(height: 4, color: statusColor),
+            Container(height: compact ? 3 : 4, color: statusColor),
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(compact ? 12 : 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: Theme.of(context).textTheme.titleMedium),
-                  const SizedBox(height: 6),
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: (compact
+                            ? Theme.of(context).textTheme.titleSmall
+                            : Theme.of(context).textTheme.titleMedium)
+                        ?.copyWith(fontWeight: FontWeight.w800),
+                  ),
+                  SizedBox(height: compact ? 4 : 6),
                   Text(
                     body,
-                    maxLines: 2,
+                    maxLines: compact ? 1 : 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.steel,
@@ -894,4 +949,3 @@ class _TrackMediaPanel extends StatelessWidget {
     return panel;
   }
 }
-

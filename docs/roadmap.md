@@ -123,6 +123,8 @@ Output:
 - garage personale modelli
 - foto modelli
 - profilo pubblico opzionale
+- follow profili pubblici con notifiche sulle attivita' pubbliche dell'utente seguito
+- gruppi di amici PitLap con inviti evento gestiti dall'owner dell'evento
 
 ## Fase 6 - Contributi community controllati
 
@@ -221,6 +223,11 @@ Se dopo 4 settimane nessuna pista ha piu' di 1 check-in in un singolo giorno, il
 ## Backlog post-MVP
 
 - notifiche push piu' ricche
+- notifiche operative per gestori pista e creator evento, con centro notifiche in-app e preferenze per ruolo
+- follow profili pubblici e notifiche opt-in su nuove attivita' pubbliche
+- `Crea gruppo`: gruppi utenti con membership consensuale e inviti evento di gruppo
+- commenti utenti su piste, negozi, eventi e spot con moderazione, segnalazioni e anti-spam
+- azioni community reali per `Commenti` e `Condividi`, con conteggi/link canonici e fallback guest
 - digital setup
 - QR code e check-in evoluto
 - mappe e POI

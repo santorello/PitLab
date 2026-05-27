@@ -12,12 +12,14 @@ import '../../features/discovery/presentation/nearby_screen.dart';
 import '../../features/events/presentation/event_detail_screen.dart';
 import '../../features/events/presentation/events_screen.dart';
 import '../../features/garage/presentation/garage_screen.dart';
+import '../../features/garage/presentation/public_builds_screen.dart';
 import '../../features/legal/presentation/legal_document_screen.dart';
 import '../../features/manager/presentation/manager_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/pitcoin/presentation/pitcoin_history_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/profile/presentation/public_profile_screen.dart';
+import '../../features/profile/presentation/public_profiles_screen.dart';
 import '../../features/shops/presentation/shop_detail_screen.dart';
 import '../../features/shops/presentation/shop_editor_screen.dart';
 import '../../features/shops/presentation/shops_screen.dart';
@@ -201,6 +203,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const GarageScreen(),
           ),
           GoRoute(
+            path: '/builds',
+            name: 'public-builds',
+            builder: (context, state) => const PublicBuildsScreen(),
+          ),
+          GoRoute(
             path: '/profile',
             name: 'profile',
             redirect: (context, state) => requireAuth(state),
@@ -230,6 +237,29 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => PublicProfileScreen(
               publicSlug: state.pathParameters['publicSlug']!,
             ),
+          ),
+          GoRoute(
+            path: '/profiles',
+            name: 'public-profiles',
+            builder: (context, state) => const PublicProfilesScreen(),
+          ),
+          GoRoute(
+            path: '/legal/privacy',
+            name: 'legal-privacy',
+            builder: (context, state) =>
+                const LegalDocumentScreen(type: LegalDocumentType.privacy),
+          ),
+          GoRoute(
+            path: '/legal/terms',
+            name: 'legal-terms',
+            builder: (context, state) =>
+                const LegalDocumentScreen(type: LegalDocumentType.terms),
+          ),
+          GoRoute(
+            path: '/legal/cookies',
+            name: 'legal-cookies',
+            builder: (context, state) =>
+                const LegalDocumentScreen(type: LegalDocumentType.cookies),
           ),
           GoRoute(
             path: '/manager',
@@ -277,24 +307,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           redirectPath: state.uri.queryParameters['redirect'],
           authErrorCode: state.uri.queryParameters['authError'],
         ),
-      ),
-      GoRoute(
-        path: '/legal/privacy',
-        name: 'legal-privacy',
-        builder: (context, state) =>
-            const LegalDocumentScreen(type: LegalDocumentType.privacy),
-      ),
-      GoRoute(
-        path: '/legal/terms',
-        name: 'legal-terms',
-        builder: (context, state) =>
-            const LegalDocumentScreen(type: LegalDocumentType.terms),
-      ),
-      GoRoute(
-        path: '/legal/cookies',
-        name: 'legal-cookies',
-        builder: (context, state) =>
-            const LegalDocumentScreen(type: LegalDocumentType.cookies),
       ),
     ],
   );

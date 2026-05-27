@@ -3,9 +3,9 @@
 ## Versione corrente
 
 - `project_name`: PitLap
-- `current_version`: 0.2.1
+- `current_version`: 0.2.3
 - `status`: pre-alpha
-- `release_date`: 2026-05-23
+- `release_date`: 2026-05-27
 
 ## Regola operativa
 
@@ -31,6 +31,44 @@ Linee guida:
 - `patch`: correzioni, piccoli miglioramenti o allineamenti
 
 ## Changelog
+
+### 0.2.3 - 2026-05-27
+
+Stato:
+
+- pre-alpha
+
+Contenuto:
+
+- aggiunte route pubbliche `/builds` e `/profiles`: marketplace build pubbliche da `user_builds.is_public=true` e directory profili da `profiles.is_public=true`, con dati reali e link ai profili pubblici
+- collegata la home: `tutte le build` apre `/builds`, `tutti i profili` apre `/profiles`; parsing immagini/specs reso piu' robusto tramite helper condiviso
+- pagina `Tracks`: sezione `Ingressi rapidi` resa compatta su mobile con quick strip orizzontale, riducendo spazio occupato nel primo viewport
+- pagina `Eventi`: aggiunta sezione collassata `Eventi passati` in fondo, alimentata da eventi pubblici reali gia' conclusi e ordinata dal piu' recente
+- pagine legal (`/legal/privacy`, `/legal/terms`, `/legal/cookies`) riportate dentro `AppScaffold`, cosi' bottom navigation/footer restano visibili anche su mobile
+- roadmap/checklist aggiornate con TODO di prodotto: `Segui profilo`, `Crea gruppo`, notifiche operative per gestori/creator evento, commenti moderati su entita' pubbliche, azioni reali per `Commenti` e `Condividi`
+- nota tecnica aperta: creazione negozio ancora da verificare lato RLS remoto; il client invia `submitted_by`, `approval_status` e `is_public` coerenti con la policy locale, ma serve controllo diretto delle policy applicate su Supabase
+
+### 0.2.2 - 2026-05-25
+
+Stato:
+
+- pre-alpha
+
+Contenuto:
+
+- nuovo fronte **Home dashboard v2** (cfr. `docs/superpowers/plans/2026-05-24-home-dashboard.md` e `docs/mockups/home-vision-v2.html`): home riscritta su contratti DB read-only, niente valori demo o fabbricati lato client
+- delta `supabase/deltas/2026-05-24-home-dashboard-contracts.sql`: 4 nuove view `security_invoker` (`home_overview_stats`, `home_trending_tracks`, `home_featured_track`, `pitcoin_public_leaderboard`) + RPC `public.get_my_pitcoin_streak()` con `search_path` esplicito. Applicato su `pitlap-dev` (con fix in flight: `track_status_history.created_at` → `updated_at`)
+- delta `supabase/deltas/2026-05-24-build-of-week.sql`: nuove tabelle `user_build_votes`, `weekly_featured_builds`, view `home_build_of_week`, funzione `private.refresh_current_build_of_week()` con award PitCoin idempotente, nuova action `build_of_week` (75 punti, per_entity_cap=1) nel catalogo. Eseguita una tantum la selezione della prima build
+- delta `supabase/deltas/2026-05-24-user-location-context.sql`: aggiunte colonne `home_city`, `home_country`, `home_latitude`, `home_longitude` su `profiles` (con check constraint range lat/lng) + signature estesa `complete_onboarding(p_preferred_city, p_user_interests, p_home_city, p_home_country, p_home_latitude, p_home_longitude)` per persistere la zona di riferimento dell'utente
+- delta `supabase/deltas/2026-05-24-activity-feed-images.sql`: riscritta la view `activity_feed` per esporre `image_url`/`image_urls` nel payload (track status, eventi, community)
+- delta `supabase/deltas/2026-05-24-shop-submitters-rls-hardening.sql`: irrigidita la INSERT policy `shop submitters can insert own shops` (solo `auth.uid() = submitted_by`, `is_public=false`, status `draft|pending`) + auto-link `shop_managers` post-insert via trigger SECURITY DEFINER
+- nuova feature Flutter `app/lib/features/community/application/home_dashboard_provider.dart`: modelli `HomeOverviewStats`, `HomeTrendingTrack`, `HomeBuildOfWeek`, `PitcoinLeaderboardEntry`, `HomeTrackWeather` + 6 provider Riverpod con fail-safe (ogni provider torna empty/null se la view o l'RPC manca, così la UI non crasha durante rollout incrementale)
+- nuova feature Flutter `app/lib/features/location/application/user_location_context_provider.dart`: legge `profiles.home_*` e `preferred_city`, espone `UserLocationContext` con coordinate + radius, helper `distanceKmBetween` e `isWithinUserRadius` per il sort distance-aware del meteo
+- riscritta `community_home_screen.dart` su pattern card-first (warm background, top bar brand, greeting, action chips, sezioni KPI/featured/trending/leaderboard/build-of-week/meteo/community), con empty state espliciti ("Arriva presto", "Classifica in partenza")
+- `onboarding_screen.dart` allineato alla nuova signature `complete_onboarding` a 6 parametri (cattura città/paese/coordinate del luogo di riferimento)
+- rifiniture su `shops_screen.dart`, `shop_detail_screen.dart`, `events_screen.dart`, `place_card.dart`, `content_scaffold_header.dart`, `community/domain/activity_feed_item.dart`, `legal_document_screen.dart`
+- ARB IT/EN rigenerate per le nuove voci home (greeting, KPI, featured, trending, build-of-week, streak, classifica, meteo, empty state)
+- health snapshot post-deploy: `home_overview_stats` = {open_tracks:6, events_next_30_days:3, new_spots_30_days:6, public_shops:7, geocoded_shops:3, public_builds:11}; top trending Arena RC Bologna (40), Offroad Parma (38), Drift Park Torino (37); leaderboard pubblica Davide 260 / Lorenzo 259 / Marco 223; build of the week settimana 2026-05-25 selezionata "Traxxas TRX-4 Gen2 Land Rover"; linter Supabase pulito sui nuovi oggetti
 
 ### 0.2.1 - 2026-05-23
 

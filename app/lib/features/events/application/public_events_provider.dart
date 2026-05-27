@@ -38,6 +38,36 @@ class PublicEventsRepository {
     return events;
   }
 
+  Future<List<CreatedEventRecord>> fetchPastPublicEvents({int limit = 50}) async {
+    final now = DateTime.now().toUtc();
+    final response = await _client
+        .from('events')
+        .select('''
+          id,
+          title,
+          description,
+          start_at,
+          end_at,
+          tracks(name, city)
+        ''')
+        .eq('visibility', 'public')
+        .lt('start_at', now.toIso8601String())
+        .order('start_at', ascending: false)
+        .limit(limit);
+
+    final events = (response as List<dynamic>)
+        .whereType<Map<String, dynamic>>()
+        .map(mapPublicEventRow)
+        .where((event) {
+          final effectiveEnd = event.endsAt ?? event.startsAt;
+          if (effectiveEnd == null) return false;
+          return effectiveEnd.toUtc().isBefore(now);
+        })
+        .toList();
+    events.sort(_compareEventsByStartDateDesc);
+    return events;
+  }
+
   Future<CreatedEventRecord?> fetchPublicEventById(String eventId) async {
     final response = await _client
         .from('events')
@@ -87,6 +117,10 @@ int _compareEventsByStartDate(CreatedEventRecord a, CreatedEventRecord b) {
   return aStart.compareTo(bStart);
 }
 
+int _compareEventsByStartDateDesc(CreatedEventRecord a, CreatedEventRecord b) {
+  return _compareEventsByStartDate(b, a);
+}
+
 CreatedEventRecord mapPublicEventRow(Map<String, dynamic> row) {
   final track = row['tracks'] as Map<String, dynamic>?;
   final trackName = track?['name'] as String? ?? '';
@@ -94,6 +128,7 @@ CreatedEventRecord mapPublicEventRow(Map<String, dynamic> row) {
   final location = city.isNotEmpty ? city : trackName;
 
   final startsAtIso = row['start_at'] as String?;
+  final endsAtIso = row['end_at'] as String?;
   final date = PublicEventsRepository._formatDate(startsAtIso);
 
   return CreatedEventRecord(
@@ -107,6 +142,7 @@ CreatedEventRecord mapPublicEventRow(Map<String, dynamic> row) {
     creatorRole: 'track',
     venue: trackName,
     startsAtIso: startsAtIso,
+    endsAtIso: endsAtIso,
   );
 }
 
@@ -124,6 +160,13 @@ final publicUpcomingEventsProvider =
       final repo = ref.watch(publicEventsRepositoryProvider);
       if (repo == null) return const [];
       return repo.fetchUpcomingPublicEvents();
+    });
+
+final publicPastEventsProvider =
+    FutureProvider<List<CreatedEventRecord>>((ref) async {
+      final repo = ref.watch(publicEventsRepositoryProvider);
+      if (repo == null) return const [];
+      return repo.fetchPastPublicEvents();
     });
 
 final publicEventDetailProvider =

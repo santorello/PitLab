@@ -765,13 +765,14 @@ class _BuildOfWeekSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle(
+        _SectionTitle(
           title: 'Build della settimana',
           actionLabel: 'tutte le build',
+          onActionTap: () => context.push('/builds'),
         ),
         const SizedBox(height: 10),
         InkWell(
-          onTap: () => context.push('/garage'),
+          onTap: () => context.push('/builds'),
           borderRadius: BorderRadius.circular(24),
           child: Container(
             clipBehavior: Clip.antiAlias,
@@ -1447,7 +1448,11 @@ class _LeaderboardSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle(title: 'Classifica PitCoin'),
+        _SectionTitle(
+          title: 'Classifica PitCoin',
+          actionLabel: 'tutti i profili',
+          onActionTap: () => context.push('/profiles'),
+        ),
         const SizedBox(height: 10),
         if (!hasScores)
           const _EmptyStateCard(
@@ -2042,10 +2047,12 @@ class _SectionTitle extends StatelessWidget {
   const _SectionTitle({
     required this.title,
     this.actionLabel,
+    this.onActionTap,
   });
 
   final String title;
   final String? actionLabel;
+  final VoidCallback? onActionTap;
 
   @override
   Widget build(BuildContext context) {
@@ -2060,11 +2067,19 @@ class _SectionTitle extends StatelessWidget {
         ),
         const Spacer(),
         if (actionLabel != null)
-          Text(
-            actionLabel!,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.signalOrange,
-                ),
+          InkWell(
+            onTap: onActionTap,
+            borderRadius: BorderRadius.circular(999),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Text(
+                actionLabel!,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: AppColors.signalOrange,
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+            ),
           ),
       ],
     );

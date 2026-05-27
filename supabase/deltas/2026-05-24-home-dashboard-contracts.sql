@@ -71,7 +71,7 @@ updates_14d as (
     h.track_id,
     count(*)::integer as updates_14d
   from public.track_status_history h
-  where h.created_at >= timezone('utc', now()) - interval '14 days'
+  where h.updated_at >= timezone('utc', now()) - interval '14 days'
   group by h.track_id
 )
 select
@@ -151,6 +151,7 @@ create or replace function public.get_my_pitcoin_streak()
 returns integer
 language plpgsql
 stable
+set search_path = public, pg_catalog
 as $$
 declare
   v_user_id uuid := auth.uid();

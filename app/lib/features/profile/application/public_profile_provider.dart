@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../shared/utils/db_list_parser.dart';
 import '../../tracks/application/tracks_providers.dart';
 
 // ── Model ─────────────────────────────────────────────────────────────────────
@@ -26,14 +27,8 @@ class PublicBuildRecord {
       id: map['id'] as String? ?? '',
       title: map['title'] as String? ?? '',
       meta: map['meta'] as String? ?? '',
-      specs: switch (map['specs']) {
-        final List<dynamic> list => list.whereType<String>().join(', '),
-        final String s => s,
-        _ => '',
-      },
-      imageUrls: (map['image_urls'] as List<dynamic>? ?? const [])
-          .whereType<String>()
-          .toList(),
+      specs: parseDbStringList(map['specs']).join(', '),
+      imageUrls: parseDbStringList(map['image_urls']),
     );
   }
 }

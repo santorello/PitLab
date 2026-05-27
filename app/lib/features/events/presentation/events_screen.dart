@@ -35,9 +35,9 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final customEvents = ref.watch(myActiveCreatedEventsProvider);
-    final archivedEvents = ref.watch(myArchivedCreatedEventsProvider);
     final currentUser = ref.watch(currentUserProvider);
     final featuredEventsAsync = ref.watch(publicUpcomingEventsProvider);
+    final pastEventsAsync = ref.watch(publicPastEventsProvider);
     return ContentScaffold(
       title: l10n.eventsTitle,
       description: l10n.eventsDescription,
@@ -256,76 +256,19 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                 ),
               ),
             ),
-          // ── Storico eventi ────────────────────────────────────────────────
-          if (archivedEvents.isNotEmpty) ...[
-            const SizedBox(height: 18),
-            Card(
-              child: Theme(
-                data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-                child: ExpansionTile(
-                  initiallyExpanded: false,
-                  maintainState: true,
-                  tilePadding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 8,
-                  ),
-                  childrenPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                  title: Text(
-                    l10n.eventsArchiveTitle,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  subtitle: Text(
-                    _localeText(
-                      context,
-                      it: '${archivedEvents.length} eventi conclusi',
-                      en: '${archivedEvents.length} past events',
-                    ),
-                    style: Theme.of(context).textTheme.bodyMedium
-                        ?.copyWith(color: AppColors.steel),
-                  ),
-                  onExpansionChanged: (value) {
-                    setState(() {
-                      _archiveExpanded = value;
-                    });
-                  },
-                  trailing: Icon(
-                    _archiveExpanded ? Icons.expand_less : Icons.expand_more,
-                    color: AppColors.steel,
-                  ),
-                  children: [
-                    ...archivedEvents.map(
-                      (event) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _EventCard(
-                          onTap: () => _openEventDetail(context, event.id),
-                          onShare: () => _handleSharePressed(context, event.id),
-                          date: event.date,
-                          endDate: event.endsAt != null
-                              ? MaterialLocalizations.of(context)
-                                    .formatShortMonthDay(event.endsAt!.toLocal())
-                              : null,
-                          title: event.title,
-                          location: event.location,
-                          note: event.note,
-                          badge: l10n.eventsBadgeArchived,
-                          imageSource: event.imageSource,
-                          imageCount: event.imageUrls.length,
-                          creatorLabel: event.creatorLabel,
-                          primaryLabel: currentUser == null
-                              ? _localeText(
-                                  context,
-                                  it: 'Accedi per vedere il dettaglio',
-                                  en: 'Sign in to view details',
-                                )
-                              : l10n.eventsOpenAction,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+          const SizedBox(height: 18),
+          _PastEventsSection(
+            eventsAsync: pastEventsAsync,
+            expanded: _archiveExpanded,
+            isSignedIn: currentUser != null,
+            onExpansionChanged: (value) {
+              setState(() {
+                _archiveExpanded = value;
+              });
+            },
+            onOpen: (eventId) => _openEventDetail(context, eventId),
+            onShare: (eventId) => _handleSharePressed(context, eventId),
+          ),
         ],
       ),
     );
@@ -1029,6 +972,145 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
         l10n.imageUploadTooLargeMessage,
       _ => l10n.imageUploadUnreadableMessage,
     };
+  }
+}
+
+class _PastEventsSection extends StatelessWidget {
+  const _PastEventsSection({
+    required this.eventsAsync,
+    required this.expanded,
+    required this.isSignedIn,
+    required this.onExpansionChanged,
+    required this.onOpen,
+    required this.onShare,
+  });
+
+  final AsyncValue<List<CreatedEventRecord>> eventsAsync;
+  final bool expanded;
+  final bool isSignedIn;
+  final ValueChanged<bool> onExpansionChanged;
+  final ValueChanged<String> onOpen;
+  final ValueChanged<String> onShare;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final countLabel = eventsAsync.maybeWhen(
+      data: (events) => _localeText(
+        context,
+        it: '${events.length} eventi passati',
+        en: '${events.length} past events',
+      ),
+      loading: () => _localeText(
+        context,
+        it: 'Caricamento storico...',
+        en: 'Loading archive...',
+      ),
+      orElse: () => _localeText(
+        context,
+        it: 'Storico eventi pubblici',
+        en: 'Public event archive',
+      ),
+    );
+
+    return Card(
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          initiallyExpanded: false,
+          maintainState: true,
+          tilePadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          childrenPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          title: Text(
+            _localeText(context, it: 'Eventi passati', en: 'Past events'),
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          subtitle: Text(
+            countLabel,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.steel),
+          ),
+          onExpansionChanged: onExpansionChanged,
+          trailing: Icon(
+            expanded ? Icons.expand_less : Icons.expand_more,
+            color: AppColors.steel,
+          ),
+          children: [
+            eventsAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (error, _) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text(
+                  _localeText(
+                    context,
+                    it: 'Non riesco a caricare gli eventi passati.',
+                    en: 'Past events cannot be loaded right now.',
+                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: AppColors.steel),
+                ),
+              ),
+              data: (events) {
+                if (events.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(
+                      _localeText(
+                        context,
+                        it: 'Nessun evento passato disponibile.',
+                        en: 'No past events available.',
+                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: AppColors.steel),
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: events
+                      .map(
+                        (event) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _EventCard(
+                            onTap: () => onOpen(event.id),
+                            onShare: () => onShare(event.id),
+                            date: event.date,
+                            endDate: event.endsAt != null
+                                ? MaterialLocalizations.of(
+                                    context,
+                                  ).formatShortMonthDay(event.endsAt!.toLocal())
+                                : null,
+                            title: event.title,
+                            location: event.location,
+                            note: event.note,
+                            badge: l10n.eventsBadgeArchived,
+                            imageSource: event.imageSource,
+                            imageCount: event.imageUrls.length,
+                            creatorLabel: event.creatorLabel,
+                            primaryLabel: isSignedIn
+                                ? l10n.eventsOpenAction
+                                : _localeText(
+                                    context,
+                                    it: 'Accedi per vedere il dettaglio',
+                                    en: 'Sign in to view details',
+                                  ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
