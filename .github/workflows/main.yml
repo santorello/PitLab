@@ -8,6 +8,9 @@ on:
 permissions:
   contents: read
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   ping:
     runs-on: ubuntu-latest
@@ -22,10 +25,18 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Check required secrets
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          test -n "$SUPABASE_URL" || { echo "Missing GitHub secret: SUPABASE_URL"; exit 2; }
+          test -n "$SUPABASE_ANON_KEY" || { echo "Missing GitHub secret: SUPABASE_ANON_KEY or SUPABASE_PUBLISHABLE_KEY"; exit 2; }
+
       - name: Ping Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY }}
           SUPABASE_KEEPALIVE_TABLE: ${{ vars.SUPABASE_KEEPALIVE_TABLE || 'keepalive' }}
           SUPABASE_KEEPALIVE_SCHEMA: ${{ vars.SUPABASE_KEEPALIVE_SCHEMA || 'public' }}
         run: python scripts/supabase_keepalive.py
