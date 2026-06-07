@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -41,12 +42,15 @@ jobs:
           SUPABASE_KEEPALIVE_SCHEMA: ${{ vars.SUPABASE_KEEPALIVE_SCHEMA || 'public' }}
         run: python scripts/supabase_keepalive.py
 
-      - name: Email on failure
+      - name: Notify owner on failure
         if: failure()
         env:
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT || '587' }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-          SMTP_FROM: ${{ secrets.SMTP_FROM || secrets.SMTP_USER }}
-        run: python scripts/notify_failure_email.py
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh issue create \
+            --title "Supabase keepalive failed" \
+            --body "The Supabase keepalive workflow failed on ${{ github.ref_name }}.
+
+Run: $RUN_URL" \
+            --assignee "${{ github.repository_owner }}"
