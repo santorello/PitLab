@@ -40,3 +40,13 @@ jobs:
           SUPABASE_KEEPALIVE_TABLE: ${{ vars.SUPABASE_KEEPALIVE_TABLE || 'keepalive' }}
           SUPABASE_KEEPALIVE_SCHEMA: ${{ vars.SUPABASE_KEEPALIVE_SCHEMA || 'public' }}
         run: python scripts/supabase_keepalive.py
+
+      - name: Email on failure
+        if: failure()
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT || '587' }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM || secrets.SMTP_USER }}
+        run: python scripts/notify_failure_email.py
