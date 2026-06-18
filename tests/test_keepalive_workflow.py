@@ -16,6 +16,12 @@ class KeepaliveWorkflowTests(unittest.TestCase):
     def test_keepalive_is_scheduled_daily(self) -> None:
         self.assertIn('- cron: "17 6 * * *"', self.workflow)
 
+    def test_inline_run_value_has_no_unquoted_yaml_colon(self) -> None:
+        notify_line = next(
+            line for line in self.workflow.splitlines() if "gh issue create" in line
+        )
+        self.assertNotIn(" Run: ", notify_line)
+
 
 if __name__ == "__main__":
     unittest.main()
