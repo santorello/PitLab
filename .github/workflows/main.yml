@@ -2,7 +2,7 @@ name: Supabase keepalive
 
 on:
   schedule:
-    - cron: "17 6 */4 * *"
+    - cron: "17 6 * * *"
   workflow_dispatch:
 
 permissions:
@@ -47,10 +47,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          gh issue create \
-            --title "Supabase keepalive failed" \
-            --body "The Supabase keepalive workflow failed on ${{ github.ref_name }}.
-
-Run: $RUN_URL" \
-            --assignee "${{ github.repository_owner }}"
+        run: gh issue create --title "Supabase keepalive failed" --body "The Supabase keepalive workflow failed on ${{ github.ref_name }}. Run: $RUN_URL" --assignee "${{ github.repository_owner }}"
