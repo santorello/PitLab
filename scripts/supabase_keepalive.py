@@ -14,6 +14,7 @@ import json
 import os
 import sys
 import time
+from datetime import datetime, timezone
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -30,20 +31,27 @@ def getenv_required(name: str) -> str:
 def build_url(base_url: str, table: str) -> str:
     clean_base = base_url.rstrip("/")
     encoded_table = urllib.parse.quote(table, safe="")
-    query = urllib.parse.urlencode({"select": "*", "limit": "1"})
+    query = urllib.parse.urlencode({"id": "eq.true", "select": "id,checked_at"})
     return f"{clean_base}/rest/v1/{encoded_table}?{query}"
 
 
 def request_once(url: str, anon_key: str, schema: str) -> tuple[int, str]:
+    payload = json.dumps(
+        {"checked_at": datetime.now(timezone.utc).isoformat()}
+    ).encode("utf-8")
     request = urllib.request.Request(
         url,
+        data=payload,
         headers={
             "apikey": anon_key,
             "Authorization": f"Bearer {anon_key}",
             "Accept": "application/json",
             "Accept-Profile": schema,
+            "Content-Profile": schema,
+            "Content-Type": "application/json",
+            "Prefer": "return=representation",
         },
-        method="GET",
+        method="PATCH",
     )
 
     try:
@@ -69,11 +77,19 @@ def main() -> int:
         status, body = request_once(url, anon_key, schema)
         if 200 <= status < 300:
             try:
-                row_count = len(json.loads(body))
+                rows = json.loads(body)
             except json.JSONDecodeError:
-                row_count = "unknown"
-            print(f"Supabase keepalive OK: status={status}, table={schema}.{table}, rows={row_count}")
-            return 0
+                rows = None
+
+            if isinstance(rows, list) and len(rows) == 1:
+                checked_at = rows[0].get("checked_at", "unknown")
+                print(
+                    f"Supabase keepalive OK: status={status}, "
+                    f"table={schema}.{table}, checked_at={checked_at}"
+                )
+                return 0
+
+            body = f"Expected exactly one updated row, received: {body[:500]}"
 
         print(
             f"Supabase keepalive failed: attempt={attempt}/{max_attempts}, "
