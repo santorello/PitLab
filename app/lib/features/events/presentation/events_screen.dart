@@ -947,6 +947,16 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
 
   Future<void> _shareEvent(BuildContext context, String eventId) async {
     final l10n = AppLocalizations.of(context)!;
+    // Eventi locali ottimistici (id `created-…`) non sono ancora persistiti:
+    // il link sarebbe morto per chiunque altro. Non condividere.
+    if (eventId.startsWith('created-')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Evento non ancora pubblicato: non condivisibile.'),
+        ),
+      );
+      return;
+    }
     final link = _eventShareLink(eventId);
     await Clipboard.setData(ClipboardData(text: link));
     if (!context.mounted) {

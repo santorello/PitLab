@@ -51,14 +51,14 @@ class _ProfileContent extends ConsumerWidget {
 
   String get _roleLabel => switch (profile.role) {
     'track_organizer' => 'Organizzatore pista',
-    'shop_manager' => 'Gestore negozio',
+    'shop_owner' || 'shop_manager' => 'Gestore negozio',
     'admin' => 'Admin PitLap',
     _ => 'Pilota',
   };
 
   IconData get _roleIcon => switch (profile.role) {
     'track_organizer' => Icons.flag_outlined,
-    'shop_manager' => Icons.storefront_outlined,
+    'shop_owner' || 'shop_manager' => Icons.storefront_outlined,
     'admin' => Icons.shield_outlined,
     _ => Icons.directions_car_outlined,
   };

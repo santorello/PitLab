@@ -10,17 +10,21 @@ Obiettivo:
 
 ## Stato
 
-Data aggiornamento: `2026-05-17`
+Data aggiornamento: `2026-07-29` (audit RLS su `pitlap-dev`)
 
 Implementazione UI attuale:
 
 - `guest`: menu pubblico senza `Garage`, `Profilo`, `Gestione`, `Admin`
 - `shop owner`: puo' vedere `Modifica negozio` nel dettaglio negozio
-- `shop owner`: l'edit del negozio deve dipendere da `shop_managers`, non solo dal ruolo
+- `shop owner`: l'edit del negozio dipende da `shop_managers`, non solo dal ruolo (attivo)
 - `track organizer`: puo' accedere a `/manager` e vedere la voce `Gestione`
 - `admin`: puo' vedere la voce `Admin` e accedere a `/admin`
-- il database deve supportare esplicitamente i ruoli `shop_owner` e `track_organizer` nell'enum `app_role`
-- il modello attuale e' ancora troppo rigido per gli account ibridi: va evoluto verso ownership multiple esplicite per negozi e piste
+
+Enforcement backend (verificato su dev 2026-07-29):
+
+- enum `app_role` in uso reale: `user`, `admin`, `shop_owner`, `track_organizer`
+- l'enforcement NON e' piu' solo gating UI: le tabelle 0.3.0 hanno RLS reale (vedi sotto)
+- account "ibridi": il ruolo globale e' un'etichetta/capability, ma l'edit di piste/negozi e' ancorato alle tabelle di ownership per-entita' `track_managers`/`shop_managers`. Un utente puo' quindi gestire piste e negozi diversi a prescindere dal singolo `role`. Resta aperto solo il modo di *rappresentare* l'ibrido in UI (un solo ruolo mostrato), non la capability.
 
 ## Principi
 
@@ -195,12 +199,25 @@ Viste future da prevedere:
 | Moderare contenuti | No | No | No | No | Si |
 | Gestire categorie hobby/label | No | No | No | No | Si |
 | Pannello controllo completo | No | No | No | No | Si |
+| Commentare entita' pubbliche | No | Si | Si | Si | Si |
+| Modificare/eliminare propri commenti | No | Si | Si | Si | Si |
+| Nascondere/moderare commenti | No | No | No | No | Si |
+| Seguire profili / piste / negozi | No | Si | Si | Si | Si |
+| Ricevere notifiche in-app | No | Si | Si | Si | Si |
+| Vedere PitCoin altrui sul profilo | No | No | No | No | No |
 
 Note:
 
 - `Si*`: da confermare quando la policy eventi passera' da prototipo locale a backend reale
 - `Si**`: solo se l'account ha relazioni di ownership multiple esplicite
-- il solo ruolo globale non deve piu' essere considerato sufficiente per editare entita' sensibili: servono relazioni reali su `track_managers` e `shop_managers`
+- il solo ruolo globale non e' sufficiente per editare entita' sensibili: servono relazioni reali su `track_managers` e `shop_managers` (attivo)
+
+### Regole RLS verificate (0.3.0, dev 2026-07-29)
+
+- **Commenti** (`entity_comments`): INSERT con `WITH CHECK author_id = auth.uid() AND is_hidden = false`; UPDATE/DELETE solo autore o admin; SELECT pubblica solo dei commenti non nascosti (autore/admin vedono anche i propri nascosti). Segnalazioni via RPC `report_comment`, non INSERT diretto.
+- **Follow** (`profile_follows`, `track_follows`, `shop_follows`): owner-scoped su `auth.uid()`; il follow profilo consentito (WITH CHECK) solo verso profili `is_public = true`.
+- **Notifiche** (`notifications`, `notification_recipients`): lettura/aggiornamento solo del destinatario o admin; nessuna forgiabilita'.
+- **PitCoin**: saldo di un utente non visibile agli altri — view `public_user_pitcoin` owner-only. Eccezione voluta: la classifica pubblica in home (`pitcoin_public_leaderboard`) resta con nomi + punti.
 
 ## Enforcement raccomandato
 
@@ -235,9 +252,10 @@ Blocco previsto:
 
 ## Da fare
 
-- allineare schema reale dei ruoli oltre `user/admin`
-- decidere il modello ownership per negozi
-- permettere ownership multiple sullo stesso account senza costringere a un solo ruolo attivo
+- ~~allineare schema reale dei ruoli oltre `user/admin`~~ fatto: enum `app_role` = user/admin/shop_owner/track_organizer
+- ~~decidere il modello ownership per negozi~~ fatto: `shop_managers` per-negozio, enforcement RLS attivo
+- ~~implementare enforcement reale oltre il gating UI~~ fatto per le entita' 0.3.0 (vedi "Regole RLS verificate")
+- rappresentare in UI gli account con capability multiple (oggi il profilo mostra un solo ruolo): la capability funziona gia' via `track_managers`/`shop_managers`, manca solo la resa
 - trasformare il pannello `Gestione` in un hub unico per piste e negozi assegnati, non solo per le piste
-- chiarire il modello definitivo degli eventi community
-- implementare enforcement reale oltre il gating UI
+- chiarire il modello definitivo degli eventi community (policy ancora da portare da prototipo a backend)
+- pulizia advisor: policy permissive multiple su `track_follows`/`shop_follows` (ALL + SELECT sovrapposte) — vedi blocco QA advisor
