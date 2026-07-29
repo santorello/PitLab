@@ -35,7 +35,16 @@ class PitcoinBadgesSection extends ConsumerWidget {
         error: (_, _) => const SizedBox.shrink(),
         data: (badges) {
           if (badges.isEmpty) return const SizedBox.shrink();
-          return _BadgeStrip(badges: badges, languageCode: languageCode);
+          // Titoletto mostrato solo quando ci sono riconoscimenti (profilo pulito
+          // per chi non ne ha ancora).
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Riconoscimenti', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 10),
+              _BadgeStrip(badges: badges, languageCode: languageCode),
+            ],
+          );
         },
       );
     }
