@@ -6,11 +6,15 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_radius.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/models/track_arrival_summary.dart';
 import '../../../shared/models/track_weather_day.dart';
 import '../../../shared/models/today_arrival_status.dart';
+import '../../../shared/utils/share_entity.dart';
 import '../../auth/application/auth_providers.dart';
+import '../../comments/presentation/comments_section.dart';
 import '../application/tracks_providers.dart';
 
 class TrackDetailScreen extends ConsumerStatefulWidget {
@@ -126,6 +130,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
 
           return ListView(
             controller: _scrollController,
+            padding: const EdgeInsets.only(bottom: AppSpacing.xl),
             children: [
               Card(
                 color: AppColors.graphite,
@@ -146,7 +151,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                 AppColors.darkScaffold,
                               ],
                             ),
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: BorderRadius.circular(AppRadius.xl),
                           ),
                         ),
                       ),
@@ -185,7 +190,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                 color: Colors.white60,
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: AppSpacing.sm),
                             Text(
                               track.name.toUpperCase(),
                               style: Theme.of(context)
@@ -193,7 +198,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                   .headlineMedium
                                   ?.copyWith(color: Colors.white),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: AppSpacing.sm),
                             Text(
                               locationText,
                               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -201,7 +206,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                               ),
                             ),
                             if (track.address.isNotEmpty) ...[
-                              const SizedBox(height: 10),
+                              const SizedBox(height: AppSpacing.sm),
                               Row(
                                 children: [
                                   const Icon(
@@ -274,7 +279,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                               ),
                             ],
                             if (track.availableServices.isNotEmpty) ...[
-                              const SizedBox(height: 10),
+                              const SizedBox(height: AppSpacing.sm),
                               Wrap(
                                 spacing: 8,
                                 runSpacing: 8,
@@ -291,7 +296,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                   .bodyLarge
                                   ?.copyWith(color: Colors.white),
                             ),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: AppSpacing.xl),
                             Wrap(
                               spacing: 12,
                               runSpacing: 12,
@@ -325,6 +330,15 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                       : () => _openMap(track.externalMapUrl),
                                   icon: Icons.map_outlined,
                                 ),
+                                _HeroIconAction(
+                                  tooltip: l10n.shareAction,
+                                  onPressed: () => shareEntity(
+                                    context: context,
+                                    entityType: 'track',
+                                    entityId: track.slug,
+                                  ),
+                                  icon: Icons.ios_share_outlined,
+                                ),
                               ],
                             ),
                           ],
@@ -334,7 +348,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.lg),
               _WeatherVerdictCard(
                 days: weatherDays,
                 isLive: weatherForecastAsync.hasValue &&
@@ -343,13 +357,21 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                       orElse: () => false,
                     ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               _TodayAtTrackCard(
                 key: _todayKey,
                 arrivalStatusAsync: todayArrivalAsync,
                 arrivalSummaryAsync: todayArrivalSummaryAsync,
                 isAuthenticated: currentUser != null,
               ),
+              // Commenti: solo per piste già pubblicate su Supabase (UUID).
+              if (isPublishedTrackId(track.id)) ...[
+                const SizedBox(height: AppSpacing.lg),
+                CommentsSection(
+                  entityType: 'track',
+                  entityId: track.id,
+                ),
+              ],
             ],
           );
         },
@@ -574,28 +596,28 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('🚗 ${l10n.arrivalSheetTitle}', style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
                     l10n.arrivalSheetBody(trackName),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.steel,
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.xl),
                   _ArrivalOptionTile(
                     icon: Icons.directions_car_filled_outlined,
                     title: l10n.arrivalConfirmTitle,
                     subtitle: l10n.arrivalConfirmSubtitle,
                     onTap: () => Navigator.of(context).pop(l10n.arrivalConfirmTitle),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: AppSpacing.sm),
                   _ArrivalOptionTile(
                     icon: Icons.help_outline,
                     title: l10n.arrivalMaybeTitle,
                     subtitle: l10n.arrivalMaybeSubtitle,
                     onTap: () => Navigator.of(context).pop(l10n.arrivalMaybeTitle),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: AppSpacing.sm),
                   _ArrivalOptionTile(
                     icon: Icons.close_outlined,
                     title: l10n.arrivalCancelTitle,
@@ -790,7 +812,7 @@ class _TodayAtTrackCard extends StatelessWidget {
                 color: AppColors.steel,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.sm),
             arrivalStatusAsync.when(
               data: (arrival) {
                 if (!isAuthenticated) {
@@ -828,7 +850,7 @@ class _TodayAtTrackCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
                           color: _statusColor(arrival.status).withAlpha(18),
-                          borderRadius: BorderRadius.circular(999),
+                          borderRadius: BorderRadius.circular(AppRadius.pill),
                         ),
                         child: Text(
                           label,
@@ -929,13 +951,13 @@ class _TodayAtTrackCard extends StatelessWidget {
                 color: AppColors.steel,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.sm),
             Wrap(
               spacing: 10,
               runSpacing: 10,
               children: chips,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               isItalian
                   ? 'Questa sezione mostra solo conteggi aggregati (nessun nominativo pubblico).'
@@ -944,7 +966,7 @@ class _TodayAtTrackCard extends StatelessWidget {
                 color: AppColors.steel,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               summary.activeCount > 0
                   ? (isItalian
@@ -994,10 +1016,10 @@ class _HeroStatusStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white10,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(color: Colors.white12),
       ),
       child: Row(
@@ -1007,7 +1029,7 @@ class _HeroStatusStrip extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: statusColor.withAlpha(24),
-              borderRadius: BorderRadius.circular(999),
+              borderRadius: BorderRadius.circular(AppRadius.pill),
             ),
             child: Text(
               statusLabel,
@@ -1046,7 +1068,7 @@ class _SummaryChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: color.withAlpha(18),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Text(
         label,
@@ -1106,12 +1128,12 @@ class _ArrivalOptionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(AppRadius.lg),
       child: Ink(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
           border: Border.all(color: AppColors.concrete),
         ),
         child: Row(
@@ -1120,8 +1142,8 @@ class _ArrivalOptionTile extends StatelessWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: const Color(0xFFF2F4F7),
-                borderRadius: BorderRadius.circular(14),
+                color: AppColors.surfaceCool,
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Icon(icon, color: AppColors.graphite),
             ),
@@ -1173,8 +1195,8 @@ class _WeatherVerdictCard extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF2F4F7),
-                    borderRadius: BorderRadius.circular(14),
+                    color: AppColors.surfaceCool,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                   child: const Icon(
                     Icons.cloud_outlined,
@@ -1202,7 +1224,7 @@ class _WeatherVerdictCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: days.first.color.withAlpha(22),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
                   ),
                   child: Text(
                     l10n.weatherTodayVerdict(days.first.verdict),
@@ -1218,7 +1240,7 @@ class _WeatherVerdictCard extends StatelessWidget {
                     color: isLive
                         ? AppColors.openGreen.withAlpha(18)
                         : AppColors.warningAmber.withAlpha(16),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
                   ),
                   child: Text(
                     isLive ? l10n.weatherLiveBadge : l10n.weatherMockBadge,
@@ -1229,7 +1251,7 @@ class _WeatherVerdictCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.xl),
             Wrap(
               spacing: 12,
               runSpacing: 12,
@@ -1261,10 +1283,10 @@ class _WeatherDayTile extends StatelessWidget {
     return Container(
       width: 172,
       height: 190,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(color: AppColors.concrete),
       ),
       child: Column(
@@ -1276,14 +1298,14 @@ class _WeatherDayTile extends StatelessWidget {
               color: AppColors.steel,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           Text(day.shortDate, style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.sm),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: day.color.withAlpha(24),
-              borderRadius: BorderRadius.circular(999),
+              borderRadius: BorderRadius.circular(AppRadius.pill),
             ),
             child: Text(
               day.verdict,
@@ -1292,7 +1314,7 @@ class _WeatherDayTile extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             day.note,
             maxLines: 2,
@@ -1334,7 +1356,7 @@ class _ServiceTag extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.white10,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
         border: Border.all(color: Colors.white12),
       ),
       child: Text(
@@ -1370,18 +1392,26 @@ class _CategoryTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, color) = _resolve();
+    // Usiamo il colore pieno come testo su background semitrasparente
+    // per garantire contrasto sufficiente su sfondi scuri della hero.
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withAlpha(40),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: color.withAlpha(120)),
+        color: color.withAlpha(48),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        border: Border.all(color: color.withAlpha(160)),
       ),
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
           color: Colors.white,
           fontWeight: FontWeight.w700,
+          shadows: [
+            Shadow(
+              color: Colors.black.withAlpha(100),
+              blurRadius: 4,
+            ),
+          ],
         ),
       ),
     );
@@ -1405,10 +1435,10 @@ class _HeroQuickFact extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       constraints: const BoxConstraints(minWidth: 150),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 11),
       decoration: BoxDecoration(
         color: Colors.white10,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(color: Colors.white12),
       ),
       child: Row(
@@ -1419,7 +1449,7 @@ class _HeroQuickFact extends StatelessWidget {
             height: 30,
             decoration: BoxDecoration(
               color: color.withAlpha(28),
-              borderRadius: BorderRadius.circular(9),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Icon(icon, size: 18, color: color),
           ),
@@ -1474,19 +1504,34 @@ class _HeroIconAction extends StatelessWidget {
       child: SizedBox(
         width: 50,
         height: 50,
-        child: FilledButton.tonal(
-          onPressed: onPressed,
-          style: FilledButton.styleFrom(
-            backgroundColor: active
-                ? AppColors.signalOrange.withAlpha(26)
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          decoration: BoxDecoration(
+            color: active
+                ? AppColors.signalOrange.withAlpha(36)
                 : Colors.white10,
-            foregroundColor: active ? AppColors.signalOrange : Colors.white,
-            padding: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+          ),
+          child: FilledButton.tonal(
+            onPressed: onPressed,
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              foregroundColor: active ? AppColors.signalOrange : Colors.white,
+              padding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+              ),
+            ),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              transitionBuilder: (child, animation) => ScaleTransition(
+                scale: animation,
+                child: child,
+              ),
+              child: Icon(icon, size: 20, key: ValueKey(icon)),
             ),
           ),
-          child: Icon(icon, size: 20),
         ),
       ),
     );

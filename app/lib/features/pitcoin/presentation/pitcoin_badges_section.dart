@@ -32,7 +32,7 @@ class PitcoinBadgesSection extends ConsumerWidget {
       final badgesAsync = ref.watch(userBadgesBySlugProvider(forSlug!));
       return badgesAsync.when(
         loading: () => const SizedBox.shrink(),
-        error: (_, __) => const SizedBox.shrink(),
+        error: (_, _) => const SizedBox.shrink(),
         data: (badges) {
           if (badges.isEmpty) return const SizedBox.shrink();
           return _BadgeStrip(badges: badges, languageCode: languageCode);
@@ -52,7 +52,7 @@ class PitcoinBadgesSection extends ConsumerWidget {
           ),
         ),
       ),
-      error: (_, __) => Text(l10n.pitcoinBadgesEmpty),
+      error: (_, _) => Text(l10n.pitcoinBadgesEmpty),
       data: (badges) {
         if (badges.isEmpty) {
           return Padding(

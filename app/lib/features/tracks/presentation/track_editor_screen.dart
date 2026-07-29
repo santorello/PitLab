@@ -7,12 +7,13 @@ import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/media/media_upload_controller.dart';
 import '../../../shared/media/media_upload_labels.dart';
+import '../../../shared/media/media_upload_service.dart';
 import '../../../shared/media/media_upload_state.dart';
 import '../../../shared/models/submitted_track.dart';
-import '../../../shared/utils/local_image_data_url.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/image_transfer_progress_card.dart';
 import '../../auth/application/auth_providers.dart';
+import '../application/track_taxonomy_option.dart';
 import '../application/tracks_providers.dart';
 
 class TrackEditorScreen extends ConsumerStatefulWidget {
@@ -26,23 +27,6 @@ class TrackEditorScreen extends ConsumerStatefulWidget {
 }
 
 class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
-  static const _serviceOptions = <String>[
-    '220V',
-    'Aria compressa',
-    'Tavoli box',
-    'Bagni',
-    'Ristoro',
-    'Illuminazione serale',
-  ];
-
-  static const _labelOptions = <String>[
-    'Offroad',
-    'Buggy',
-    'Scaler',
-    'Indoor',
-    'Club day',
-    'Gare',
-  ];
 
   late final TextEditingController _nameController;
   late final TextEditingController _slugController;
@@ -60,8 +44,15 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
   /// Preview locale (data-URL da picker). Non viene inviato a Supabase.
   String _coverImagePreview = '';
   bool _isSaving = false;
-  final Set<String> _selectedServices = <String>{};
-  final Set<String> _selectedLabels = <String>{};
+  /// Bozza già persistita su Supabase in questa sessione di editing.
+  /// Inizializzata da [widget.initialDraft] e aggiornata dopo il primo
+  /// "Salva bozza" così che i salvataggi/invii successivi facciano UPDATE
+  /// invece di un nuovo INSERT (evita duplicate slug — D06).
+  SubmittedTrack? _persistedDraft;
+  /// Chiavi DB delle categorie selezionate (da track_categories.key).
+  final Set<String> _selectedCategoryKeys = <String>{};
+  /// Chiavi DB dei servizi selezionati (da service_types.key).
+  final Set<String> _selectedServiceKeys = <String>{};
 
   String get _resolvedCoverImage =>
       _coverImageUrlController.text.trim().isNotEmpty
@@ -74,7 +65,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
     if (_cityController.text.trim().isNotEmpty) done++;
     if (_shortDescriptionController.text.trim().isNotEmpty) done++;
     if (_resolvedCoverImage.isNotEmpty) done++;
-    if (_selectedServices.isNotEmpty) done++;
+    if (_selectedServiceKeys.isNotEmpty) done++;
     return done;
   }
 
@@ -86,6 +77,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
   void initState() {
     super.initState();
     final d = widget.initialDraft;
+    _persistedDraft = widget.initialDraft;
     _nameController = TextEditingController(text: d?.name ?? '');
     _slugController = TextEditingController(text: d?.slug ?? '');
     _cityController = TextEditingController(text: d?.city ?? '');
@@ -115,6 +107,69 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
           setState(() {});
         }
       });
+    }
+    // Se si sta editando una bozza esistente, carica le chiavi tassonomia dal DB.
+    final draftId = d?.id;
+    if (draftId != null && draftId.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadDraftTaxonomy(draftId);
+      });
+    }
+  }
+
+  /// Carica i servizi e le categorie già associati alla bozza/pista in editing.
+  /// Necessario per pre-selezionare i chip quando si apre il form in modalità edit.
+  Future<void> _loadDraftTaxonomy(String trackId) async {
+    final client = ref.read(supabaseClientProvider);
+    if (client == null) {
+      return;
+    }
+    try {
+      // Legge i servizi attivi per questa pista
+      final servicesResp = await client
+          .from('track_services')
+          .select('is_available, service_types(key)')
+          .eq('track_id', trackId);
+
+      final serviceKeys = (servicesResp as List<dynamic>)
+          .whereType<Map<String, dynamic>>()
+          .where((row) => row['is_available'] == true)
+          .map((row) {
+            final st = row['service_types'];
+            if (st is Map<String, dynamic>) return st['key'] as String?;
+            return null;
+          })
+          .whereType<String>()
+          .toSet();
+
+      // Legge le categorie per questa pista
+      final categoriesResp = await client
+          .from('track_category_links')
+          .select('track_categories(key)')
+          .eq('track_id', trackId);
+
+      final categoryKeys = (categoriesResp as List<dynamic>)
+          .whereType<Map<String, dynamic>>()
+          .map((row) {
+            final tc = row['track_categories'];
+            if (tc is Map<String, dynamic>) return tc['key'] as String?;
+            return null;
+          })
+          .whereType<String>()
+          .toSet();
+
+      if (mounted) {
+        setState(() {
+          _selectedServiceKeys
+            ..clear()
+            ..addAll(serviceKeys);
+          _selectedCategoryKeys
+            ..clear()
+            ..addAll(categoryKeys);
+        });
+      }
+    } catch (_) {
+      // Fallback silenzioso: l'utente può ri-selezionare manualmente.
     }
   }
 
@@ -176,7 +231,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
                     runSpacing: 10,
                     children: [
                       const _DarkHeroChip(label: 'Card pubblica'),
-                      const _DarkHeroChip(label: 'Servizi e label'),
+                      const _DarkHeroChip(label: 'Categorie e servizi'),
                       const _DarkHeroChip(label: 'Invio approvazione'),
                       _DarkHeroChip(
                         label:
@@ -221,6 +276,15 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
           LayoutBuilder(
             builder: (context, constraints) {
               final stacked = constraints.maxWidth < 960;
+              final categoryOptions = ref.watch(trackCategoryOptionsProvider).maybeWhen(
+                data: (options) => options,
+                orElse: () => const <TrackTaxonomyOption>[],
+              );
+              final serviceOptions = ref.watch(trackServiceOptionsProvider).maybeWhen(
+                data: (options) => options,
+                orElse: () => const <TrackTaxonomyOption>[],
+              );
+
               final editor = _EditorSections(
                 nameController: _nameController,
                 slugController: _slugController,
@@ -236,15 +300,28 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
                 coverImagePreview: _coverImagePreview,
                 uploadingCover: _uploadingCover,
                 coverStageLabel: _coverTransferState?.stageLabel,
-                selectedServices: _selectedServices,
-                selectedLabels: _selectedLabels,
+                selectedServiceKeys: _selectedServiceKeys,
+                selectedCategoryKeys: _selectedCategoryKeys,
+                serviceOptions: serviceOptions,
+                categoryOptions: categoryOptions,
                 onPickCover: _pickCoverImage,
                 coverProgress: _coverTransferState?.progress ?? 0,
                 coverCompletedCount: _coverTransferState?.completedCount ?? 0,
                 coverTotalCount: _coverTransferState?.totalCount ?? 0,
-                onToggleService: (value) => _toggleItem(_selectedServices, value),
-                onToggleLabel: (value) => _toggleItem(_selectedLabels, value),
+                onToggleService: (key) => _toggleItem(_selectedServiceKeys, key),
+                onToggleCategory: (key) => _toggleItem(_selectedCategoryKeys, key),
               );
+
+              // Etichette leggibili per la preview card
+              final selectedServiceLabels = serviceOptions
+                  .where((o) => _selectedServiceKeys.contains(o.key))
+                  .map((o) => o.label)
+                  .toList();
+              final selectedCategoryLabels = categoryOptions
+                  .where((o) => _selectedCategoryKeys.contains(o.key))
+                  .map((o) => o.label)
+                  .toList();
+
               final preview = Column(
                 children: [
                   _TrackPreviewCard(
@@ -252,8 +329,8 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
                     city: _cityController.text.trim(),
                     shortDescription: _shortDescriptionController.text.trim(),
                     coverImage: _resolvedCoverImage,
-                    services: _selectedServices.toList(),
-                    labels: _selectedLabels.toList(),
+                    services: selectedServiceLabels,
+                    categories: selectedCategoryLabels,
                   ),
                   const SizedBox(height: 18),
                   _ReadinessCard(
@@ -262,7 +339,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
                     descriptionReady:
                         _shortDescriptionController.text.trim().isNotEmpty,
                     coverReady: _resolvedCoverImage.isNotEmpty,
-                    servicesReady: _selectedServices.isNotEmpty,
+                    servicesReady: _selectedServiceKeys.isNotEmpty,
                   ),
                 ],
               );
@@ -342,6 +419,19 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
 
   Future<void> _pickCoverImage() async {
     final messenger = ScaffoldMessenger.of(context);
+    final uploadService = ref.read(mediaUploadServiceProvider);
+    final userId = ref.read(effectiveUserIdProvider) ??
+        ref.read(currentUserProvider)?.id;
+
+    if (uploadService == null || userId == null) {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Devi essere autenticato per caricare immagini.'),
+        ),
+      );
+      return;
+    }
+
     final uploadController = MediaUploadController(
       totalItems: 1,
       initialStageLabel: 'Sto preparando la cover pista',
@@ -350,14 +440,13 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
       _uploadingCover = true;
       _coverTransferState = uploadController.snapshot;
     });
+
     final picked = await FilePicker.platform.pickFiles(
       type: FileType.image,
       withData: true,
     );
     final bytes = picked?.files.single.bytes;
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
     if (bytes == null) {
       setState(() {
         _uploadingCover = false;
@@ -365,35 +454,47 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
       });
       return;
     }
-    final imageResult = await localImageDataUrlResultFromBytes(
-      bytes: bytes,
-      onProgress: (stage, progress) {
-        if (!mounted) {
-          return;
-        }
-        uploadController.setStageLabel(mediaUploadStageLabel(context, stage));
-        uploadController.updateItem(index: 0, stage: stage, progress: progress);
-        setState(() {
-          _coverTransferState = uploadController.snapshot;
-        });
-      },
-    );
-    if (!mounted) {
-      return;
-    }
-    if (imageResult.dataUrl == null) {
-      uploadController.markError(0);
-    } else {
+
+    try {
+      final result = await uploadService.uploadImage(
+        bytes: bytes,
+        userId: userId,
+        entityType: 'tracks',
+        filePrefix: 'cover',
+        onProgress: (stage, progress) {
+          if (!mounted) return;
+          uploadController.setStageLabel(mediaUploadStageLabel(context, stage));
+          uploadController.updateItem(index: 0, stage: stage, progress: progress);
+          setState(() {
+            _coverTransferState = uploadController.snapshot;
+          });
+        },
+      );
+      if (!mounted) return;
       uploadController.markDone(0);
-    }
-    setState(() {
-      _uploadingCover = false;
-      _coverImagePreview = imageResult.dataUrl ?? '';
-      _coverTransferState = null;
-    });
-    if (imageResult.dataUrl == null) {
+      setState(() {
+        _uploadingCover = false;
+        _coverImagePreview = '';
+        _coverImageUrlController.text = result.publicUrl;
+        _coverTransferState = null;
+      });
+    } on MediaUploadException catch (e) {
+      if (!mounted) return;
+      uploadController.markError(0);
+      setState(() {
+        _uploadingCover = false;
+        _coverTransferState = uploadController.snapshot;
+      });
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      if (!mounted) return;
+      uploadController.markError(0);
+      setState(() {
+        _uploadingCover = false;
+        _coverTransferState = uploadController.snapshot;
+      });
       messenger.showSnackBar(
-        const SnackBar(content: Text('Non siamo riusciti a leggere l\'immagine selezionata.')),
+        SnackBar(content: Text('Errore caricamento cover pista: $e')),
       );
     }
   }
@@ -406,7 +507,8 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
     });
   }
 
-  bool get _isEditMode => widget.initialDraft != null;
+  bool get _isEditMode =>
+      (_persistedDraft?.id.isNotEmpty ?? false) || widget.initialDraft != null;
 
   Future<void> _saveDraft(String userId) async {
     final repository = ref.read(tracksRepositoryProvider);
@@ -420,10 +522,16 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
     try {
       final track = _buildSubmittedTrack(approvalStatus: 'draft');
       if (_isEditMode) {
-        await repository.updateSubmittedTrack(track: track);
+        final saved = await repository.updateSubmittedTrack(track: track);
+        _persistedDraft = saved;
       } else {
-        await repository.insertSubmittedTrack(submittedBy: userId, track: track);
+        final inserted =
+            await repository.insertSubmittedTrack(submittedBy: userId, track: track);
+        // Memorizza l'id assegnato così i salvataggi successivi fanno UPDATE.
+        _persistedDraft = inserted;
       }
+      // Persisti servizi e categorie ora che il track_id è disponibile.
+      await _persistTaxonomy(_persistedDraft!.id);
       ref.invalidate(submittedTracksProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -463,10 +571,15 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
     try {
       final track = _buildSubmittedTrack(approvalStatus: 'pending');
       if (_isEditMode) {
-        await repository.updateSubmittedTrack(track: track);
+        final saved = await repository.updateSubmittedTrack(track: track);
+        _persistedDraft = saved;
       } else {
-        await repository.insertSubmittedTrack(submittedBy: userId, track: track);
+        final inserted =
+            await repository.insertSubmittedTrack(submittedBy: userId, track: track);
+        _persistedDraft = inserted;
       }
+      // Persisti servizi e categorie prima di invalidare il provider.
+      await _persistTaxonomy(_persistedDraft!.id);
       ref.invalidate(submittedTracksProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -485,6 +598,79 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
     }
   }
 
+  /// Persiste servizi e categorie su Supabase per la pista con il dato [trackId].
+  /// Richiede che la policy RLS `submitter can manage own draft track services` /
+  /// `submitter can manage own draft track category links` (delta
+  /// 2026-06-10-draft-taxonomy-policies.sql) sia applicata sul DB.
+  /// In assenza di client Supabase, non fa nulla silenziosamente.
+  Future<void> _persistTaxonomy(String trackId) async {
+    if (trackId.isEmpty) return;
+    final client = ref.read(supabaseClientProvider);
+    if (client == null) return;
+
+    // ── Servizi ──────────────────────────────────────────────────────────────
+    // Legge tutti i service_type id/key dal DB (già in cache se il provider
+    // è stato caricato, altrimenti fa una query leggera).
+    try {
+      final serviceTypes = await client.from('service_types').select('id, key');
+      final selectedKeys = _selectedServiceKeys;
+      final serviceUpserts = <Map<String, dynamic>>[];
+
+      for (final row in (serviceTypes as List<dynamic>).whereType<Map<String, dynamic>>()) {
+        final serviceId = row['id'] as String?;
+        final serviceKey = row['key'] as String?;
+        if (serviceId == null || serviceKey == null) continue;
+        serviceUpserts.add({
+          'track_id': trackId,
+          'service_type_id': serviceId,
+          'is_available': selectedKeys.contains(serviceKey),
+        });
+      }
+
+      if (serviceUpserts.isNotEmpty) {
+        await client.from('track_services').upsert(
+          serviceUpserts,
+          onConflict: 'track_id,service_type_id',
+        );
+      }
+    } catch (_) {
+      // Fallback silenzioso: la policy RLS potrebbe non essere ancora applicata.
+      // L'utente potrà riselezionare i servizi da "Modifica pista" dopo l'approvazione.
+    }
+
+    // ── Categorie ─────────────────────────────────────────────────────────────
+    try {
+      if (_selectedCategoryKeys.isNotEmpty) {
+        final categoryRows = await client
+            .from('track_categories')
+            .select('id, key')
+            .inFilter('key', _selectedCategoryKeys.toList());
+
+        final selectedCategoryIds = (categoryRows as List<dynamic>)
+            .whereType<Map<String, dynamic>>()
+            .map((row) => row['id'] as String?)
+            .whereType<String>()
+            .toList();
+
+        await client.from('track_category_links').delete().eq('track_id', trackId);
+
+        if (selectedCategoryIds.isNotEmpty) {
+          await client.from('track_category_links').insert(
+            selectedCategoryIds
+                .map((catId) => {'track_id': trackId, 'category_id': catId})
+                .toList(),
+          );
+        }
+      } else {
+        // Nessuna categoria selezionata: rimuove i link esistenti.
+        await client.from('track_category_links').delete().eq('track_id', trackId);
+      }
+    } catch (_) {
+      // Fallback silenzioso: come per i servizi, la policy RLS potrebbe
+      // non essere ancora applicata.
+    }
+  }
+
   SubmittedTrack _buildSubmittedTrack({required String approvalStatus}) {
     final slug = _slugController.text.trim().isEmpty
         ? _slugify(_nameController.text)
@@ -494,7 +680,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
         ? _coverImageUrlController.text.trim()
         : null;
     return SubmittedTrack(
-      id: widget.initialDraft?.id ?? '',
+      id: _persistedDraft?.id ?? widget.initialDraft?.id ?? '',
       slug: slug,
       name: _nameController.text.trim().isEmpty
           ? 'Nuova pista'
@@ -541,11 +727,13 @@ class _EditorSections extends StatelessWidget {
     required this.coverProgress,
     required this.coverCompletedCount,
     required this.coverTotalCount,
-    required this.selectedServices,
-    required this.selectedLabels,
+    required this.selectedServiceKeys,
+    required this.selectedCategoryKeys,
+    required this.serviceOptions,
+    required this.categoryOptions,
     required this.onPickCover,
     required this.onToggleService,
-    required this.onToggleLabel,
+    required this.onToggleCategory,
   });
 
   final TextEditingController nameController;
@@ -566,11 +754,17 @@ class _EditorSections extends StatelessWidget {
   final double coverProgress;
   final int coverCompletedCount;
   final int coverTotalCount;
-  final Set<String> selectedServices;
-  final Set<String> selectedLabels;
+  /// Chiavi DB dei servizi selezionati.
+  final Set<String> selectedServiceKeys;
+  /// Chiavi DB delle categorie selezionate.
+  final Set<String> selectedCategoryKeys;
+  /// Opzioni tassonomia servizi caricate da DB (service_types).
+  final List<TrackTaxonomyOption> serviceOptions;
+  /// Opzioni tassonomia categorie caricate da DB (track_categories).
+  final List<TrackTaxonomyOption> categoryOptions;
   final Future<void> Function() onPickCover;
   final void Function(String) onToggleService;
-  final void Function(String) onToggleLabel;
+  final void Function(String) onToggleCategory;
 
   String get _resolvedCoverImage =>
       coverImageUrlController.text.trim().isNotEmpty
@@ -654,40 +848,46 @@ class _EditorSections extends StatelessWidget {
         ),
         const SizedBox(height: 18),
         _SectionCard(
-          title: 'Servizi e label',
-          body: 'Questi campi alimentano card, filtri e lettura rapida.',
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: _TrackEditorScreenState._serviceOptions
-                    .map(
-                      (item) => FilterChip(
-                        label: Text(item),
-                        selected: selectedServices.contains(item),
-                        onSelected: (_) => onToggleService(item),
-                      ),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: _TrackEditorScreenState._labelOptions
-                    .map(
-                      (item) => FilterChip(
-                        label: Text(item),
-                        selected: selectedLabels.contains(item),
-                        onSelected: (_) => onToggleLabel(item),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ],
-          ),
+          title: 'Categoria pista',
+          body: 'Seleziona il tipo di pista — usato nei filtri di ricerca.',
+          child: categoryOptions.isEmpty
+              ? const _TaxonomyLoadingHint()
+              : Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: categoryOptions
+                      .map(
+                        (option) => FilterChip(
+                          avatar: option.icon == null
+                              ? null
+                              : Icon(option.icon, size: 16),
+                          label: Text(option.label),
+                          selected: selectedCategoryKeys.contains(option.key),
+                          onSelected: (_) => onToggleCategory(option.key),
+                        ),
+                      )
+                      .toList(),
+                ),
+        ),
+        const SizedBox(height: 18),
+        _SectionCard(
+          title: 'Servizi disponibili',
+          body: 'Seleziona i servizi confermati presenti in pista.',
+          child: serviceOptions.isEmpty
+              ? const _TaxonomyLoadingHint()
+              : Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: serviceOptions
+                      .map(
+                        (option) => FilterChip(
+                          label: Text(option.label),
+                          selected: selectedServiceKeys.contains(option.key),
+                          onSelected: (_) => onToggleService(option.key),
+                        ),
+                      )
+                      .toList(),
+                ),
         ),
         const SizedBox(height: 18),
         _SectionCard(
@@ -723,7 +923,7 @@ class _TrackPreviewCard extends StatelessWidget {
     required this.shortDescription,
     required this.coverImage,
     required this.services,
-    required this.labels,
+    required this.categories,
   });
 
   final String name;
@@ -731,7 +931,7 @@ class _TrackPreviewCard extends StatelessWidget {
   final String shortDescription;
   final String coverImage;
   final List<String> services;
-  final List<String> labels;
+  final List<String> categories;
 
   @override
   Widget build(BuildContext context) {
@@ -800,23 +1000,15 @@ class _TrackPreviewCard extends StatelessWidget {
                         : shortDescription,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  if (labels.isNotEmpty) ...[
+                  if (categories.isNotEmpty || services.isNotEmpty) ...[
                     const SizedBox(height: 12),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: labels
-                          .map((item) => _PreviewChip(label: item))
-                          .toList(),
-                    ),
-                  ],
-                  if (services.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Text(
-                      '${services.length} servizi attivi',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: AppColors.steel,
-                      ),
+                      children: [
+                        ...categories.map((item) => _PreviewChip(label: item, isCategory: true)),
+                        ...services.map((item) => _PreviewChip(label: item, isCategory: false)),
+                      ],
                     ),
                   ],
                 ],
@@ -949,20 +1141,52 @@ class _ReadinessRow extends StatelessWidget {
 }
 
 class _PreviewChip extends StatelessWidget {
-  const _PreviewChip({required this.label});
+  const _PreviewChip({required this.label, this.isCategory = false});
 
   final String label;
+  final bool isCategory;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isCategory
+            ? AppColors.signalOrange.withValues(alpha: 0.10)
+            : Colors.white,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppColors.concrete),
+        border: Border.all(
+          color: isCategory
+              ? AppColors.signalOrange.withValues(alpha: 0.30)
+              : AppColors.concrete,
+        ),
       ),
       child: Text(label),
+    );
+  }
+}
+
+/// Placeholder mostrato finché le opzioni tassonomia vengono caricate dal DB.
+class _TaxonomyLoadingHint extends StatelessWidget {
+  const _TaxonomyLoadingHint();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          'Caricamento opzioni…',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: AppColors.steel,
+          ),
+        ),
+      ],
     );
   }
 }

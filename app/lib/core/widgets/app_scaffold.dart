@@ -6,6 +6,7 @@ import '../../app/l10n/generated/app_localizations.dart';
 import '../../app/theme/app_breakpoints.dart';
 import '../../app/theme/app_colors.dart';
 import '../../features/auth/application/auth_providers.dart';
+import '../../features/notifications/presentation/notification_bell.dart';
 
 class AppScaffold extends ConsumerStatefulWidget {
   const AppScaffold({required this.child, super.key});
@@ -137,7 +138,13 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                   color: AppColors.concrete,
                 ),
                 extended: _isRailExpanded,
-                trailing: null,
+                trailing: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [NotificationBell()],
+                  ),
+                ),
                 leading: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
                   child: Row(
@@ -197,8 +204,8 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
             ),
             Expanded(
               child: _ScaffoldBodyWithImpersonationBanner(
-                child: widget.child,
                 impersonation: impersonation,
+                child: widget.child,
               ),
             ),
           ],
@@ -207,9 +214,10 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
     }
 
     return Scaffold(
+      appBar: const _MobileTopBar(),
       body: _ScaffoldBodyWithImpersonationBanner(
-        child: widget.child,
         impersonation: impersonation,
+        child: widget.child,
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: selectedIndex,
@@ -296,6 +304,43 @@ class _ScaffoldBodyWithImpersonationBanner extends ConsumerWidget {
   }
 }
 
+// ── Mobile top bar ────────────────────────────────────────────────────────────
+
+class _MobileTopBar extends StatelessWidget implements PreferredSizeWidget {
+  const _MobileTopBar();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: AppColors.graphite,
+      elevation: 0,
+      automaticallyImplyLeading: false,
+      title: RichText(
+        text: TextSpan(
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
+          children: const [
+            TextSpan(text: 'Pit'),
+            TextSpan(
+              text: 'Lap',
+              style: TextStyle(color: AppColors.signalOrange),
+            ),
+          ],
+        ),
+      ),
+      actions: const [
+        NotificationBell(),
+        SizedBox(width: 4),
+      ],
+    );
+  }
+}
+
 extension on AppScaffold {
   int _selectedIndex(String location, List<_Destination> destinations) {
     final uri = Uri.tryParse(location);
@@ -322,6 +367,8 @@ extension on AppScaffold {
     } else if (path.startsWith('/event/')) {
       normalizedLocation = '/events';
     }
+    // /notifications has no nav-bar entry; indexWhere returns -1 → falls back
+    // to 0 (Home), which is acceptable.
     final index = destinations.indexWhere((item) {
       if (item.location == '/') {
         return normalizedLocation == '/';

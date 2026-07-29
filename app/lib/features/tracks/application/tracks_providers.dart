@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:pitlap_app/app/bootstrap/error_reporting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -131,7 +132,8 @@ final trackCategoryOptionsProvider =
             .where((option) => option.key.isNotEmpty)
             .toList();
         return options.isEmpty ? _defaultTrackCategoryOptions : options;
-      } catch (_) {
+      } catch (e, st) {
+        AppErrorReporter.report(e, st, context: 'tracks_providers');
         return _defaultTrackCategoryOptions;
       }
     });
@@ -165,7 +167,8 @@ final trackServiceOptionsProvider =
             .where((option) => option.key.isNotEmpty)
             .toList();
         return options.isEmpty ? _defaultTrackServiceOptions : options;
-      } catch (_) {
+      } catch (e, st) {
+        AppErrorReporter.report(e, st, context: 'tracks_providers');
         return _defaultTrackServiceOptions;
       }
     });
@@ -328,7 +331,8 @@ final effectiveFollowedTrackIdsProvider = FutureProvider<Set<String>>((ref) asyn
 
   try {
     return repository.fetchFollowedTrackIds(userId: userId);
-  } catch (_) {
+  } catch (e, st) {
+    AppErrorReporter.report(e, st, context: 'tracks_providers');
     return const <String>{};
   }
 });
@@ -343,7 +347,8 @@ final trackFollowerCountProvider = FutureProvider.family<int, String>((ref, trac
 
   try {
     return repository.fetchTrackFollowerCount(trackId: trackId);
-  } catch (_) {
+  } catch (e, st) {
+    AppErrorReporter.report(e, st, context: 'tracks_providers');
     final followedIds = ref.watch(followedTrackIdsProvider);
     return followedIds.contains(trackId) ? 1 : 0;
   }
@@ -380,7 +385,8 @@ class FollowedTrackIdsController extends Notifier<Set<String>> {
       final followedIds = await repository.fetchFollowedTrackIds(userId: userId);
       _cached = followedIds;
       state = followedIds;
-    } catch (_) {
+    } catch (e, st) {
+      AppErrorReporter.report(e, st, context: 'tracks_providers');
       _cached = <String>{};
       state = _cached;
     }

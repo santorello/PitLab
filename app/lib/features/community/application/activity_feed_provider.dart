@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../features/auth/application/auth_providers.dart';
 import '../domain/activity_feed_item.dart';
@@ -51,7 +50,6 @@ final _userInterestsProvider =
 });
 
 /// DORMANT — true se l'utente ha interessi configurati (onboarding KYC completato)
-// ignore: unused_element
 final hasUserInterestsProvider = Provider.autoDispose<bool>((ref) {
   final interestsAsync = ref.watch(_userInterestsProvider);
   return interestsAsync.maybeWhen(
@@ -65,7 +63,6 @@ final hasUserInterestsProvider = Provider.autoDispose<bool>((ref) {
 /// Per track_status e track_event, filtra sul campo category_keys del payload.
 /// Per new_spot, filtra su best_for / surface.
 /// Per community_event, non filtra (sempre incluso).
-// ignore: unused_element
 final personalizedFeedProvider =
     FutureProvider.autoDispose<List<ActivityFeedItem>>((ref) async {
   final client = ref.watch(authClientProvider);

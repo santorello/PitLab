@@ -283,6 +283,72 @@ Regole:
 - evitare link liberi non controllati nel primo MVP
 - admin puo' rimuovere link non conformi
 
+## Implementato 2026-06-10
+
+### Bucket e configurazione Storage
+
+Bucket pubblico unico: `media` (limite 5 MB per file, MIME: image/jpeg, image/png, image/webp, image/gif).
+
+Policy RLS applicate su dev:
+- lettura pubblica (SELECT senza autenticazione)
+- INSERT/UPDATE/DELETE solo se `(storage.foldername(name))[1] = auth.uid()` (il primo segmento del path deve corrispondere all'utente autenticato)
+- gli admin possono UPDATE/DELETE ovunque tramite `is_admin()`
+
+### Path convention
+
+`<user_id>/<entity_type>/<filename>`
+
+Esempi:
+- `42bb15da-.../profiles/avatar-1718012345678.webp`
+- `42bb15da-.../tracks/cover-1718012345678.webp`
+- `42bb15da-.../shops/gallery-1718012345679.webp`
+- `42bb15da-.../events/photo-1718012345680.webp`
+- `42bb15da-.../builds/photo-1718012345681.webp`
+- `42bb15da-.../spots/photo-1718012345682.webp`
+- `42bb15da-.../places/photo-1718012345683.webp`
+
+`entity_type` ammessi: `tracks | shops | events | spots | profiles | builds | places`
+
+Filename sempre `<prefix>-<timestamp_ms>.webp` (nessun dato personale nel nome).
+
+### MediaUploadService
+
+Nuovo servizio in `app/lib/shared/media/media_upload_service.dart`:
+
+1. Validazione dimensione input (> 5 MB → errore chiaro lato client)
+2. Decode con package `image` già presente + EXIF orientation fix (`bakeOrientation`)
+3. Resize lato lungo a 1600 px
+4. Encode WebP qualità 82
+5. Validazione dimensione output (sicurezza extra)
+6. Upload binario via `supabase.storage.from('media').uploadBinary(path, bytes, fileOptions: FileOptions(contentType: 'image/webp'))`
+7. Public URL via `getPublicUrl`
+
+Progress: preparing (0.05→0.50) → uploading (0.50→0.95) → done (1.0).
+Per batch multi-file, avanzamento per-file tramite `MediaUploadController` esistente (n di N file completati).
+
+Guard: se `userId` è vuoto o `uploadService` è null (utente non autenticato), lancia `MediaUploadException` con messaggio leggibile — mai upload silenzioso.
+
+### Flussi migrati a Storage
+
+| Flusso | Campo DB aggiornato | entity_type |
+|---|---|---|
+| Profilo avatar | `avatar_url` in `user_profiles` | profiles |
+| Pista cover | `image_url` in `submitted_tracks` | tracks |
+| Negozio cover | `image_url` in `shops` | shops |
+| Negozio galleria | `gallery_images` in `shops` | shops |
+| Evento foto | `image_urls` in `community_events` | events |
+| Submit-place foto (spot/shop/place) | `image_urls` in submission | spots / shops / places |
+| Build garage foto | `image_urls` in `user_builds` | builds |
+
+### Fallback dati esistenti
+
+`local_image_data_url.dart` rimane in codebase per:
+- retrocompatibilità con record DB che contengono ancora `data:image/...` (filtrati in read/display da `AdaptiveImage` + `isLocalImageDataUrlTooLarge`)
+- costanti condivise (`maxEventImages`, `maxShopGalleryImages`, `maxGarageBuildImages`)
+- futuro script di migrazione one-shot (da `data:image` a Storage URL)
+
+TODO: script migrazione one-shot (Edge Function) da schedulare dopo Gate Alpha.
+
 ## Step di implementazione
 
 ### Step 1 - Stabilizzazione locale

@@ -1,3 +1,4 @@
+import 'package:pitlap_app/app/bootstrap/error_reporting.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -100,7 +101,8 @@ class PublicEventsRepository {
         'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic',
       ];
       return '${days[dt.weekday - 1]} ${dt.day} ${months[dt.month - 1]}';
-    } catch (_) {
+    } catch (e, st) {
+      AppErrorReporter.report(e, st, context: 'public_events_provider');
       return '';
     }
   }

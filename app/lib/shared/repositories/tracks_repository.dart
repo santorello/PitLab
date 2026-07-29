@@ -97,5 +97,6 @@ abstract class TracksRepository {
     required String externalMapUrl,
     required List<String> availableServiceKeys,
     List<String> categoryKeys = const [],
+    String? imageUrl,
   });
 }

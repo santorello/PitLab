@@ -289,7 +289,7 @@ class EditableShopsRepository {
         .eq('slug', slug)
         .maybeSingle();
     if (response == null) return null;
-    return EditableShopRecord.fromRow(response as Map<String, dynamic>);
+    return EditableShopRecord.fromRow(response);
   }
 
   Future<void> updateApprovalStatus({

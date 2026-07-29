@@ -12,6 +12,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/media/media_upload_controller.dart';
 import '../../../shared/media/media_upload_labels.dart';
+import '../../../shared/media/media_upload_service.dart';
 import '../../../shared/media/media_upload_state.dart';
 import '../../../shared/places/place_selection.dart';
 import '../../../shared/utils/local_image_data_url.dart';
@@ -681,8 +682,8 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
   }
 
   Future<void> _pickImages(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
+
     if (_pickedImages.length >= maxEventImages) {
       messenger.showSnackBar(
         SnackBar(
@@ -698,16 +699,35 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
       return;
     }
 
+    final uploadService = ref.read(mediaUploadServiceProvider);
+    final effectiveUserId = ref.read(effectiveUserIdProvider) ??
+        ref.read(currentUserProvider)?.id;
+
+    if (uploadService == null || effectiveUserId == null) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            _localeText(
+              context,
+              it: 'Devi essere autenticato per caricare immagini.',
+              en: 'You must be signed in to upload images.',
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isUploadingImages = true;
       _imageTransferState = null;
     });
 
     final remaining = maxEventImages - _pickedImages.length;
-    final preparingImagesLabel = _localeText(
+    final uploadingSelectedPhotosLabel = _localeText(
       context,
-      it: 'Sto preparando le foto selezionate',
-      en: 'Preparing selected photos',
+      it: 'Sto caricando le foto selezionate',
+      en: 'Uploading selected photos',
     );
     final picked = await FilePicker.platform.pickFiles(
       type: FileType.image,
@@ -715,9 +735,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
       withData: true,
     );
 
-    if (!mounted) {
-      return;
-    }
+    if (!context.mounted) return;
 
     if (picked == null) {
       setState(() {
@@ -730,17 +748,23 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
     final selectedFiles = picked.files.take(remaining).toList(growable: false);
     final uploadController = MediaUploadController(
       totalItems: selectedFiles.length,
-      initialStageLabel: preparingImagesLabel,
+      initialStageLabel: uploadingSelectedPhotosLabel,
     );
     setState(() {
       _imageTransferState = uploadController.snapshot;
     });
 
+    // Determina entityType in base al tipo di submission
+    final entityType = switch (_submissionType) {
+      'spot' => 'spots',
+      'shop' => 'shops',
+      _ => 'places',
+    };
+
     final nextImages = <String>[];
-    LocalImageDataUrlFailure? lastFailure;
+    String? lastError;
     for (var index = 0; index < selectedFiles.length; index++) {
-      final file = selectedFiles[index];
-      final bytes = file.bytes;
+      final bytes = selectedFiles[index].bytes;
       if (bytes == null) {
         uploadController.markError(index);
         if (mounted) {
@@ -750,36 +774,36 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
         }
         continue;
       }
-      final result = await localImageDataUrlResultFromBytes(
-        bytes: bytes,
-        onProgress: (stage, progress) {
-          if (!mounted) {
-            return;
-          }
-          uploadController.setStageLabel(mediaUploadStageLabel(context, stage));
-          uploadController.updateItem(
-            index: index,
-            stage: stage,
-            progress: progress,
-          );
-          setState(() {
-            _imageTransferState = uploadController.snapshot;
-          });
-        },
-      );
-      final dataUrl = result.dataUrl;
-      if (dataUrl == null) {
-        lastFailure = result.failure;
+      try {
+        final result = await uploadService.uploadImage(
+          bytes: bytes,
+          userId: effectiveUserId,
+          entityType: entityType,
+          filePrefix: 'photo',
+          onProgress: (stage, progress) {
+            if (!mounted) return;
+            uploadController.setStageLabel(
+              mediaUploadStageLabel(context, stage),
+            );
+            uploadController.updateItem(
+              index: index,
+              stage: stage,
+              progress: progress,
+            );
+            setState(() {
+              _imageTransferState = uploadController.snapshot;
+            });
+          },
+        );
+        nextImages.add(result.publicUrl);
+        uploadController.markDone(index);
+      } on MediaUploadException catch (e) {
+        lastError = e.message;
         uploadController.markError(index);
-        if (mounted) {
-          setState(() {
-            _imageTransferState = uploadController.snapshot;
-          });
-        }
-        continue;
+      } catch (e) {
+        lastError = 'Errore caricamento foto ${index + 1}';
+        uploadController.markError(index);
       }
-      nextImages.add(dataUrl);
-      uploadController.markDone(index);
       if (mounted) {
         setState(() {
           _imageTransferState = uploadController.snapshot;
@@ -787,21 +811,19 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
       }
     }
 
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
 
     setState(() {
       _isUploadingImages = false;
-      _pickedImages = [..._pickedImages, ...nextImages].take(maxEventImages).toList();
+      _pickedImages = [
+        ..._pickedImages,
+        ...nextImages,
+      ].take(maxEventImages).toList();
       _imageTransferState = null;
     });
 
-    if (nextImages.isEmpty && lastFailure != null) {
-      final errorMessage = _imageUploadErrorMessage(l10n, lastFailure);
-      messenger.showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
+    if (nextImages.isEmpty && lastError != null) {
+      messenger.showSnackBar(SnackBar(content: Text(lastError)));
     }
   }
 
@@ -932,17 +954,6 @@ Future<Placemark?> _safePlacemarkFromCoordinates(
   }
 }
 
-String _imageUploadErrorMessage(
-  AppLocalizations l10n,
-  LocalImageDataUrlFailure? failure,
-) {
-  return switch (failure) {
-    LocalImageDataUrlFailure.inputTooLarge ||
-    LocalImageDataUrlFailure.outputTooLarge =>
-      l10n.imageUploadTooLargeMessage,
-    _ => l10n.imageUploadUnreadableMessage,
-  };
-}
 
 String _localeText(
   BuildContext context, {

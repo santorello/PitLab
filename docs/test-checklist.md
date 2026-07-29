@@ -1494,3 +1494,25 @@ Test end-to-end del flow di creazione pista (impersona Lorenzo Bianchi - track_o
 | TC-WT-22 | RIMANDATO | - | Persistenza impersonazione su localStorage richiede modifica a `impersonationProvider`. P3, basso valore vs costo. | |
 | TC-WT-19 | admin pendingApprovalsCount aggrega tracks + shops | fix applicato, test runtime richiede DB con pending |
 | TC-WT-20 | editor shop carica pending via fetchBySlugIncludingDrafts | fix applicato, test runtime richiede shop in stato pending |
+
+## Fix QA E2E 2026-06-10 (D07 / D08 / D09)
+
+| Difetto | Stato | File toccati | Note |
+|---|---|---|---|
+| D07 | FIXED 2026-06-10 | `app/lib/features/manager/presentation/manager_screen.dart` | Sezione "Bozze e in approvazione" aggiunta nel branch operativo (quando `managedTracks` non è vuota). `submittedTracksProvider` già esistente; la sezione filtra per `approvalStatus != 'approved'` ed è sempre mostrata quando non vuota. |
+| D08 | FIXED 2026-06-10 | `app/lib/features/tracks/presentation/track_editor_screen.dart`, `app/lib/app/l10n/arb/app_it.arb`, `app/lib/app/l10n/arb/app_en.arb` | Blocco hard-coded "Servizi e label" sostituito con due sezioni distinte "Categoria pista" e "Servizi disponibili" alimentate da `trackCategoryOptionsProvider` e `trackServiceOptionsProvider` — stesse sorgenti DB usate da "Modifica pista". |
+| D09 | FIXED 2026-06-10 | `app/lib/features/tracks/presentation/track_editor_screen.dart`, `supabase/deltas/2026-06-10-draft-taxonomy-policies.sql` | Servizi e categorie persistiti su `track_services`/`track_category_links` in `_saveDraft` e `_submitForApproval` via nuovo metodo `_persistTaxonomy`. Richiede applicazione manuale del delta SQL che aggiunge le policy RLS per il submitter su bozze/pending. |
+
+## Nuovi TC da audit statico 2026-07-29 (cfr. docs/qa-audit-2026-07-29.md)
+
+| TC | Area | Scenario | Atteso | Rif. finding |
+|---|---|---|---|---|
+| TC-078 | Commenti | Aprire dettaglio di un evento creato localmente (id `created-*`) | Sezione commenti nascosta o funzionante, mai in stato errore | QA-2026-07-29-01 |
+| TC-079 | Profilo | Tap su un negozio preferito dal bottom sheet di `/profile` | Apre `/shop/<slug>` con dettaglio corretto (non "non trovato") | QA-2026-07-29-02 |
+| TC-080 | Profilo | Aprire i preferiti pista da `/profile` | Nome pista leggibile e tap che apre `/track/<slug>` (niente UUID) | QA-2026-07-29-03 |
+| TC-081 | Condividi | Copiare il link di un evento creato localmente e aprirlo in finestra anonima | Link risolvibile oppure azione Condividi nascosta per eventi non pubblicati | QA-2026-07-29-04 |
+| TC-082 | Notifiche | Guest apre `/notifications` da URL diretto | Redirect a login o CTA login, non empty state "nessuna notifica" | QA-2026-07-29-05 |
+| TC-083 | Notifiche | Tap su notifica "build pubblicata da profilo seguito" | Naviga alla build/profilo dell'autore, non al garage del destinatario | QA-2026-07-29-06 |
+| TC-084 | Notifiche | Tap su notifica "nuovo follower" | Naviga a `/u/<slug follower>`, non alla directory `/profiles` | QA-2026-07-29-07 |
+| TC-085 | l10n | App in EN: card feed home (azioni Commenta/Condividi/conteggi) | Testi in inglese da ARB, nessuna stringa italiana hardcoded | QA-2026-07-29-08 |
+| TC-086 | Liste | `/shops`, `/spots`, `/nearby` con rete assente | Stato errore con retry, non empty state "nessun risultato" | QA-2026-07-29-11 |

@@ -6,9 +6,13 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_radius.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
+import '../../../shared/utils/share_entity.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/external_links_section.dart';
+import '../../comments/presentation/comments_section.dart';
 import '../application/public_shops_provider.dart';
 import '../application/shop_follows_providers.dart';
 import '../application/shop_permissions_providers.dart';
@@ -155,7 +159,15 @@ class _ShopDetailBody extends ConsumerWidget {
           editable: canEdit,
         ),
 
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
+
+        // Sezione commenti (shop.id è UUID dal DB).
+        CommentsSection(
+          entityType: 'shop',
+          entityId: shop.id,
+        ),
+
+        const SizedBox(height: AppSpacing.sm),
       ],
     );
   }
@@ -271,6 +283,16 @@ class _ShopHero extends StatelessWidget {
                           tooltip: isSaved
                               ? l10n.shopSavedAction
                               : l10n.shopSaveAction,
+                        ),
+                        const SizedBox(width: 4),
+                        IconButton.outlined(
+                          onPressed: () => shareEntity(
+                            context: context,
+                            entityType: 'shop',
+                            entityId: slug,
+                          ),
+                          icon: const Icon(Icons.ios_share_outlined),
+                          tooltip: l10n.shareAction,
                         ),
                         if (canEdit) ...[
                           const SizedBox(width: 8),
@@ -618,7 +640,7 @@ class _GallerySection extends StatelessWidget {
               return GestureDetector(
                 onTap: () => _openFullscreen(context, url),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                   child: SizedBox(
                     width: itemSize,
                     height: itemSize,
@@ -733,7 +755,7 @@ class _ServiceChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.signalOrange.withAlpha(14),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
         border: Border.all(color: AppColors.signalOrange.withAlpha(60)),
       ),
       child: Text(
@@ -758,7 +780,7 @@ class _TypeBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: AppColors.signalOrange.withAlpha(22),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
         border: Border.all(color: AppColors.signalOrange.withAlpha(80)),
       ),
       child: Text(
@@ -782,9 +804,9 @@ class _LocationBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFF2F4F7),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: const Color(0xFFE0DDD6)),
+        color: AppColors.surfaceCool,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

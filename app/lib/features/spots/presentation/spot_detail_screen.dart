@@ -5,9 +5,13 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_radius.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
+import '../../../shared/utils/share_entity.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../../auth/application/auth_providers.dart';
+import '../../comments/presentation/comments_section.dart';
 import '../application/spots_providers.dart';
 import '../domain/spot_catalog.dart';
 
@@ -67,7 +71,7 @@ class SpotDetailScreen extends ConsumerWidget {
                 children: [
                   if (spot.imageUrls.isNotEmpty) ...[
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(22),
+                      borderRadius: BorderRadius.circular(AppRadius.xl),
                       child: SizedBox(
                         height: 220,
                         width: double.infinity,
@@ -78,7 +82,7 @@ class SpotDetailScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: AppSpacing.xl),
                   ],
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -87,7 +91,7 @@ class SpotDetailScreen extends ConsumerWidget {
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                     child: Text(
                       spot.category,
@@ -103,7 +107,7 @@ class SpotDetailScreen extends ConsumerWidget {
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
                     [
                       spot.city,
@@ -133,7 +137,7 @@ class SpotDetailScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.xl),
                   Wrap(
                     spacing: 12,
                     runSpacing: 12,
@@ -163,18 +167,32 @@ class SpotDetailScreen extends ConsumerWidget {
                         onPressed: () => _openSpotMap(spot),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.white,
-                          side: const BorderSide(color: Colors.white24),
+                          side: const BorderSide(color: Colors.white54),
                         ),
                         icon: const Icon(Icons.map_outlined),
                         label: Text(l10n.openMapButton),
                       ),
+                      if (spot.id != null)
+                        OutlinedButton.icon(
+                          onPressed: () => shareEntity(
+                            context: context,
+                            entityType: 'spot',
+                            entityId: spot.slug,
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(color: Colors.white54),
+                          ),
+                          icon: const Icon(Icons.ios_share_outlined),
+                          label: Text(l10n.shareAction),
+                        ),
                     ],
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: AppSpacing.xl),
           if (spot.imageUrls.isNotEmpty || spot.photoCount > 0) ...[
             Card(
               child: Padding(
@@ -190,7 +208,7 @@ class SpotDetailScreen extends ConsumerWidget {
                       ),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.sm),
                     Text(
                       spot.imageUrls.isEmpty
                           ? _localeText(
@@ -221,7 +239,7 @@ class SpotDetailScreen extends ConsumerWidget {
                         itemBuilder: (context, index) {
                           if (spot.imageUrls.isEmpty) {
                             return ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(AppRadius.lg),
                               child: Container(
                                 width: 128,
                                 padding: const EdgeInsets.all(12),
@@ -250,7 +268,7 @@ class SpotDetailScreen extends ConsumerWidget {
                             );
                           }
                           return ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(AppRadius.lg),
                             child: InkWell(
                               onTap: () =>
                                   _openSpotGallery(context, spot.imageUrls, index),
@@ -273,7 +291,7 @@ class SpotDetailScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: AppSpacing.xl),
           ],
           if ((spot.videoUrl ?? '').trim().isNotEmpty) ...[
             Card(
@@ -290,7 +308,7 @@ class SpotDetailScreen extends ConsumerWidget {
                       ),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.sm),
                     Text(
                       _localeText(
                         context,
@@ -317,7 +335,7 @@ class SpotDetailScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: AppSpacing.xl),
           ],
           Card(
             child: Padding(
@@ -340,7 +358,7 @@ class SpotDetailScreen extends ConsumerWidget {
                       context,
                     ).textTheme.bodyLarge?.copyWith(color: AppColors.steel),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.xl),
                   Wrap(
                     spacing: 10,
                     runSpacing: 10,
@@ -376,6 +394,14 @@ class SpotDetailScreen extends ConsumerWidget {
               ),
             ),
           ),
+          // Commenti: solo per spot già persistiti su Supabase (id UUID).
+          if (spot.id != null) ...[
+            const SizedBox(height: AppSpacing.xl),
+            CommentsSection(
+              entityType: 'spot',
+              entityId: spot.id!,
+            ),
+          ],
         ],
       ),
     );
@@ -457,7 +483,7 @@ class _DetailChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: const Color(0xFFF8F7F3),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
         border: Border.all(color: AppColors.concrete),
       ),
       child: Row(

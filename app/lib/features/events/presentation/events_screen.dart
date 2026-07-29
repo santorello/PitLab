@@ -10,6 +10,7 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/media/media_upload_controller.dart';
 import '../../../shared/media/media_upload_labels.dart';
+import '../../../shared/media/media_upload_service.dart';
 import '../../../shared/media/media_upload_state.dart';
 import '../../../shared/utils/local_image_data_url.dart';
 import '../../../shared/widgets/adaptive_image.dart';
@@ -305,6 +306,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     final profile = ref
         .read(effectiveUserProfileProvider)
         .maybeWhen(data: (value) => value, orElse: () => null);
+    final uploadService = ref.read(mediaUploadServiceProvider);
     final titleController = TextEditingController();
     final locationController = TextEditingController();
     final venueController = TextEditingController();
@@ -381,14 +383,29 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                                       );
                                       return;
                                     }
+                                    if (uploadService == null || effectiveUserId == null) {
+                                      messenger.showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            _localeText(
+                                              context,
+                                              it: 'Devi essere autenticato per caricare immagini.',
+                                              en: 'You must be signed in to upload images.',
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                      return;
+                                    }
                                     setDialogState(() {
                                       isUploadingImages = true;
                                       imageTransferState = null;
                                     });
-                                    final preparingImagesLabel = _localeText(
+                                    final uploadingEventPhotosLabel =
+                                        _localeText(
                                       context,
-                                      it: 'Sto preparando le foto evento',
-                                      en: 'Preparing event photos',
+                                      it: 'Sto caricando le foto evento',
+                                      en: 'Uploading event photos',
                                     );
                                     final picked =
                                         await FilePicker.platform.pickFiles(
@@ -410,21 +427,20 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                                         MediaUploadController(
                                           totalItems: selectedFiles.length,
                                           initialStageLabel:
-                                              preparingImagesLabel,
+                                              uploadingEventPhotosLabel,
                                         );
                                     setDialogState(() {
                                       imageTransferState =
                                           uploadController.snapshot;
                                     });
                                     final nextImages = <String>[];
-                                    LocalImageDataUrlFailure? lastFailure;
+                                    String? lastError;
                                     for (
                                       var index = 0;
                                       index < selectedFiles.length;
                                       index++
                                     ) {
-                                      final file = selectedFiles[index];
-                                      final bytes = file.bytes;
+                                      final bytes = selectedFiles[index].bytes;
                                       if (bytes == null) {
                                         uploadController.markError(index);
                                         if (context.mounted) {
@@ -435,44 +451,37 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                                         }
                                         continue;
                                       }
-                                      final imageResult =
-                                          await localImageDataUrlResultFromBytes(
-                                            bytes: bytes,
-                                            onProgress: (stage, progress) {
-                                              if (!context.mounted) {
-                                                return;
-                                              }
-                                              uploadController.setStageLabel(
-                                                mediaUploadStageLabel(
-                                                  context,
-                                                  stage,
-                                                ),
-                                              );
-                                              uploadController.updateItem(
-                                                index: index,
-                                                stage: stage,
-                                                progress: progress,
-                                              );
-                                              setDialogState(() {
-                                                imageTransferState =
-                                                    uploadController.snapshot;
-                                              });
-                                            },
-                                          );
-                                      final dataUrl = imageResult.dataUrl;
-                                      if (dataUrl == null) {
-                                        lastFailure = imageResult.failure;
+                                      try {
+                                        final result = await uploadService.uploadImage(
+                                          bytes: bytes,
+                                          userId: effectiveUserId,
+                                          entityType: 'events',
+                                          filePrefix: 'photo',
+                                          onProgress: (stage, progress) {
+                                            if (!context.mounted) return;
+                                            uploadController.setStageLabel(
+                                              mediaUploadStageLabel(context, stage),
+                                            );
+                                            uploadController.updateItem(
+                                              index: index,
+                                              stage: stage,
+                                              progress: progress,
+                                            );
+                                            setDialogState(() {
+                                              imageTransferState =
+                                                  uploadController.snapshot;
+                                            });
+                                          },
+                                        );
+                                        nextImages.add(result.publicUrl);
+                                        uploadController.markDone(index);
+                                      } on MediaUploadException catch (e) {
+                                        lastError = e.message;
                                         uploadController.markError(index);
-                                        if (context.mounted) {
-                                          setDialogState(() {
-                                            imageTransferState =
-                                                uploadController.snapshot;
-                                          });
-                                        }
-                                        continue;
+                                      } catch (e) {
+                                        lastError = 'Errore caricamento foto ${index + 1}';
+                                        uploadController.markError(index);
                                       }
-                                      nextImages.add(dataUrl);
-                                      uploadController.markDone(index);
                                       if (context.mounted) {
                                         setDialogState(() {
                                           imageTransferState =
@@ -491,17 +500,9 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                                       ].take(maxEventImages).toList();
                                       imageTransferState = null;
                                     });
-                                    if (nextImages.isEmpty &&
-                                        lastFailure != null) {
+                                    if (nextImages.isEmpty && lastError != null) {
                                       messenger.showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            _imageUploadErrorMessage(
-                                              l10n,
-                                              lastFailure,
-                                            ),
-                                          ),
-                                        ),
+                                        SnackBar(content: Text(lastError)),
                                       );
                                     }
                                   },
@@ -962,17 +963,6 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     return '${base.scheme}://${base.authority}$path#/event/$eventId';
   }
 
-  static String _imageUploadErrorMessage(
-    AppLocalizations l10n,
-    LocalImageDataUrlFailure? failure,
-  ) {
-    return switch (failure) {
-      LocalImageDataUrlFailure.inputTooLarge ||
-      LocalImageDataUrlFailure.outputTooLarge =>
-        l10n.imageUploadTooLargeMessage,
-      _ => l10n.imageUploadUnreadableMessage,
-    };
-  }
 }
 
 class _PastEventsSection extends StatelessWidget {

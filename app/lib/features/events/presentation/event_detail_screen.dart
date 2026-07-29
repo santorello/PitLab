@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_radius.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
+import '../../../shared/utils/share_entity.dart';
 import '../../../shared/widgets/adaptive_image.dart';
-import '../application/public_events_provider.dart';
+import '../../comments/presentation/comments_section.dart';
 import '../../profile/application/profile_hub_providers.dart';
+import '../application/public_events_provider.dart';
 
 class EventDetailScreen extends ConsumerWidget {
   const EventDetailScreen({required this.eventId, super.key});
@@ -79,15 +82,15 @@ class EventDetailScreen extends ConsumerWidget {
       child: ListView(
         children: [
           Container(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(AppSpacing.xl),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [Color(0xFFF6EFE3), Colors.white, Color(0xFFF2F4F7)],
               ),
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: Color(0xFFE5DDD0)),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
+              border: Border.all(color: AppColors.borderSubtle),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +100,7 @@ class EventDetailScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: AppColors.signalOrange.withAlpha(22),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
                     border: Border.all(color: AppColors.signalOrange.withAlpha(80)),
                   ),
                   child: Text(
@@ -115,7 +118,7 @@ class EventDetailScreen extends ConsumerWidget {
                     color: AppColors.graphite,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: AppSpacing.sm),
                 Row(
                   children: [
                     const Icon(Icons.location_on_outlined, size: 16, color: AppColors.steel),
@@ -142,7 +145,7 @@ class EventDetailScreen extends ConsumerWidget {
                   ],
                 ),
                 if (event.creatorLabel != null && event.creatorLabel!.isNotEmpty) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
                     event.creatorLabel!,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -150,16 +153,20 @@ class EventDetailScreen extends ConsumerWidget {
                     ),
                   ),
                 ],
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.xl),
                 FilledButton.icon(
-                  onPressed: () => _shareEvent(context, eventId),
+                  onPressed: () => shareEntity(
+                    context: context,
+                    entityType: 'event',
+                    entityId: eventId,
+                  ),
                   icon: const Icon(Icons.ios_share_outlined),
                   label: Text(l10n.eventsShareAction),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: AppSpacing.xl),
           if (event.imageUrls.isNotEmpty) ...[
             Card(
               child: Padding(
@@ -168,7 +175,7 @@ class EventDetailScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(AppRadius.xl),
                       child: InkWell(
                         onTap: () => _openGallery(context, event.imageUrls, 0),
                         child: SizedBox(
@@ -194,7 +201,7 @@ class EventDetailScreen extends ConsumerWidget {
                             onTap: () =>
                                 _openGallery(context, event.imageUrls, index),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
                               child: SizedBox(
                                 width: 110,
                                 child: AdaptiveImage(
@@ -214,7 +221,7 @@ class EventDetailScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: AppSpacing.xl),
           ],
           Card(
             child: Padding(
@@ -226,14 +233,14 @@ class EventDetailScreen extends ConsumerWidget {
                     '📋 ${l10n.eventsDetailOverviewTitle}',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
                     event.note,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: AppColors.steel,
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.xl),
                   Wrap(
                     spacing: 10,
                     runSpacing: 10,
@@ -248,22 +255,14 @@ class EventDetailScreen extends ConsumerWidget {
               ),
             ),
           ),
+          const SizedBox(height: AppSpacing.xl),
+          // Commenti sull'evento (entityType 'event', id UUID).
+          CommentsSection(
+            entityType: 'event',
+            entityId: eventId,
+          ),
         ],
       ),
-    );
-  }
-
-  Future<void> _shareEvent(BuildContext context, String eventId) async {
-    final l10n = AppLocalizations.of(context)!;
-    final base = Uri.base;
-    final path = base.path.isEmpty ? '/' : base.path;
-    final link = '${base.scheme}://${base.authority}$path#/event/$eventId';
-    await Clipboard.setData(ClipboardData(text: link));
-    if (!context.mounted) {
-      return;
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.eventsShareCopied)),
     );
   }
 }
@@ -340,7 +339,7 @@ class _DetailChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.signalOrange.withAlpha(18),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
         border: Border.all(color: AppColors.signalOrange.withAlpha(70)),
       ),
       child: Text(

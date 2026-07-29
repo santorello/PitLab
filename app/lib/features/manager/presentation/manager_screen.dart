@@ -6,6 +6,7 @@ import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/adaptive_image.dart';
+import '../../../shared/widgets/empty_state_panel.dart';
 import '../../../shared/models/submitted_track.dart';
 import '../../../shared/models/track_list_item.dart';
 import '../../auth/application/auth_providers.dart';
@@ -349,10 +350,11 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                         publicTracksAsync.when(
                           data: (tracks) {
                             if (tracks.isEmpty) {
-                              return Text(
-                                'Non ci sono ancora piste pubbliche da mostrare.',
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(color: AppColors.steel),
+                              return const EmptyStatePanel(
+                                icon: Icons.flag_outlined,
+                                title: 'Nessuna pista pubblica',
+                                subtitle: 'Non ci sono ancora piste pubbliche da mostrare.',
+                                compact: true,
                               );
                             }
 
@@ -519,6 +521,48 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                 ),
               ),
               const SizedBox(height: 18),
+              // D07 — sezione bozze/in-approvazione sempre visibile anche
+              // quando l'utente ha piste già assegnate via track_managers.
+              Builder(
+                builder: (context) {
+                  final pendingDrafts = trackDrafts
+                      .where((d) => d.approvalStatus != 'approved')
+                      .toList();
+                  if (pendingDrafts.isEmpty) return const SizedBox.shrink();
+                  return Column(
+                    children: [
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '🚀 Bozze e in approvazione',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Piste che hai inviato in revisione o che sono ancora in bozza.',
+                                style: Theme.of(context).textTheme.bodyLarge
+                                    ?.copyWith(color: AppColors.steel),
+                              ),
+                              const SizedBox(height: 16),
+                              ...pendingDrafts.map(
+                                (draft) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: _DraftTrackCard(draft: draft),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                    ],
+                  );
+                },
+              ),
               if (canManageShops && myShopDrafts.isNotEmpty) ...[
                 Card(
                   child: Padding(
@@ -570,10 +614,11 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                       recentUpdatesAsync.when(
                         data: (updates) {
                           if (updates.isEmpty) {
-                            return Text(
-                              'Nessun aggiornamento storico disponibile per ora.',
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: AppColors.steel),
+                            return const EmptyStatePanel(
+                              icon: Icons.history_outlined,
+                              title: 'Nessun aggiornamento storico',
+                              subtitle: 'Nessun aggiornamento storico disponibile per ora.',
+                              compact: true,
                             );
                           }
                           return Column(

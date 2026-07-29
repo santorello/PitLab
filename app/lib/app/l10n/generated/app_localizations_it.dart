@@ -1883,6 +1883,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Non riesco a leggere questa immagine. Prova con JPG, PNG o WebP.';
 
   @override
+  String get mediaUploadNotAuthenticated => 'Accedi per caricare immagini.';
+
+  @override
+  String get mediaUploadGenericError =>
+      'Caricamento immagine non riuscito. Riprova.';
+
+  @override
   String get eventsCreateDateLabel => 'Data';
 
   @override
@@ -1955,8 +1962,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get garageBuildSaveAction => 'Salva build';
 
   @override
-  String get garageBuildCreatedMessage =>
-      'Build aggiunta localmente al garage.';
+  String get garageBuildCreatedMessage => 'Build aggiunta al garage.';
 
   @override
   String get garageBuildUpdatedMessage => 'Build aggiornata.';
@@ -1978,6 +1984,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String garageBuildImagesCount(int count, int max) {
     return '$count/$max immagini';
   }
+
+  @override
+  String get garageUploadPhotosAction => 'Carica foto';
 
   @override
   String get processingUploadImages => 'Sto preparando le immagini';
@@ -2177,4 +2186,157 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pitcoinPointsZero => '—';
+
+  @override
+  String get trackEditorCategorySection => 'Categoria pista';
+
+  @override
+  String get trackEditorCategorySectionBody =>
+      'Seleziona il tipo di pista — usato nei filtri di ricerca.';
+
+  @override
+  String get trackEditorServicesSection => 'Servizi disponibili';
+
+  @override
+  String get trackEditorServicesSectionBody =>
+      'Seleziona i servizi confermati presenti in pista.';
+
+  @override
+  String get trackEditorDraftsSection => 'Bozze e in approvazione';
+
+  @override
+  String get trackEditorDraftsSectionBody =>
+      'Qui trovi le piste che hai inviato e che sono in attesa di revisione o ancora in bozza.';
+
+  @override
+  String get trackEditorDraftEditButton => 'Modifica scheda';
+
+  @override
+  String get trackEditorDraftPendingLabel => 'In attesa di revisione admin';
+
+  @override
+  String get shareLinkCopied => 'Link copiato negli appunti';
+
+  @override
+  String get shareAction => 'Condividi';
+
+  @override
+  String get commentsSectionTitle => 'Commenti';
+
+  @override
+  String get commentsEmptyTitle => 'Nessun commento ancora';
+
+  @override
+  String get commentsEmptyBody =>
+      'Sii il primo a lasciare un commento su questo contenuto.';
+
+  @override
+  String get commentsLoadMore => 'Carica altri commenti';
+
+  @override
+  String get commentsInputHint => 'Scrivi un commento…';
+
+  @override
+  String get commentsSubmitAction => 'Invia';
+
+  @override
+  String get commentsPostError =>
+      'Impossibile pubblicare il commento. Riprova.';
+
+  @override
+  String get commentsLoadError => 'Errore nel caricamento dei commenti.';
+
+  @override
+  String get commentsDeleteAction => 'Elimina';
+
+  @override
+  String get commentsDeleteTitle => 'Elimina commento';
+
+  @override
+  String get commentsDeleteBody =>
+      'Sei sicuro di voler eliminare questo commento? L\'operazione non è reversibile.';
+
+  @override
+  String get commentsDeleteCancel => 'Annulla';
+
+  @override
+  String get commentsDeleteConfirm => 'Elimina';
+
+  @override
+  String get commentsReportAction => 'Segnala';
+
+  @override
+  String get commentsReportTitle => 'Segnala commento';
+
+  @override
+  String get commentsReportBody =>
+      'Vuoi segnalare questo commento al team di moderazione?';
+
+  @override
+  String get commentsReportCancel => 'Annulla';
+
+  @override
+  String get commentsReportConfirm => 'Segnala';
+
+  @override
+  String get commentsReportSuccess => 'Commento segnalato. Grazie.';
+
+  @override
+  String get commentsReportError =>
+      'Impossibile inviare la segnalazione. Riprova.';
+
+  @override
+  String get commentsGuestCta => 'Accedi per lasciare un commento.';
+
+  @override
+  String get commentsGuestLogin => 'Accedi';
+
+  @override
+  String commentsCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count commenti',
+      one: '1 commento',
+      zero: 'Commenta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get profileFollowAction => 'Segui';
+
+  @override
+  String get profileFollowingAction => 'Stai seguendo';
+
+  @override
+  String get profileUnfollowAction => 'Smetti di seguire';
+
+  @override
+  String get profileFollowerSingular => 'follower';
+
+  @override
+  String get profileFollowerPlural => 'follower';
+
+  @override
+  String get notificationsTitle => 'Notifiche';
+
+  @override
+  String get notificationsDescription => 'Le tue notifiche recenti';
+
+  @override
+  String get notificationsMarkAllRead => 'Segna tutte come lette';
+
+  @override
+  String get notificationsLoadMore => 'Carica altre';
+
+  @override
+  String get notificationsEmptyTitle => 'Nessuna notifica';
+
+  @override
+  String get notificationsEmptyBody =>
+      'Quando qualcuno ti segue o pubblica qualcosa di nuovo, lo trovi qui.';
+
+  @override
+  String get notificationsErrorTitle => 'Impossibile caricare le notifiche.';
 }

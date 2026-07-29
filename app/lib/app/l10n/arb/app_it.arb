@@ -631,6 +631,8 @@
   "eventsCreateImageLoaded": "Foto evento pronta",
   "imageUploadTooLargeMessage": "Questa immagine è troppo pesante per l'anteprima. Prova con una foto sotto i 5 MB o comprimila prima di caricarla.",
   "imageUploadUnreadableMessage": "Non riesco a leggere questa immagine. Prova con JPG, PNG o WebP.",
+  "mediaUploadNotAuthenticated": "Accedi per caricare immagini.",
+  "mediaUploadGenericError": "Caricamento immagine non riuscito. Riprova.",
   "eventsCreateDateLabel": "Data",
   "eventsCreateSave": "Salva evento",
   "eventsCreateSuccess": "Evento pubblico creato. Ora compare nella lista eventi della community.",
@@ -660,7 +662,7 @@
   "garageBuildSpecsHint": "Specifiche rapide separate da virgola",
   "garageBuildPublicToggle": "Rendi pubblica questa build",
   "garageBuildSaveAction": "Salva build",
-  "garageBuildCreatedMessage": "Build aggiunta localmente al garage.",
+  "garageBuildCreatedMessage": "Build aggiunta al garage.",
   "garageBuildUpdatedMessage": "Build aggiornata.",
   "garageEditBuildAction": "Modifica build",
   "garageBuildMaxImagesReached": "Puoi aggiungere fino a {max} immagini per build.",
@@ -680,6 +682,7 @@
     }
   },
   "garageBuildImagesCount": "{count}/{max} immagini",
+  "garageUploadPhotosAction": "Carica foto",
   "@garageBuildImagesCount": {
     "placeholders": {
       "count": {
@@ -803,5 +806,60 @@
       }
     }
   },
-  "pitcoinPointsZero": "—"
+  "pitcoinPointsZero": "—",
+
+  "trackEditorCategorySection": "Categoria pista",
+  "trackEditorCategorySectionBody": "Seleziona il tipo di pista — usato nei filtri di ricerca.",
+  "trackEditorServicesSection": "Servizi disponibili",
+  "trackEditorServicesSectionBody": "Seleziona i servizi confermati presenti in pista.",
+  "trackEditorDraftsSection": "Bozze e in approvazione",
+  "trackEditorDraftsSectionBody": "Qui trovi le piste che hai inviato e che sono in attesa di revisione o ancora in bozza.",
+  "trackEditorDraftEditButton": "Modifica scheda",
+  "trackEditorDraftPendingLabel": "In attesa di revisione admin",
+
+  "shareLinkCopied": "Link copiato negli appunti",
+  "shareAction": "Condividi",
+
+  "commentsSectionTitle": "Commenti",
+  "commentsEmptyTitle": "Nessun commento ancora",
+  "commentsEmptyBody": "Sii il primo a lasciare un commento su questo contenuto.",
+  "commentsLoadMore": "Carica altri commenti",
+  "commentsInputHint": "Scrivi un commento…",
+  "commentsSubmitAction": "Invia",
+  "commentsPostError": "Impossibile pubblicare il commento. Riprova.",
+  "commentsLoadError": "Errore nel caricamento dei commenti.",
+  "commentsDeleteAction": "Elimina",
+  "commentsDeleteTitle": "Elimina commento",
+  "commentsDeleteBody": "Sei sicuro di voler eliminare questo commento? L'operazione non è reversibile.",
+  "commentsDeleteCancel": "Annulla",
+  "commentsDeleteConfirm": "Elimina",
+  "commentsReportAction": "Segnala",
+  "commentsReportTitle": "Segnala commento",
+  "commentsReportBody": "Vuoi segnalare questo commento al team di moderazione?",
+  "commentsReportCancel": "Annulla",
+  "commentsReportConfirm": "Segnala",
+  "commentsReportSuccess": "Commento segnalato. Grazie.",
+  "commentsReportError": "Impossibile inviare la segnalazione. Riprova.",
+  "commentsGuestCta": "Accedi per lasciare un commento.",
+  "commentsGuestLogin": "Accedi",
+  "commentsCountLabel": "{count, plural, =0{Commenta} =1{1 commento} other{{count} commenti}}",
+  "@commentsCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFollowAction": "Segui",
+  "profileFollowingAction": "Stai seguendo",
+  "profileUnfollowAction": "Smetti di seguire",
+  "profileFollowerSingular": "follower",
+  "profileFollowerPlural": "follower",
+  "notificationsTitle": "Notifiche",
+  "notificationsDescription": "Le tue notifiche recenti",
+  "notificationsMarkAllRead": "Segna tutte come lette",
+  "notificationsLoadMore": "Carica altre",
+  "notificationsEmptyTitle": "Nessuna notifica",
+  "notificationsEmptyBody": "Quando qualcuno ti segue o pubblica qualcosa di nuovo, lo trovi qui.",
+  "notificationsErrorTitle": "Impossibile caricare le notifiche."
 }

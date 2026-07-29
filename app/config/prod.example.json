@@ -1,0 +1,6 @@
+{
+  "SUPABASE_URL": "https://your-prod-ref.supabase.co",
+  "SUPABASE_PUBLISHABLE_KEY": "your-prod-anon-or-publishable-key",
+  "MAPTILER_API_KEY": "",
+  "SENTRY_DSN": ""
+}

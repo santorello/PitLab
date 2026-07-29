@@ -10,8 +10,8 @@ import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/media/media_upload_controller.dart';
 import '../../../shared/media/media_upload_labels.dart';
+import '../../../shared/media/media_upload_service.dart';
 import '../../../shared/media/media_upload_state.dart';
-import '../../../shared/utils/local_image_data_url.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/external_links_section.dart';
 import '../../../shared/widgets/image_transfer_progress_card.dart';
@@ -106,7 +106,7 @@ class ProfileScreen extends ConsumerWidget {
               (shop) => _CollectionEntry(
                 title: shop.name,
                 subtitle: shop.city,
-                onTap: () => context.go('/shop/${shop.id}'),
+                onTap: () => context.go('/shop/${shop.slug}'),
               ),
             )
             .toList(),
@@ -1323,15 +1323,15 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
 
   Future<void> _pickAvatar(BuildContext context) async {
     final messenger = ScaffoldMessenger.of(context);
-    final unreadableMessage = _profileText(
-      context,
-      it: 'Non siamo riusciti a leggere l\'immagine selezionata.',
-      en: 'We could not read the selected image.',
-    );
     final preparingAvatarLabel = _profileText(
       context,
       it: 'Sto preparando la foto profilo',
       en: 'Preparing profile photo',
+    );
+    final genericUploadErrorMessage = _profileText(
+      context,
+      it: 'Errore imprevisto durante il caricamento.',
+      en: 'Unexpected error during upload.',
     );
     setState(() {
       _uploadingAvatar = true;
@@ -1339,6 +1339,24 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
     });
 
     try {
+      final userId = widget.targetUserId;
+      final uploadService = ref.read(mediaUploadServiceProvider);
+
+      if (userId == null || uploadService == null) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              _profileText(
+                context,
+                it: 'Devi essere autenticato per caricare immagini.',
+                en: 'You must be signed in to upload images.',
+              ),
+            ),
+          ),
+        );
+        return;
+      }
+
       final picked = await FilePicker.platform.pickFiles(
         type: FileType.image,
         withData: true,
@@ -1350,6 +1368,7 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
       if (bytes == null) {
         return;
       }
+
       final uploadController = MediaUploadController(
         totalItems: 1,
         initialStageLabel: preparingAvatarLabel,
@@ -1357,40 +1376,47 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
       setState(() {
         _avatarTransferState = uploadController.snapshot;
       });
-      final result = await localImageDataUrlResultFromBytes(
-        bytes: bytes,
-        onProgress: (stage, progress) {
-          if (!mounted) {
-            return;
-          }
-          uploadController.setStageLabel(mediaUploadStageLabel(context, stage));
-          uploadController.updateItem(index: 0, stage: stage, progress: progress);
-          setState(() {
-            _avatarTransferState = uploadController.snapshot;
-          });
-        },
-      );
-      final dataUrl = result.dataUrl;
-      if (!mounted) {
-        return;
-      }
-      if (dataUrl == null) {
+
+      try {
+        final result = await uploadService.uploadImage(
+          bytes: bytes,
+          userId: userId,
+          entityType: 'profiles',
+          filePrefix: 'avatar',
+          onProgress: (stage, progress) {
+            if (!mounted) return;
+            uploadController.setStageLabel(mediaUploadStageLabel(context, stage));
+            uploadController.updateItem(index: 0, stage: stage, progress: progress);
+            setState(() {
+              _avatarTransferState = uploadController.snapshot;
+            });
+          },
+        );
+        if (!mounted) return;
+        uploadController.markDone(0);
+        setState(() {
+          _avatarTransferState = uploadController.snapshot;
+          _avatarUrlController.text = result.publicUrl;
+        });
+      } on MediaUploadException catch (e) {
+        if (!mounted) return;
+        uploadController.markError(0);
+        setState(() {
+          _avatarTransferState = uploadController.snapshot;
+        });
+        messenger.showSnackBar(SnackBar(content: Text(e.message)));
+      } catch (e) {
+        if (!mounted) return;
         uploadController.markError(0);
         setState(() {
           _avatarTransferState = uploadController.snapshot;
         });
         messenger.showSnackBar(
           SnackBar(
-            content: Text(unreadableMessage),
+            content: Text(genericUploadErrorMessage),
           ),
         );
-        return;
       }
-      uploadController.markDone(0);
-      setState(() {
-        _avatarTransferState = uploadController.snapshot;
-        _avatarUrlController.text = dataUrl;
-      });
     } finally {
       if (mounted) {
         setState(() {

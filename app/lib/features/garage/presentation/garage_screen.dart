@@ -9,11 +9,14 @@ import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/models/user_build.dart';
+import '../../../shared/media/media_upload_service.dart';
 import '../../../shared/utils/local_image_data_url.dart';
 import '../../../shared/widgets/adaptive_image.dart';
+import '../../../shared/widgets/empty_state_panel.dart';
 import '../../../shared/widgets/pill.dart';
 import '../../../shared/widgets/processing_status_badge.dart';
 import '../../auth/application/auth_providers.dart';
+import '../../pitcoin/providers/pitcoin_providers.dart';
 import '../application/garage_providers.dart';
 
 class GarageScreen extends ConsumerWidget {
@@ -154,25 +157,11 @@ class _GarageBody extends ConsumerWidget {
 
         // ── Build list ────────────────────────────────────────────────────
         if (state.builds.isEmpty)
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('🚗 ${l10n.garageBuildsTitle}',
-                      style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Nessuna build ancora. Aggiungi il tuo primo modello!',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: AppColors.steel),
-                  ),
-                ],
-              ),
-            ),
+          EmptyStatePanel(
+            icon: Icons.precision_manufacturing_outlined,
+            title: l10n.garageBuildsTitle,
+            subtitle: 'Nessuna build ancora. Aggiungi il tuo primo modello!',
+            compact: true,
           )
         else
           Card(
@@ -245,6 +234,8 @@ class _GarageBody extends ConsumerWidget {
     }
 
     var isUploadingImages = false;
+    final uploadService = ref.read(mediaUploadServiceProvider);
+    final currentUserId = ref.read(currentUserProvider)?.id;
 
     final result = await showDialog<UserBuild>(
       context: context,
@@ -287,6 +278,12 @@ class _GarageBody extends ConsumerWidget {
                     children: [
                       OutlinedButton.icon(
                         onPressed: () async {
+                          if (uploadService == null || currentUserId == null) {
+                            messenger.showSnackBar(SnackBar(
+                              content: Text(l10n.mediaUploadNotAuthenticated),
+                            ));
+                            return;
+                          }
                           setDialogState(() => isUploadingImages = true);
                           final remainingSlots =
                               maxGarageBuildImages - pickedImages.length;
@@ -308,36 +305,40 @@ class _GarageBody extends ConsumerWidget {
                             setDialogState(() => isUploadingImages = false);
                             return;
                           }
-                          final dataUrls = <String>[];
-                          LocalImageDataUrlFailure? lastFailure;
+                          final uploadedUrls = <String>[];
+                          String? lastError;
                           for (final file in files.take(remainingSlots)) {
                             final bytes = file.bytes;
                             if (bytes == null) continue;
-                            final result =
-                                await localImageDataUrlResultFromBytes(
-                                    bytes: bytes);
-                            if (result.dataUrl != null) {
-                              dataUrls.add(result.dataUrl!);
-                            } else {
-                              lastFailure = result.failure;
+                            try {
+                              final result = await uploadService.uploadImage(
+                                bytes: bytes,
+                                userId: currentUserId,
+                                entityType: 'builds',
+                                filePrefix: 'photo',
+                              );
+                              uploadedUrls.add(result.publicUrl);
+                            } on MediaUploadException catch (e) {
+                              lastError = e.message;
+                            } catch (e) {
+                              lastError = l10n.mediaUploadGenericError;
                             }
                           }
                           setDialogState(() {
                             isUploadingImages = false;
                             pickedImages = [
                               ...pickedImages,
-                              ...dataUrls,
+                              ...uploadedUrls,
                             ].take(maxGarageBuildImages).toList();
                           });
-                          if (lastFailure != null) {
+                          if (lastError != null) {
                             messenger.showSnackBar(SnackBar(
-                              content: Text(
-                                  _imageUploadErrorMessage(l10n, lastFailure)),
+                              content: Text(lastError),
                             ));
                           }
                         },
                         icon: const Icon(Icons.photo_library_outlined),
-                        label: const Text('Anteprima foto'),
+                        label: Text(l10n.garageUploadPhotosAction),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -362,31 +363,6 @@ class _GarageBody extends ConsumerWidget {
                       icon: Icons.photo_library_outlined,
                     ),
                   ],
-                  const SizedBox(height: 8),
-                  // Avviso prominente: le foto locali non vengono persistite
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF8F0),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFFFD1B5)),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.info_outline, size: 16, color: Color(0xFF8A3C12)),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Le foto caricate da file sono temporanee e non vengono salvate. Per foto persistenti usa il campo URL sopra.',
-                            style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                              color: const Color(0xFF8A3C12),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                   const SizedBox(height: 8),
                   Text(
                     l10n.garageBuildImagesHelper(maxGarageBuildImages),
@@ -524,6 +500,12 @@ class _GarageBody extends ConsumerWidget {
       ok = await controller.updateBuild(result.copyWith(id: existing.id, ownerId: existing.ownerId));
     }
 
+    if (ok) {
+      // D13: aggiorna subito il saldo PitCoin (build_created/published).
+      ref.invalidate(effectiveUserPitcoinBalanceProvider);
+      ref.invalidate(effectiveUserPitcoinRecentDeltaProvider);
+    }
+
     if (context.mounted) {
       messenger.showSnackBar(SnackBar(
         content: Text(ok
@@ -565,17 +547,6 @@ class _GarageBody extends ConsumerWidget {
     }
   }
 
-  static String _imageUploadErrorMessage(
-    AppLocalizations l10n,
-    LocalImageDataUrlFailure? failure,
-  ) {
-    return switch (failure) {
-      LocalImageDataUrlFailure.inputTooLarge ||
-      LocalImageDataUrlFailure.outputTooLarge =>
-        l10n.imageUploadTooLargeMessage,
-      _ => l10n.imageUploadUnreadableMessage,
-    };
-  }
 }
 
 // ── Widgets ───────────────────────────────────────────────────────────────

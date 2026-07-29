@@ -28,10 +28,12 @@ Attorno a questo loop, ecosistema di negozi, spot, eventi, profili e community.
 
 ## Prossime milestone (sintesi)
 
-Vedi `docs/roadmap.md` per il dettaglio completo. Quelle a piu' alto valore residuo:
+Vedi `docs/roadmap.md` per il dettaglio completo. Aggiornato 2026-06-10 (v0.3.0):
 
-- Chiudere bug rimanenti del walkthrough sessione 3 (vedi `docs/test-checklist.md` TC-WT-21/22)
-- Implementare `MediaUploadService` + `MediaUploadField` con Supabase Storage (vedi `docs/media-strategy.md`)
+- ~~MediaUploadService con Supabase Storage~~ fatto in 0.3.0
+- ~~Commenti/Condividi reali, Segui profilo, notifiche in-app~~ fatto in 0.3.0
+- Applicare su prod i 6 delta del 2026-06-10 (vedi `VERSION.md` 0.3.0, nota operativa) — blocker go-live
+- Walkthrough regressivo post-0.3.0 (nuove feature: commenti, follow, notifiche, upload)
 - Approntare i contenuti reali e onboarding gestori per Gate Alpha
 
 ## Documenti correlati

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:pitlap_app/app/bootstrap/error_reporting.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/foundation.dart';
 
@@ -118,6 +119,7 @@ class SupabaseTracksRepository implements TracksRepository {
             latitude,
             longitude,
             external_map_url,
+            image_url,
             track_status_current(status, message),
             track_services(
               is_available,
@@ -163,6 +165,7 @@ class SupabaseTracksRepository implements TracksRepository {
             latitude,
             longitude,
             external_map_url,
+            image_url,
             track_status_current(status, message),
             track_services(
               is_available,
@@ -224,6 +227,7 @@ class SupabaseTracksRepository implements TracksRepository {
             latitude,
             longitude,
             external_map_url,
+            image_url,
             track_status_current(status, message),
             track_services(
               is_available,
@@ -390,7 +394,8 @@ class SupabaseTracksRepository implements TracksRepository {
       if (response is int) return response;
       if (response is num) return response.toInt();
       return 0;
-    } catch (_) {
+    } catch (e, st) {
+      AppErrorReporter.report(e, st, context: 'supabase_tracks_repository');
       return 0;
     }
   }
@@ -528,7 +533,9 @@ class SupabaseTracksRepository implements TracksRepository {
     required String externalMapUrl,
     required List<String> availableServiceKeys,
     List<String> categoryKeys = const [],
+    String? imageUrl,
   }) async {
+    final normalizedImageUrl = imageUrl?.trim();
     await _client
         .from('tracks')
         .update({
@@ -540,6 +547,10 @@ class SupabaseTracksRepository implements TracksRepository {
           'city': city,
           'country': country,
           'external_map_url': externalMapUrl.isEmpty ? null : externalMapUrl,
+          'image_url':
+              (normalizedImageUrl == null || normalizedImageUrl.isEmpty)
+                  ? null
+                  : normalizedImageUrl,
           'updated_at': DateTime.now().toIso8601String(),
         })
         .eq('id', trackId);

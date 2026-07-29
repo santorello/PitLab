@@ -113,7 +113,7 @@ class _PitcoinHistoryScreenState extends ConsumerState<PitcoinHistoryScreen> {
             child: CircularProgressIndicator(),
           ),
         ),
-        error: (_, __) => Center(
+        error: (_, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(40),
             child: Text(l10n.pitcoinHistoryEmpty),
@@ -139,7 +139,7 @@ class _PitcoinHistoryScreenState extends ConsumerState<PitcoinHistoryScreen> {
           final languageCode = Localizations.localeOf(context).languageCode;
           return ListView.separated(
             itemCount: _accumulated.length + (_exhausted ? 0 : 1),
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (context, index) {
               if (index == _accumulated.length) {
                 return Padding(

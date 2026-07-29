@@ -299,6 +299,7 @@ class _ManagedTrackEditorScreenState
     _mapUrlController.text = track.externalMapUrl;
     _shortDescriptionController.text = track.shortDescription;
     _descriptionController.text = track.description;
+    _coverImageUrlController.text = track.imageUrl ?? '';
     _selectedServiceKeys
       ..clear()
       ..addAll(track.availableServiceKeys);
@@ -364,6 +365,7 @@ class _ManagedTrackEditorScreenState
         externalMapUrl: _mapUrlController.text.trim(),
         availableServiceKeys: _selectedServiceKeys.toList(),
         categoryKeys: _selectedCategoryKeys.toList(),
+        imageUrl: _coverImageUrlController.text.trim(),
       );
 
       ref.invalidate(publicTracksProvider);

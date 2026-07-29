@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:pitlap_app/app/bootstrap/error_reporting.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../auth/application/auth_providers.dart';
 import '../../location/application/user_location_context_provider.dart';
@@ -221,7 +223,7 @@ extension on HomeOverviewStats {
       publicBuilds == 0;
 }
 
-Future<HomeOverviewStats> _fetchHomeOverviewStatsFallback(client) async {
+Future<HomeOverviewStats> _fetchHomeOverviewStatsFallback(SupabaseClient client) async {
   final now = DateTime.now();
   final next30 = now.add(const Duration(days: 30));
   final last30 = now.subtract(const Duration(days: 30));
@@ -382,7 +384,8 @@ List<String> _parseImageUrls(dynamic value) {
             .where((url) => url.isNotEmpty)
             .toList();
       }
-    } catch (_) {
+    } catch (e, st) {
+      AppErrorReporter.report(e, st, context: 'home_dashboard_provider');
       return const [];
     }
   }

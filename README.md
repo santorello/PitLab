@@ -141,6 +141,14 @@ Codice attivo in:
 - il primo target reale sono utenti Android e utenti web da browser mobile/desktop
 - il rollout iniziale sara' locale e progressivo, partendo da poche piste selezionate
 
+Aggiornamenti 0.3.0 (2026-06-10):
+
+- flusso gestore completo end-to-end: crea pista con tassonomie DB reali, bozze sempre recuperabili da `Gestione`, modifica pista per gestori su piste approvate
+- media upload reale su Supabase Storage (bucket `media`, resize WebP, progress e errori reali)
+- commenti moderabili e condivisione con link canonici su piste, negozi, eventi, spot e build
+- segui profilo con notifiche in-app (campanella + centro notifiche `/notifications`)
+- hardening sicurezza/performance DB documentato in `docs/db-hardening-2026-06-10.md`
+
 ## Prossimi passi
 
 - rifinire home e dettaglio pista eliminando ridondanze e migliorando gerarchia visiva

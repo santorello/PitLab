@@ -16,8 +16,10 @@ class PlaceMapPreviewCard extends StatelessWidget {
   final PlaceSelection selection;
   final double height;
 
-  static String get _tileUrlTemplate =>
-      'https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=${AppConfig.mapTilerApiKey}';
+  // MapTiler quando c'è la key, altrimenti OpenStreetMap (gratis, senza key).
+  static String get _tileUrlTemplate => AppConfig.hasMapTilerConfig
+      ? 'https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=${AppConfig.mapTilerApiKey}'
+      : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +35,7 @@ class PlaceMapPreviewCard extends StatelessWidget {
         children: [
           SizedBox(
             height: height,
-            child: AppConfig.hasMapTilerConfig
-                ? FlutterMap(
+            child: FlutterMap(
                     options: MapOptions(
                       interactionOptions: const InteractionOptions(
                         flags: InteractiveFlag.none,
@@ -78,18 +79,6 @@ class PlaceMapPreviewCard extends StatelessWidget {
                         ],
                       ),
                     ],
-                  )
-                : Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Text(
-                        'Mappa pronta, ma manca la API key MapTiler in questa build.',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.steel,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
                   ),
           ),
           Padding(

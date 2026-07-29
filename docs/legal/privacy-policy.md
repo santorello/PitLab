@@ -1,242 +1,223 @@
-# Privacy Policy
+# Informativa sul trattamento dei dati personali (Privacy Policy)
 
-Stato: base operativa avanzata da validare con supporto legale prima della pubblicazione ufficiale.
+**Versione: 1.0 — in vigore dal 2026-06-03**
+**Ultimo aggiornamento: 2026-06-03**
 
-Data efficacia: `2026-04-07`
-
-Versione documento: `2026-04-07-draft`
+---
 
 ## 1. Titolare del trattamento
 
-Il titolare del trattamento dei dati personali trattati tramite PitLap e' il soggetto che gestisce il servizio.
+Il titolare del trattamento dei dati personali raccolti tramite PitLap è:
 
-Alla data di questa bozza i dati identificativi completi del titolare devono ancora essere inseriti in forma definitiva:
+**Giuseppe [COGNOME — DA COMPLETARE]**
+Comune di Rho (MI), Italia
+Email privacy: privacy@pitlap.app
 
-- denominazione / nome del titolare: da completare
-- sede legale o operativa: da completare
-- email di contatto generale: da completare
-- email privacy dedicata: da completare
+**Responsabile della Protezione dei Dati (DPO):** non nominato. La nomina di un DPO non è obbligatoria per la presente scala di trattamento ai sensi dell'art. 37 del Regolamento (UE) 2016/679 (GDPR). Il punto di contatto per qualunque questione relativa alla protezione dei dati personali è l'indirizzo email indicato sopra.
 
-Se verra' nominato un responsabile della protezione dei dati (DPO), i relativi riferimenti dovranno essere indicati in questa informativa.
+---
 
 ## 2. Ambito del servizio
 
-PitLap e' una piattaforma digitale dedicata al modellismo che puo' includere, a seconda dello stato di sviluppo del prodotto:
+PitLap (pitlap.app) è una piattaforma digitale dedicata alla community del modellismo radiocomandato (RC). Il servizio è attualmente in fase di **beta chiusa su invito** e comprende:
 
 - consultazione di piste, negozi, eventi e contenuti informativi
-- accesso utente tramite magic link o altri sistemi di autenticazione
-- profilo utente con preferenze, lingua e visibilita'
-- segnalazione della presenza giornaliera in pista
-- salvataggio di preferiti
-- garage personale con build e contenuti opzionalmente pubblici
-- future aree community e discovery
+- accesso utente tramite email e magic link
+- profilo utente con nickname, città di riferimento, foto e preferenze
+- check-in "Sto arrivando": segnalazione della presenza giornaliera in pista
+- garage personale con build, modelli e foto
+- sistema di reputazione PitCoin
+- follow di altri utenti
+- contenuti pubblici creati dagli utenti (build, spot, eventi, link)
+
+---
 
 ## 3. Categorie di dati trattati
 
-PitLap puo' trattare le seguenti categorie di dati personali.
-
 ### 3.1 Dati account
 
-- indirizzo email
-- identificativo utente tecnico
-- data di creazione account
-- stato della sessione e metadati minimi necessari all'autenticazione
+- Indirizzo email (necessario per accesso tramite magic link)
+- Identificativo utente tecnico (UUID generato da Supabase Auth)
+- Data di creazione dell'account e metadati di sessione
 
 ### 3.2 Dati profilo
 
-- nome visibile o display name
-- lingua preferita
-- eventuali dati aggiuntivi che potranno essere raccolti in futuro, come nome, cognome, soprannome, luogo, anni di esperienza nel modellismo, hobby o interessi
+- Nome visibile / nickname
+- Città di riferimento
+- Coordinate geografiche "home" (opzionali, fornite dall'utente)
+- Foto avatar, cover e immagini del garage (caricate volontariamente dall'utente)
 
-### 3.3 Dati di utilizzo del prodotto
+### 3.3 Contenuti pubblicati dall'utente
 
-- piste seguite o salvate
-- preferenze legate al servizio
-- stato di presenza in pista per il giorno corrente
-- contenuti inseriti nel garage o nel profilo, quando tali funzionalita' saranno attivate
+- Build e descrizioni del garage
+- Piste, negozi, spot e eventi inseriti o proposti
+- Link pubblicati
+- Contenuti testuali e fotografici resi pubblici su scelta dell'utente
 
-### 3.4 Dati tecnici e di sicurezza
+### 3.4 Dati di utilizzo del servizio
 
-- log tecnici minimi
-- informazioni necessarie alla corretta erogazione del servizio
-- dati relativi alla sicurezza applicativa, prevenzione abusi e integrita' del sistema
+- Check-in "Sto arrivando" (pista + data)
+- Relazioni di follow tra utenti
+- Preferiti e contenuti salvati
 
-### 3.5 Dati relativi ai consensi
+### 3.5 Dati tecnici e di sicurezza
 
-- accettazione dei Termini di Servizio
-- presa visione dell'Informativa Privacy
-- eventuale consenso marketing
-- versione del documento e origine del consenso o della presa visione
+- Log tecnici applicativi (rotazione automatica, conservati per 90 giorni)
+- Informazioni necessarie alla sicurezza, all'integrità del sistema e alla prevenzione di abusi
 
-## 4. Finalita' del trattamento
+### 3.6 Dati relativi ai consensi
 
-I dati personali possono essere trattati per le seguenti finalita'.
+- Accettazione dei Termini di Servizio (con timestamp e versione documento)
+- Presa visione della presente Informativa Privacy (con timestamp e versione documento)
+- Eventuale consenso marketing via email (attualmente non raccolto durante la beta — vedi § 11)
+
+---
+
+## 4. Finalità del trattamento
 
 ### 4.1 Creazione e gestione dell'account
 
-Per consentire l'accesso al servizio, la gestione della sessione, la configurazione dell'account e la continuita' dell'esperienza utente.
+Consentire l'accesso al servizio, la gestione della sessione e la configurazione dell'account.
+**Base giuridica:** esecuzione di un contratto o misure precontrattuali (art. 6 §1 lett. b GDPR).
 
-### 4.2 Erogazione delle funzionalita' richieste
+### 4.2 Erogazione delle funzionalità richieste
 
-Per mostrare contenuti, gestire la lingua preferita, salvare preferiti, supportare il profilo, il garage e la segnalazione della presenza in pista.
+Mostrare contenuti, gestire il profilo, il garage, i check-in, il sistema di follow e le funzionalità community.
+**Base giuridica:** esecuzione di un contratto (art. 6 §1 lett. b GDPR).
 
-### 4.3 Sicurezza, manutenzione e prevenzione abusi
+### 4.3 Sicurezza, manutenzione e prevenzione degli abusi
 
-Per monitorare il corretto funzionamento del servizio, prevenire utilizzi impropri, gestire errori e proteggere l'integrita' della piattaforma.
+Monitorare il corretto funzionamento, prevenire utilizzi impropri e proteggere l'integrità della piattaforma.
+**Base giuridica:** legittimo interesse del titolare (art. 6 §1 lett. f GDPR).
 
-### 4.4 Adempimenti normativi e gestione documentale
+### 4.4 Adempimenti documentali e di conformità
 
-Per tracciare consensi, prese visione e altri elementi necessari alla conformita' documentale e alla tutela del servizio.
+Tracciare consensi e prese visione per dimostrare la conformità normativa.
+**Base giuridica:** obbligo legale (art. 6 §1 lett. c GDPR) e legittimo interesse.
 
-### 4.5 Comunicazioni marketing facoltative
+### 4.5 Comunicazioni marketing via email (sospese durante la beta)
 
-Per inviare aggiornamenti, novita' o comunicazioni promozionali relative a PitLap, solo quando l'utente ha espresso un consenso separato, specifico e facoltativo.
+Per inviare aggiornamenti, novità o comunicazioni promozionali relative a PitLap. **Questa finalità è attualmente sospesa: durante la beta chiusa nessuna email marketing viene inviata e il relativo opt-in non viene raccolto.** Quando il marketing verrà attivato, sarà richiesto un consenso separato, specifico e revocabile in qualsiasi momento.
+**Base giuridica (futura):** consenso dell'interessato (art. 6 §1 lett. a GDPR).
 
-## 5. Basi giuridiche del trattamento
+---
 
-Le basi giuridiche principali sono le seguenti:
+## 5. Conferimento dei dati
 
-- esecuzione di un contratto o di misure precontrattuali, per la creazione dell'account e l'erogazione delle funzionalita' essenziali richieste dall'utente
-- adempimento di obblighi legali, ove applicabili
-- legittimo interesse del titolare, per sicurezza, stabilita', prevenzione abusi, manutenzione tecnica e tutela del servizio
-- consenso dell'interessato, per finalita' opzionali come il marketing via email
+Il conferimento dell'indirizzo email e dei dati tecnici di sessione è necessario per accedere al servizio. Il mancato conferimento rende impossibile la creazione dell'account.
 
-PitLap non richiede un “consenso alla privacy” per trattare i dati necessari all'erogazione del servizio. L'informativa privacy viene resa disponibile e l'utente ne prende visione. Il consenso viene richiesto solo quando serve una base giuridica di natura facoltativa, come il marketing.
+I dati di profilo aggiuntivi (nickname, città, coordinate home, foto), i contenuti del garage e le altre informazioni facoltative possono essere conferiti in modo progressivo su scelta dell'utente.
 
-## 6. Conferimento dei dati
+---
 
-Il conferimento di alcuni dati e' necessario per usare il servizio.
+## 6. Profilo pubblico, garage e visibilità
 
-In particolare:
+PitLap adotta un approccio di privacy by default:
 
-- l'indirizzo email e' necessario per accedere tramite magic link
-- alcuni dati tecnici sono necessari per l'erogazione e la sicurezza del servizio
-- i dati facoltativi di profilo, hobby, garage o visibilita' pubblica potranno essere conferiti in modo progressivo
-- il consenso marketing e' sempre facoltativo
+- Il profilo pubblico è disattivato di default; l'utente può renderlo visibile esplicitamente.
+- Il garage rimane privato di default; singole build possono essere rese pubbliche su scelta.
+- I contenuti pubblici possono essere visibili agli utenti autenticati secondo le regole di visibilità del prodotto.
+- I check-in "Sto arrivando" sono visibili agli utenti autenticati per la giornata corrente.
 
-Il mancato conferimento dei dati necessari puo' impedire l'accesso o l'uso corretto di alcune funzionalita' essenziali.
+---
 
-## 7. Profilo pubblico, garage pubblico e visibilita'
+## 7. Destinatari dei dati e sub-responsabili del trattamento
 
-PitLap adotta un approccio prudente.
+I dati personali possono essere comunicati ai seguenti fornitori che operano come responsabili del trattamento (art. 28 GDPR):
 
-Salvo diversa scelta esplicita dell'utente:
+| Fornitore | Ruolo | Paese/Sede | Garanzia di trasferimento |
+|---|---|---|---|
+| **Supabase** | Backend: autenticazione, database Postgres, storage immagini | Germania (eu-central-1, Francoforte) — **UE** | Dati ospitati nell'UE; nessun trasferimento extra-SEE per il progetto pitlap-prod |
+| **MapTiler** | Mappe interattive e geocoding (richieste lato dispositivo dell'utente) | Svizzera | Paese terzo con decisione di adeguatezza della Commissione UE; ove applicabile: Clausole Contrattuali Standard (SCC) |
+| **Open-Meteo** | Previsioni meteo per le piste outdoor; riceve coordinate o nome della città | Austria — **UE** | Dati ospitati nell'UE |
+| **Sentry** (crash reporting) | Eventuale: non ancora attivo. Sarà incluso in un aggiornamento di questa informativa se e quando attivato. | — | — |
 
-- il profilo pubblico resta disattivato di default
-- il garage puo' rimanere privato di default
-- singole build o contenuti potranno essere resi pubblici solo su scelta dell'utente
+MapTiler riceve l'indirizzo IP del dispositivo dell'utente e la query geografica direttamente dal client al momento della visualizzazione delle mappe o del geocoding. Si applicano le [condizioni di utilizzo](https://www.maptiler.com/cloud/pricing/) e la privacy policy di MapTiler.
 
-Questa informativa dovra' essere coordinata con le regole di prodotto per chiarire:
+Open-Meteo riceve coordinate geografiche o il nome della città per restituire le previsioni meteo. Si applicano i [termini di Open-Meteo](https://open-meteo.com/en/terms).
 
-- quali contenuti sono visibili ad altri utenti autenticati
-- se alcuni contenuti pubblici siano comunque nascosti ai visitatori non autenticati
-- quali contenuti siano visibili all'interno di PitLap e con quali limitazioni
+---
 
-## 8. Destinatari dei dati e fornitori
+## 8. Trasferimenti di dati extra-SEE
 
-I dati personali possono essere trattati da fornitori tecnici che operano come responsabili del trattamento o soggetti autorizzati, nella misura necessaria al funzionamento del servizio.
+I dati archiviati su Supabase risiedono nella regione UE (Francoforte, Germania) e non vengono trasferiti al di fuori dello Spazio Economico Europeo.
 
-In base all'architettura attuale o prevista, i fornitori potranno includere:
+MapTiler è una società svizzera: la Svizzera beneficia di una decisione di adeguatezza della Commissione europea. Ove applicabile, il trasferimento è ulteriormente garantito da Clausole Contrattuali Standard.
 
-- provider backend e autenticazione
-- provider hosting o infrastruttura web
-- provider email e SMTP
-- eventuali strumenti tecnici di monitoraggio o analytics, se introdotti
+Open-Meteo opera in Austria, Paese UE: nessun trasferimento extra-SEE.
 
-Prima della pubblicazione ufficiale, l'elenco reale dei fornitori dovra' essere mantenuto aggiornato in questa informativa o in documentazione facilmente accessibile.
+---
 
-## 9. Trasferimenti di dati extra SEE / extra UE
+## 9. Periodi di conservazione
 
-Eventuali trasferimenti di dati personali verso Paesi non appartenenti allo Spazio Economico Europeo dovranno essere valutati e documentati.
+| Categoria di dati | Periodo di conservazione |
+|---|---|
+| Dati account e profilo | Per tutta la durata dell'account attivo + 30 giorni dalla richiesta di cancellazione |
+| Foto e contenuti pubblicati | Finché pubblicati o fino alla cancellazione da parte dell'utente (o dell'account) |
+| Check-in "Sto arrivando" | Storicizzati e ripuliti automaticamente tramite upsert giornaliero; il dato corrente viene sostituito ogni giorno |
+| Log tecnici | 90 giorni (rotazione automatica) |
+| Dati dei consensi | Per tutta la durata dell'account + il tempo necessario a dimostrare la conformità (almeno 5 anni a fini difensivi) |
+| Dati di sessione (token) | Durata della validità del token di sessione Supabase |
 
-Se alcuni fornitori trattano dati al di fuori dell'Unione Europea o dello SEE, il titolare dovra' indicare:
+---
 
-- il Paese o la tipologia di trasferimento
-- la base di legittimazione del trasferimento
-- le garanzie appropriate utilizzate
+## 10. Minori
 
-Alla data attuale questo punto resta da completare con riferimento ai fornitori effettivamente usati.
+PitLap è riservato a utenti che abbiano compiuto **14 anni di età**. Questa soglia è stabilita in conformità all'art. 8 del GDPR e all'art. 2-quinquies del D.Lgs. 196/2003 (Codice Privacy italiano, come modificato dal D.Lgs. 101/2018).
 
-## 10. Periodi di conservazione
+Nella fase di **beta chiusa**, l'accesso avviene esclusivamente su invito; gli inviti sono riservati a persone maggiori di 14 anni.
 
-I tempi di conservazione definitivi devono essere confermati prima della pubblicazione ufficiale.
+Se il titolare dovesse accertare che un utente è minore di 14 anni, l'account sarà sospeso e i dati cancellati senza indugio.
 
-In linea generale:
-
-- i dati account restano conservati per la durata del rapporto con l'utente e fino alla chiusura dell'account, salvo obblighi di legge o esigenze difensive
-- i log tecnici e di sicurezza devono essere conservati per un periodo limitato e proporzionato
-- i consensi e le prese visione devono essere conservati per il tempo necessario a dimostrare la conformita' del trattamento
-- le presenze giornaliere in pista dovranno seguire una retention coerente con la finalita' del prodotto e con il principio di minimizzazione
+---
 
 ## 11. Marketing via email
 
-Le comunicazioni marketing:
+Le comunicazioni marketing sono facoltative e non necessarie per creare o utilizzare l'account.
 
-- sono facoltative
-- non sono necessarie per creare o usare l'account
-- richiedono un consenso separato
-- devono poter essere revocate facilmente in qualunque momento
+**Durante la fase di beta chiusa il marketing via email è sospeso: nessuna email promozionale viene inviata e l'opt-in non viene raccolto.** Questo approccio garantisce il rispetto dell'art. 7 §3 GDPR by design.
 
-Il consenso marketing deve essere tracciato con:
+Quando il marketing verrà attivato:
+- sarà richiesto un consenso separato, specifico, non preselezionato e revocabile;
+- sarà possibile revocare il consenso in qualsiasi momento tramite l'apposita funzione in-app;
+- il consenso sarà tracciato con stato, timestamp, versione del documento e origine.
 
-- stato del consenso
-- data o timestamp
-- versione del documento informativo
-- origine del consenso
-
-Per una governance ancora piu' solida, puo' essere valutato un doppio opt-in dedicato al solo marketing.
+---
 
 ## 12. Diritti dell'interessato
 
-L'utente puo' esercitare i diritti previsti dalla normativa applicabile, tra cui:
+L'utente può esercitare, in qualsiasi momento, i seguenti diritti ai sensi degli artt. 15–22 GDPR:
 
-- accesso ai dati personali
-- rettifica
-- cancellazione, nei casi previsti
-- limitazione del trattamento
-- opposizione, nei casi previsti
-- portabilita', ove applicabile
-- revoca del consenso per i trattamenti basati sul consenso
-- reclamo all'autorita' di controllo competente
+- **Accesso** ai propri dati personali
+- **Rettifica** dei dati inesatti o incompleti
+- **Cancellazione** ("diritto all'oblio"), nei casi previsti — disponibile in-app tramite la funzione "Richiedi cancellazione account" (`request_account_deletion`)
+- **Limitazione** del trattamento
+- **Opposizione** al trattamento basato su legittimo interesse
+- **Portabilità** dei dati, ove applicabile
+- **Revoca del consenso** in qualsiasi momento, senza pregiudicare la liceità del trattamento basato sul consenso prestato prima della revoca
 
-Il canale operativo per l'esercizio dei diritti dovra' essere chiaramente indicato con un contatto dedicato.
+Per esercitare questi diritti, l'utente può scrivere a: **privacy@pitlap.app**
+
+L'utente ha inoltre il diritto di proporre **reclamo al Garante per la protezione dei dati personali** (Autorità di controllo italiana): [www.garanteprivacy.it](https://www.garanteprivacy.it)
+
+---
 
 ## 13. Decisioni automatizzate e profilazione
 
-Alla data attuale PitLap non dichiara processi decisionali automatizzati con effetti giuridici o analogamente significativi nei confronti dell'utente.
+PitLap non effettua processi decisionali automatizzati con effetti giuridici o analogamente significativi nei confronti dell'utente. Il sistema PitCoin è un indicatore di reputazione comunitaria basato su interazioni esplicite dell'utente, non su profilazione comportamentale automatizzata.
 
-Se in futuro verranno introdotti suggerimenti personalizzati, ranking o elementi di profilazione non strettamente necessari, questa sezione dovra' essere aggiornata specificando:
+Se in futuro venissero introdotti elementi di profilazione rilevante, questa sezione verrà aggiornata con le informazioni previste dall'art. 22 GDPR.
 
-- logica utilizzata
-- finalita'
-- dati coinvolti
-- impatti principali per l'utente
+---
 
-## 14. Minori
+## 14. Aggiornamenti dell'informativa
 
-Se il servizio dovesse essere usato da minori, il titolare dovra' valutare attentamente il quadro normativo applicabile e introdurre le misure necessarie in termini di informativa, consenso e tutela.
+La presente informativa può essere aggiornata nel tempo. Le modifiche rilevanti saranno comunicate agli utenti tramite avviso in-app o email, ove opportuno. Ogni versione riporta la data di efficacia e il numero di versione.
 
-Questa bozza non disciplina ancora in modo definitivo tale scenario.
+Lo storico delle versioni è disponibile su richiesta scrivendo a privacy@pitlap.app.
 
-## 15. Aggiornamenti dell'informativa
+---
 
-La presente informativa puo' essere aggiornata nel tempo.
-
-Ogni versione effettiva dovrebbe riportare almeno:
-
-- data di efficacia
-- versione documento
-- breve storico delle modifiche rilevanti
-
-## 16. Dati ancora da completare prima della pubblicazione
-
-Prima di considerare questa informativa pronta per la pubblicazione ufficiale vanno inseriti:
-
-- dati completi del titolare
-- contatti reali per privacy e diritti
-- eventuale DPO
-- fornitori effettivi
-- retention definita
-- chiarimento sui trasferimenti extra UE
-- posizione finale su analytics e cookie
-- regole definitive di visibilita' per profilo, garage e contenuti pubblici
+*PitLap — pitlap.app*
+*Versione: 1.0 — in vigore dal 2026-06-03*
+*Ultimo aggiornamento: 2026-06-03*

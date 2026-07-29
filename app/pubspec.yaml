@@ -1,7 +1,7 @@
 name: pitlap_app
 description: "PitLap mobile and web application."
 publish_to: 'none'
-version: 1.0.0+1
+version: 0.3.0+30
 
 environment:
   sdk: ^3.11.1

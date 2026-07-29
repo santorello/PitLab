@@ -4,12 +4,16 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_breakpoints.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_radius.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../features/auth/application/auth_providers.dart';
+import '../../../features/comments/application/comments_providers.dart';
 import '../../../features/location/application/user_location_context_provider.dart';
 import '../../../features/pitcoin/providers/pitcoin_providers.dart';
 import '../../../features/shops/application/public_shops_provider.dart';
 import '../../../features/spots/application/spots_providers.dart';
 import '../../../features/tracks/application/tracks_providers.dart';
+import '../../../shared/utils/share_entity.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../application/activity_feed_provider.dart';
 import '../application/home_dashboard_provider.dart';
@@ -116,7 +120,7 @@ class CommunityHomeScreen extends ConsumerWidget {
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       _TopBar(userLabel: user?.email),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: AppSpacing.lg),
                       _GreetingCard(
                         greeting: _timeGreeting(DateTime.now()),
                         userName: displayName,
@@ -126,7 +130,7 @@ class CommunityHomeScreen extends ConsumerWidget {
                         ),
                         weatherAsync: weatherAsync,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.md),
                       if (user != null)
                         _PitcoinStrip(
                           totalPoints: balanceAsync.maybeWhen(
@@ -144,11 +148,11 @@ class CommunityHomeScreen extends ConsumerWidget {
                         )
                       else
                         const _GuestPitcoinNotice(),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: AppSpacing.lg),
                       const _QuickActions(),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: AppSpacing.xl),
                       _WeatherStrip(weatherAsync: weatherAsync),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: AppSpacing.xl),
                       _NearbyMapPreview(
                         trackCount: nearbyTracks.length,
                         openTrackCount: nearbyTracks
@@ -159,24 +163,35 @@ class CommunityHomeScreen extends ConsumerWidget {
                         isLocalized: hasGeoContext,
                         radiusKm: location.radiusKm,
                       ),
-                      const SizedBox(height: 18),
-                      _BuildOfWeekSection(buildAsync: buildOfWeekAsync),
+                      // BuildOfWeek e FeaturedTrack: spacer solo se presenti.
+                      buildOfWeekAsync.maybeWhen(
+                        data: (build) => build == null
+                            ? const SizedBox.shrink()
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: AppSpacing.xl),
+                                  _BuildOfWeekSection(buildAsync: buildOfWeekAsync),
+                                ],
+                              ),
+                        orElse: () => const SizedBox.shrink(),
+                      ),
                       featuredAsync.maybeWhen(
                         data: (track) => track == null
                             ? const SizedBox.shrink()
                             : Padding(
-                                padding: const EdgeInsets.only(top: 18),
+                                padding: const EdgeInsets.only(top: AppSpacing.xl),
                                 child: _FeaturedTrackCard(track: track),
                               ),
                         orElse: () => const SizedBox.shrink(),
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: AppSpacing.xl),
                       _OverviewStatsGrid(statsAsync: statsAsync),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: AppSpacing.xl),
                       _TrendingTracksSection(trendingAsync: trendingAsync),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: AppSpacing.xl),
                       _LeaderboardSection(leaderboardAsync: leaderboardAsync),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: AppSpacing.xl),
                       _FeedSection(feedAsync: feedAsync),
                     ]),
                   ),
@@ -206,7 +221,7 @@ class _TopBar extends StatelessWidget {
             gradient: const LinearGradient(
               colors: [AppColors.signalOrange, AppColors.orange200],
             ),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.md),
             boxShadow: [
               BoxShadow(
                 color: AppColors.signalOrange.withAlpha(80),
@@ -272,7 +287,7 @@ class _GreetingCard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [Color(0xFF1F2937), Color(0xFF0F172A)],
         ),
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(AppRadius.xl),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withAlpha(36),
@@ -300,7 +315,7 @@ class _GreetingCard extends StatelessWidget {
                 _WeatherPill(weather: firstWeather, dark: true),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             userName,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -308,7 +323,7 @@ class _GreetingCard extends StatelessWidget {
                   fontWeight: FontWeight.w800,
                 ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             openTracks > 0
                 ? 'Oggi risultano $openTracks piste aperte su PitLap.'
@@ -345,17 +360,17 @@ class _WeatherStrip extends StatelessWidget {
         const _SectionTitle(
           title: 'Meteo alle tue piste',
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.sm),
         SizedBox(
-          height: 112,
+          height: 140,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: items.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.sm),
             itemBuilder: (context, index) {
               final item = items[index];
               return SizedBox(
-                width: 156,
+                width: 158,
                 child: _WeatherCard(weather: item),
               );
             },
@@ -373,53 +388,161 @@ class _WeatherCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _weatherColor(weather);
+    final p = _weatherPalette(weather);
+    final rain = weather.precipitationProbability;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.panel,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.borderSubtle),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [p.top, p.bottom],
+        ),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            weather.city,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: AppColors.steel,
-                  fontWeight: FontWeight.w700,
-                ),
-          ),
-          const Spacer(),
           Row(
             children: [
-              Text(
-                weather.temperatureC == null ? '--' : '${weather.temperatureC}°',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: AppColors.graphite,
-                      fontWeight: FontWeight.w800,
-                    ),
+              Expanded(
+                child: Text(
+                  weather.city,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: p.soft,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
               ),
-              const Spacer(),
-              Icon(_weatherIcon(weather), color: color, size: 28),
+              Icon(_weatherIcon(weather), color: p.accent, size: 30),
             ],
           ),
+          const Spacer(),
+          Text(
+            weather.temperatureC == null ? '--' : '${weather.temperatureC}°',
+            style: TextStyle(
+              color: p.strong,
+              fontWeight: FontWeight.w800,
+              fontSize: 32,
+              height: 1.0,
+            ),
+          ),
+          const SizedBox(height: 2),
           Text(
             weather.trackName,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: AppColors.graphite,
+                  color: p.strong,
                   fontWeight: FontWeight.w800,
                 ),
           ),
+          if (rain != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: p.chipBg,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.water_drop_outlined, size: 13, color: p.chipText),
+                    const SizedBox(width: 4),
+                    Text(
+                      '$rain%',
+                      style: TextStyle(
+                        color: p.chipText,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
+}
+
+/// Colori della card meteo in base alla condizione (weatherCode + pioggia).
+class _WeatherPalette {
+  const _WeatherPalette({
+    required this.top,
+    required this.bottom,
+    required this.accent,
+    required this.strong,
+    required this.soft,
+    required this.chipBg,
+    required this.chipText,
+  });
+
+  final Color top;
+  final Color bottom;
+  final Color accent;
+  final Color strong;
+  final Color soft;
+  final Color chipBg;
+  final Color chipText;
+}
+
+_WeatherPalette _weatherPalette(HomeTrackWeather weather) {
+  final code = weather.weatherCode;
+  final rain = weather.precipitationProbability ?? 0;
+  // Pioggia / rovesci → teal-verde acqua
+  if (code >= 60 || rain >= 65) {
+    return const _WeatherPalette(
+      top: Color(0xFFE1F5EE),
+      bottom: Color(0xFF9FE1CB),
+      accent: Color(0xFF1D9E75),
+      strong: Color(0xFF085041),
+      soft: Color(0xFF0F6E56),
+      chipBg: Color(0xFF7FD3B6),
+      chipText: Color(0xFF04342C),
+    );
+  }
+  // Nebbia → grigio
+  if (code >= 45) {
+    return const _WeatherPalette(
+      top: Color(0xFFF1EFE8),
+      bottom: Color(0xFFD3D1C7),
+      accent: Color(0xFF5F5E5A),
+      strong: Color(0xFF2C2C2A),
+      soft: Color(0xFF5F5E5A),
+      chipBg: Color(0xFFC4C2B8),
+      chipText: Color(0xFF2C2C2A),
+    );
+  }
+  // Nuvoloso → azzurro
+  if (code >= 3 || rain >= 35) {
+    return const _WeatherPalette(
+      top: Color(0xFFE6F1FB),
+      bottom: Color(0xFFB5D4F4),
+      accent: Color(0xFF378ADD),
+      strong: Color(0xFF0C447C),
+      soft: Color(0xFF185FA5),
+      chipBg: Color(0xFF9CC6EF),
+      chipText: Color(0xFF042C53),
+    );
+  }
+  // Sereno → ambra calda
+  return const _WeatherPalette(
+    top: Color(0xFFFCEFD6),
+    bottom: Color(0xFFF8C66B),
+    accent: Color(0xFFBA7517),
+    strong: Color(0xFF633806),
+    soft: Color(0xFF854F0B),
+    chipBg: Color(0xFFF3B44E),
+    chipText: Color(0xFF412402),
+  );
 }
 
 class _PitcoinStrip extends StatelessWidget {
@@ -502,16 +625,16 @@ class _NearbyMapPreview extends StatelessWidget {
           title: 'Vicino a te',
           actionLabel: 'mappa intera',
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.sm),
         InkWell(
           onTap: () => context.push('/spots/map'),
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
           child: Container(
             height: 170,
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               color: const Color(0xFFE8F7FB),
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
               border: Border.all(color: AppColors.borderSubtle),
               boxShadow: [
                 BoxShadow(
@@ -550,7 +673,7 @@ class _NearbyMapPreview extends StatelessWidget {
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: Colors.white.withAlpha(238),
-                        borderRadius: BorderRadius.circular(18),
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withAlpha(18),
@@ -566,7 +689,7 @@ class _NearbyMapPreview extends StatelessWidget {
                             height: 44,
                             decoration: BoxDecoration(
                               color: AppColors.wetBlue.withAlpha(26),
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
                             ),
                             child: const Icon(
                               Icons.add_location_alt_outlined,
@@ -670,11 +793,13 @@ class _MiniMapBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(painter: _MiniMapPainter());
+    return const CustomPaint(painter: _MiniMapPainter());
   }
 }
 
 class _MiniMapPainter extends CustomPainter {
+  const _MiniMapPainter();
+
   @override
   void paint(Canvas canvas, Size size) {
     final background = Paint()..color = const Color(0xFFE6F7FB);
@@ -770,15 +895,15 @@ class _BuildOfWeekSection extends StatelessWidget {
           actionLabel: 'tutte le build',
           onActionTap: () => context.push('/builds'),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.sm),
         InkWell(
           onTap: () => context.push('/builds'),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
           child: Container(
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               color: const Color(0xFF111827),
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withAlpha(34),
@@ -823,7 +948,7 @@ class _BuildOfWeekSection extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFFBBF24),
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                             boxShadow: [
                               BoxShadow(
                                 color: const Color(0xFFFBBF24).withAlpha(80),
@@ -875,7 +1000,7 @@ class _BuildOfWeekSection extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                             ),
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: AppSpacing.md),
                       Row(
                         children: [
                           _DarkStatIcon(
@@ -951,11 +1076,13 @@ class _BuildHeroFallback extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(painter: _BuildHeroPainter());
+    return const CustomPaint(painter: _BuildHeroPainter());
   }
 }
 
 class _BuildHeroPainter extends CustomPainter {
+  const _BuildHeroPainter();
+
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
@@ -1092,7 +1219,7 @@ class _QuickActions extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: actions.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final action = actions[index];
           return ActionChip(
@@ -1122,62 +1249,6 @@ class _QuickAction {
   final String route;
 }
 
-class _ComingSoonStories extends StatelessWidget {
-  const _ComingSoonStories();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const _SectionTitle(
-          title: 'Live ai box',
-          actionLabel: 'Arriva presto',
-        ),
-        const SizedBox(height: 10),
-        _SurfaceCard(
-          child: Row(
-            children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: AppColors.orange50,
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: const Icon(
-                  Icons.groups_2_outlined,
-                  color: AppColors.signalOrange,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Arriva presto',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: AppColors.graphite,
-                            fontWeight: FontWeight.w800,
-                          ),
-                    ),
-                    Text(
-                      'Mostreremo solo presenze reali e privacy-safe quando il contratto dati sara pronto.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.steel,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class _FeaturedTrackCard extends StatelessWidget {
   const _FeaturedTrackCard({required this.track});
@@ -1190,15 +1261,15 @@ class _FeaturedTrackCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _SectionTitle(title: 'Pista del giorno'),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.sm),
         InkWell(
           onTap: () => context.push('/track/${track.slug}'),
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
           child: Container(
             height: 250,
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -1223,7 +1294,7 @@ class _FeaturedTrackCard extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                       ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
                 Text(
                   [
                     if (track.city.isNotEmpty) track.city,
@@ -1352,13 +1423,13 @@ class _TrendingTracksSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _SectionTitle(title: 'Piste in trend'),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.sm),
         SizedBox(
           height: 160,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: tracks.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.sm),
             itemBuilder: (context, index) {
               return _TrendingTrackTile(track: tracks[index]);
             },
@@ -1378,13 +1449,13 @@ class _TrendingTrackTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => context.push('/track/${track.slug}'),
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(AppRadius.lg),
       child: Container(
         width: 210,
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppColors.panel,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
           border: Border.all(color: AppColors.borderSubtle),
         ),
         child: Column(
@@ -1406,7 +1477,7 @@ class _TrendingTrackTile extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             Text(
               track.name,
               maxLines: 2,
@@ -1453,7 +1524,7 @@ class _LeaderboardSection extends StatelessWidget {
           actionLabel: 'tutti i profili',
           onActionTap: () => context.push('/profiles'),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.sm),
         if (!hasScores)
           const _EmptyStateCard(
             icon: Icons.emoji_events_outlined,
@@ -1494,13 +1565,13 @@ class _LeaderboardSection extends StatelessWidget {
   }
 }
 
-class _FeedSection extends StatelessWidget {
+class _FeedSection extends ConsumerWidget {
   const _FeedSection({required this.feedAsync});
 
   final AsyncValue<List<ActivityFeedItem>> feedAsync;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final items = feedAsync.maybeWhen(
       data: (value) => value,
       orElse: () => const <ActivityFeedItem>[],
@@ -1510,14 +1581,19 @@ class _FeedSection extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    // Carica i conteggi commenti in batch per ogni tipo, evitando N+1.
+    // Raggruppa gli id per tipo di entità.
+    final visible = items.take(8).toList();
+    _triggerBatchCounts(ref, visible);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _SectionTitle(
           title: 'Novita dalla community',
         ),
-        const SizedBox(height: 12),
-        ...items.take(8).map(
+        const SizedBox(height: AppSpacing.md),
+        ...visible.map(
               (item) => Padding(
                 padding: const EdgeInsets.only(bottom: 14),
                 child: _ActivityCard(item: item),
@@ -1526,15 +1602,32 @@ class _FeedSection extends StatelessWidget {
       ],
     );
   }
+
+  /// Raggruppa gli id per tipo e chiama loadBatch una volta per tipo.
+  static void _triggerBatchCounts(WidgetRef ref, List<ActivityFeedItem> items) {
+    final byType = <String, List<String>>{};
+    for (final item in items) {
+      final entityType = _feedItemEntityType(item);
+      final entityId = _feedItemEntityId(item);
+      if (entityType != null && entityId != null && entityId.isNotEmpty) {
+        byType.putIfAbsent(entityType, () => []).add(entityId);
+      }
+    }
+    for (final entry in byType.entries) {
+      ref
+          .read(commentCountsBatchProvider(entry.key).notifier)
+          .loadBatch(entry.value);
+    }
+  }
 }
 
-class _ActivityCard extends StatelessWidget {
+class _ActivityCard extends ConsumerWidget {
   const _ActivityCard({required this.item});
 
   final ActivityFeedItem item;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final accent = _eventColor(item.eventType);
     final imageSource = item.primaryImageUrl;
     final meta = [
@@ -1542,14 +1635,23 @@ class _ActivityCard extends StatelessWidget {
       _relativeTimeLabel(item.createdAt),
     ].join(' - ');
 
+    // Conteggio commenti reale dalla cache batch.
+    final entityType = _feedItemEntityType(item);
+    final entityId = _feedItemEntityId(item);
+    final commentCount = (entityType != null && entityId != null)
+        ? ref.watch(commentCountForProvider(
+            CommentsKey(entityType: entityType, entityId: entityId),
+          ))
+        : 0;
+
     return InkWell(
       onTap: () => _openActivity(context, item),
-      borderRadius: BorderRadius.circular(22),
+      borderRadius: BorderRadius.circular(AppRadius.xl),
       child: Container(
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           color: AppColors.panel,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
           border: Border.all(color: AppColors.borderSubtle),
           boxShadow: [
             BoxShadow(
@@ -1636,7 +1738,7 @@ class _ActivityCard extends StatelessWidget {
                       _SmallPill(label: _eventLabel(item.eventType), color: accent),
                     ],
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: AppSpacing.md),
                   Text(
                     item.title,
                     maxLines: 2,
@@ -1657,7 +1759,7 @@ class _ActivityCard extends StatelessWidget {
                           ),
                     ),
                   ],
-                  const SizedBox(height: 14),
+                  const SizedBox(height: AppSpacing.md),
                   Row(
                     children: [
                       FilledButton(
@@ -1696,22 +1798,27 @@ class _ActivityCard extends StatelessWidget {
               child: Row(
                 children: [
                   _ActivityMetaIcon(
-                    icon: Icons.favorite_outline,
-                    label: '0',
-                    color: const Color(0xFFE11D48),
-                  ),
-                  const SizedBox(width: 16),
-                  _ActivityMetaIcon(
                     icon: Icons.chat_bubble_outline,
-                    label: '0 commenti',
+                    label: commentCount == 0
+                        ? 'Commenta'
+                        : commentCount == 1
+                            ? '1 commento'
+                            : '$commentCount commenti',
                     color: AppColors.steel,
+                    onTap: () => _openActivity(context, item),
                   ),
                   const Spacer(),
-                  _ActivityMetaIcon(
-                    icon: Icons.north_east,
-                    label: 'condividi',
-                    color: AppColors.steel,
-                  ),
+                  if (entityType != null && entityId != null)
+                    _ActivityMetaIcon(
+                      icon: Icons.ios_share_outlined,
+                      label: 'Condividi',
+                      color: AppColors.steel,
+                      onTap: () => shareEntity(
+                        context: context,
+                        entityType: entityType,
+                        entityId: _feedItemShareId(item),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -1789,15 +1896,17 @@ class _ActivityMetaIcon extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.color,
+    this.onTap,
   });
 
   final IconData icon;
   final String label;
   final Color color;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final row = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 17, color: color),
@@ -1811,6 +1920,8 @@ class _ActivityMetaIcon extends StatelessWidget {
         ),
       ],
     );
+    if (onTap == null) return row;
+    return GestureDetector(onTap: onTap, child: row);
   }
 }
 
@@ -1934,7 +2045,7 @@ class _MetricCard extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(11, compact ? 9 : 11, 11, compact ? 9 : 11),
           decoration: BoxDecoration(
             color: AppColors.panel,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.md),
             border: Border.all(color: AppColors.borderSubtle),
           ),
           child: Column(
@@ -1991,7 +2102,7 @@ class _SurfaceCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.panel,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(color: AppColors.borderSubtle),
       ),
       child: child,
@@ -2059,24 +2170,25 @@ class _SectionTitle extends StatelessWidget {
     return Row(
       children: [
         Text(
-          title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          title.toUpperCase(),
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 color: AppColors.graphite,
                 fontWeight: FontWeight.w800,
+                letterSpacing: 0.8,
               ),
         ),
         const Spacer(),
         if (actionLabel != null)
           InkWell(
             onTap: onActionTap,
-            borderRadius: BorderRadius.circular(999),
+            borderRadius: BorderRadius.circular(AppRadius.pill),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               child: Text(
                 actionLabel!,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: AppColors.signalOrange,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                     ),
               ),
             ),
@@ -2097,7 +2209,7 @@ class _DarkPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.white.withAlpha(28),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
         border: Border.all(color: Colors.white24),
       ),
       child: Text(
@@ -2126,7 +2238,7 @@ class _SmallPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withAlpha(24),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Text(
         label,
@@ -2159,7 +2271,7 @@ class _WeatherPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
         border: Border.all(
           color: dark ? Colors.white24 : AppColors.borderSubtle,
         ),
@@ -2252,15 +2364,6 @@ Color _eventColor(String eventType) {
   };
 }
 
-IconData _eventIcon(String eventType) {
-  return switch (eventType) {
-    'community_event' => Icons.groups_2_outlined,
-    'track_event' => Icons.event_outlined,
-    'new_spot' => Icons.add_location_alt_outlined,
-    'track_status' => Icons.flag_outlined,
-    _ => Icons.notifications_none_outlined,
-  };
-}
 
 String _eventLabel(String eventType) {
   return switch (eventType) {
@@ -2360,4 +2463,38 @@ void _openActivity(BuildContext context, ActivityFeedItem item) {
   if (item.actorSlug != null && item.actorSlug!.isNotEmpty) {
     context.push('/track/${item.actorSlug}');
   }
+}
+
+/// Mappa un item feed al tipo entità usato in entity_comments.
+/// Restituisce null per tipi senza commenti.
+String? _feedItemEntityType(ActivityFeedItem item) {
+  return switch (item.eventType) {
+    'track_status' || 'track_event' => 'track',
+    'community_event' => 'event',
+    'new_spot' => 'spot',
+    _ => null,
+  };
+}
+
+/// Restituisce l'entity_id (UUID) per conteggi commenti.
+/// Per track/spot usa actorId (UUID dal DB); per eventi usa il payload event_id.
+String? _feedItemEntityId(ActivityFeedItem item) {
+  if (item.eventType == 'community_event') {
+    final id = item.payload['event_id'] as String?;
+    return (id != null && id.isNotEmpty) ? id : null;
+  }
+  return item.actorId.isNotEmpty ? item.actorId : null;
+}
+
+/// Restituisce l'id da passare a shareEntity (slug per track/spot, uuid per event).
+String _feedItemShareId(ActivityFeedItem item) {
+  if (item.eventType == 'community_event') {
+    return (item.payload['event_id'] as String?) ?? item.actorId;
+  }
+  // Per track e spot, buildEntityLink usa lo slug nel path.
+  // actorSlug è lo slug disponibile; se manca, fallback all'actorId.
+  if (item.actorSlug != null && item.actorSlug!.isNotEmpty) {
+    return item.actorSlug!;
+  }
+  return item.actorId;
 }

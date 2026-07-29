@@ -1,182 +1,195 @@
-# Terms of Service
+# Termini di Servizio
 
-Stato: bozza avanzata da validare con supporto legale prima della pubblicazione.
+**Versione: 1.0 — in vigore dal 2026-06-03**
+**Ultimo aggiornamento: 2026-06-03**
 
-Data efficacia: `2026-04-08`
-
-Versione documento: `2026-04-08-draft`
+---
 
 ## 1. Oggetto del servizio
 
-PitLap e' una piattaforma digitale dedicata al modellismo e alle attivita' collegate, con funzioni che possono includere:
+PitLap (pitlap.app) è una piattaforma digitale dedicata alla community del modellismo radiocomandato (RC). Il servizio è gestito da:
 
-- consultazione di piste, negozi ed eventi
-- indicazione di presenza in pista
-- gestione di profilo, garage e contenuti utente
+**Giuseppe [COGNOME — DA COMPLETARE]**
+Comune di Rho (MI), Italia
+Email: privacy@pitlap.app
+
+Il servizio comprende, a seconda delle funzionalità disponibili nella versione corrente:
+
+- consultazione di piste, negozi, eventi e contenuti informativi
+- check-in "Sto arrivando": segnalazione della presenza giornaliera in pista
+- gestione di profilo utente, garage e contenuti pubblicati
+- sistema di follow e reputazione PitCoin
 - strumenti per organizzatori, negozi e amministratori
 
-Il servizio puo' evolvere nel tempo e alcune funzioni possono essere disponibili solo in determinate versioni, ambienti o aree geografiche.
+PitLap è attualmente in fase di **beta chiusa su invito**. Il servizio può evolvere nel tempo e alcune funzionalità possono essere disponibili solo in determinate versioni o ambienti.
+
+---
 
 ## 2. Accettazione dei termini
 
-L'uso di PitLap richiede l'accettazione dei presenti Termini di Servizio.
+L'uso di PitLap richiede l'accettazione dei presenti Termini di Servizio e la presa visione dell'Informativa Privacy. Entrambe le azioni sono registrate al primo accesso con timestamp e versione del documento.
 
-Se l'utente non accetta i termini, non deve usare le funzionalita' che richiedono autenticazione o contribuzione di contenuti.
+Se l'utente non accetta i presenti termini, non deve utilizzare le funzionalità che richiedono autenticazione.
 
-## 3. Accesso e account
+---
 
-L'accesso puo' avvenire tramite email e magic link oppure altri sistemi che potranno essere introdotti in futuro.
+## 3. Requisiti di accesso — età minima
 
-L'utente e' responsabile:
+L'accesso a PitLap è riservato a persone che abbiano compiuto **14 anni di età**, in conformità all'art. 8 del GDPR e all'art. 2-quinquies del D.Lgs. 196/2003.
 
-- della correttezza di base dei dati che inserisce
-- della custodia del proprio accesso e dei link di autenticazione
-- dell'uso del servizio in conformita' ai presenti termini
+**Non è ammessa la registrazione di utenti di età inferiore a 14 anni.** L'utente, al momento dell'accettazione dei presenti termini, dichiara di soddisfare tale requisito. Se il titolare dovesse accertare che un utente è minore di 14 anni, l'account sarà sospeso e i dati cancellati.
 
-PitLap puo' adottare misure di sicurezza aggiuntive, limitazioni tecniche o controlli di accesso per proteggere il servizio e gli utenti.
+---
 
-## 4. Requisiti di utilizzo
+## 4. Account e accesso
+
+L'accesso avviene tramite email e magic link. L'utente è responsabile:
+
+- della veridicità dei dati forniti in sede di registrazione e profilo
+- della custodia del proprio accesso e dei link di autenticazione ricevuti via email
+- di non condividere l'accesso con terzi
+- dell'utilizzo del servizio in conformità ai presenti termini e alle leggi applicabili
+
+PitLap può adottare misure di sicurezza aggiuntive, limitazioni tecniche o controlli di accesso per proteggere il servizio e gli utenti.
+
+---
+
+## 5. Regole di utilizzo
 
 L'utente si impegna a:
 
-- usare il servizio in modo lecito, corretto e rispettoso
-- non impersonare altre persone o organizzazioni
+- usare il servizio in modo lecito, corretto e rispettoso degli altri utenti e della community
+- non impersonare altre persone, negozi, organizzazioni o entità
 - non pubblicare dati palesemente falsi, fuorvianti o dannosi
 - non usare il servizio per spam, scraping abusivo, molestie o attacchi tecnici
-- non tentare di aggirare permessi, ruoli, limiti o controlli di sicurezza
+- non tentare di aggirare permessi, ruoli, limiti di accesso o controlli di sicurezza
+- non pubblicare contenuti che violino diritti di terzi (inclusi diritti d'autore e diritti all'immagine)
+- non pubblicare contenuti offensivi, diffamatori, discriminatori o illegali
 
-## 5. Contenuti utente
+---
 
-L'utente puo' inserire o rendere disponibili contenuti quali:
+## 6. Contenuti utente
 
-- nome visibile e dati profilo
+L'utente può inserire o rendere disponibili contenuti quali:
+
+- nome visibile, nickname e dati profilo
 - garage, build, immagini e descrizioni
-- eventi
-- segnalazioni di luoghi
-- contenuti riferiti a piste o negozi, se il ruolo o i permessi lo consentono
+- eventi, piste, negozi, spot e link
 
-L'utente resta responsabile dei contenuti che inserisce e dichiara di avere i diritti necessari per pubblicarli.
+L'utente dichiara di essere l'autore dei contenuti inseriti o di avere i diritti necessari per pubblicarli, e resta l'unico responsabile degli stessi.
 
-Quando un contenuto viene marcato come pubblico, esso puo' essere mostrato secondo le regole di visibilita' del prodotto, che possono includere limitazioni come la visione solo da parte di utenti autenticati.
+Caricando contenuti su PitLap, l'utente concede al titolare una licenza non esclusiva, gratuita e trasferibile ai sub-fornitori tecnici nella misura necessaria all'erogazione del servizio (es. hosting, visualizzazione, indicizzazione interna). Tale licenza ha durata pari alla pubblicazione del contenuto e cessa con la sua rimozione da parte dell'utente o con la cancellazione dell'account.
 
-## 6. Profili, garage e visibilita'
+Quando un contenuto viene marcato come pubblico, esso può essere mostrato ad altri utenti autenticati secondo le regole di visibilità del prodotto.
 
-PitLap puo' distinguere tra:
+---
 
-- dati account privati
-- profilo utente
-- garage personale
-- contenuti pubblici o semi-pubblici
+## 7. Profili, garage e visibilità
 
-La visibilita' di profili, garage, build o altri contenuti puo' dipendere da:
+PitLap distingue tra dati account privati, profilo utente, garage personale e contenuti pubblici.
 
-- scelta dell'utente
-- ruolo dell'account
-- permessi applicativi
-- moderazione o policy del prodotto
+Per impostazione predefinita:
 
-La semplice disponibilita' tecnica di un contenuto non implica che esso sia visibile pubblicamente senza restrizioni.
+- il profilo pubblico è disattivato
+- il garage rimane privato
+- singole build o contenuti possono essere resi pubblici solo su scelta esplicita dell'utente
 
-## 7. Eventi, piste e negozi
+La semplice disponibilità tecnica di un contenuto non implica che esso sia visibile pubblicamente senza restrizioni.
 
-Le informazioni su piste, negozi ed eventi possono essere:
+---
 
-- inserite da PitLap
-- inserite o aggiornate da gestori autorizzati
-- proposte o create dagli utenti, nei limiti consentiti dal prodotto
+## 8. Piste, negozi ed eventi
 
-PitLap non garantisce che ogni informazione sia sempre completa, aggiornata o priva di errori.
+Le informazioni su piste, negozi ed eventi possono essere inserite da PitLap, da gestori autorizzati o proposte dagli utenti nei limiti consentiti dal prodotto.
 
-L'utente deve usare normale prudenza prima di spostarsi, partecipare a un evento, acquistare beni o fare affidamento operativo sui dati presenti.
+PitLap non garantisce che ogni informazione sia sempre completa, aggiornata o priva di errori. L'utente deve usare normale prudenza prima di spostarsi, partecipare a un evento o fare affidamento operativo sui dati presenti nel servizio.
 
-## 8. Moderazione e enforcement
+---
 
-PitLap puo' limitare, nascondere, modificare, sospendere o rimuovere contenuti e account se ritiene, in buona fede, che vi siano:
+## 9. Moderazione e enforcement
 
-- violazioni di legge
-- violazioni dei presenti termini
+PitLap può limitare, nascondere, modificare, sospendere o rimuovere contenuti e account qualora ritenga, in buona fede, che vi siano:
+
+- violazioni di legge o dei presenti termini
 - contenuti lesivi, ingannevoli, diffamatori o manifestamente inappropriati
 - uso improprio degli strumenti community
 - rischi per il servizio, gli utenti o soggetti terzi
 
-Nei limiti ragionevoli e compatibili con la sicurezza del servizio, PitLap puo' mostrare messaggi informativi o motivazioni sintetiche delle azioni intraprese.
+Nei limiti ragionevoli e compatibili con la sicurezza del servizio, PitLap può fornire informazioni sintetiche sulle azioni intraprese.
 
-## 9. Ruoli e permessi
+---
 
-PitLap puo' prevedere ruoli diversi, inclusi a titolo esemplificativo:
+## 10. Ruoli e permessi
 
-- utente registrato
-- negozio
-- organizzatore pista
-- amministratore
+PitLap può prevedere ruoli distinti, tra cui a titolo esemplificativo: utente registrato, negozio, organizzatore pista, amministratore. I permessi legati a un ruolo non sono assoluti e possono dipendere da relazioni di ownership, approvazione o moderazione.
 
-I permessi legati a un ruolo non sono assoluti e possono dipendere anche da relazioni di ownership, approvazione o moderazione.
+---
 
-## 10. Disponibilita' del servizio
+## 11. Disponibilità del servizio
 
-PitLap e' fornito su base "as is" e "as available", nei limiti consentiti dalla legge applicabile.
+Il servizio è fornito in base al principio "così com'è" ("as is") e "nei limiti della disponibilità" ("as available"), nella misura consentita dalla legge applicabile.
 
-Il servizio puo':
+Il servizio può subire interruzioni, modifiche alle funzionalità, errori o dati incompleti. PitLap farà quanto ragionevolmente possibile per mantenere il servizio utile e affidabile, ma non garantisce disponibilità continua o assenza totale di errori.
 
-- subire interruzioni
-- cambiare funzionalita'
-- avere errori o dati incompleti
-- essere aggiornato, sospeso o parzialmente disattivato
+Essendo il servizio in fase di beta chiusa, l'utente accetta che possano verificarsi instabilità, perdite di dati o modifiche sostanziali alle funzionalità durante questo periodo.
 
-PitLap fara' quanto ragionevolmente possibile per mantenere il servizio utile e affidabile, ma non garantisce disponibilita' continua o assenza totale di errori.
+---
 
-## 11. Servizi terzi e dati esterni
+## 12. Servizi terzi
 
-Il servizio puo' integrare fornitori terzi, ad esempio per:
+Il servizio integra fornitori terzi per autenticazione, backend, mappe, geocoding, meteo e storage (si veda l'Informativa Privacy per i dettagli). PitLap non controlla integralmente i servizi terzi e non risponde direttamente di eventuali indisponibilità, errori o modifiche introdotte da tali fornitori.
 
-- autenticazione e backend infrastrutturale
-- meteo
-- mappe o geolocalizzazione
-- storage e media
+---
 
-PitLap non controlla integralmente i servizi terzi e non risponde direttamente di eventuali indisponibilita', errori o cambiamenti introdotti da tali fornitori.
+## 13. Limitazione di responsabilità
 
-## 12. Limitazione di responsabilita'
+Nei limiti massimi consentiti dalla legge applicabile, e fatte salve le responsabilità inderogabili previste dalla normativa a tutela dei consumatori (D.Lgs. 206/2005 — Codice del Consumo), PitLap non è responsabile per danni indiretti, perdita di opportunità, mancata partecipazione a eventi, errori di dati o decisioni operative prese esclusivamente sulla base delle informazioni presenti nel servizio.
 
-Nei limiti massimi consentiti dalla legge applicabile, PitLap non e' responsabile per danni indiretti, perdita di opportunita', mancata partecipazione a eventi, errori di dati o decisioni operative prese esclusivamente sulla base delle informazioni presenti nel servizio.
+Questa clausola non esclude né limita responsabilità che non possano essere escluse per legge.
 
-Questa clausola non esclude o limita responsabilita' che non possano essere escluse per legge.
+---
 
-## 13. Chiusura, sospensione e cancellazione account
+## 14. Chiusura, sospensione e cancellazione dell'account
 
-L'utente puo' richiedere la chiusura del proprio account tramite gli strumenti messi a disposizione dal prodotto o tramite i canali di contatto indicati nei documenti ufficiali.
+L'utente può richiedere la cancellazione del proprio account in qualsiasi momento tramite la funzione in-app **"Richiedi cancellazione account"** o scrivendo a privacy@pitlap.app.
 
-PitLap puo' sospendere o chiudere account in caso di:
+I dati dell'account vengono conservati per 30 giorni dalla richiesta, al termine dei quali vengono eliminati in modo definitivo, salvo obblighi di legge.
 
-- violazione dei termini
-- abuso del servizio
-- rischio tecnico o legale rilevante
-- richieste provenienti da autorita' competenti o obblighi normativi
+PitLap può sospendere o chiudere account in caso di: violazione dei termini, abuso del servizio, rischio tecnico o legale rilevante, richieste di autorità competenti o obblighi normativi.
 
-## 14. Modifiche ai termini
+---
 
-PitLap puo' aggiornare i presenti termini.
+## 15. Modifiche ai termini
 
-Le versioni effettive dovranno riportare almeno:
+PitLap può aggiornare i presenti termini. Le modifiche rilevanti saranno comunicate tramite avviso in-app o email con congruo preavviso. Continuando a utilizzare il servizio dopo la data di efficacia della nuova versione, l'utente accetta le modifiche apportate.
 
-- data di efficacia
-- versione del documento
-- storico sintetico delle modifiche rilevanti
+Ogni versione riporta la data di efficacia e il numero di versione.
 
-Per modifiche particolarmente rilevanti, potra' essere richiesta una nuova accettazione o potra' essere dato apposito avviso.
+---
 
-## 15. Legge applicabile e foro
+## 16. Legge applicabile e foro competente
 
-Questa sezione va completata prima della pubblicazione con:
+I presenti Termini di Servizio sono disciplinati dalla **legge italiana**.
 
-- soggetto giuridico titolare del servizio
-- legge applicabile
-- eventuale foro competente
+Per le controversie con i **consumatori** (ai sensi del D.Lgs. 206/2005 — Codice del Consumo), è competente il **foro del luogo di residenza o domicilio del consumatore**, secondo quanto previsto dall'art. 66-bis del Codice del Consumo (foro inderogabile a favore del consumatore).
 
-## 16. Contatti
+Per ogni altra controversia (es. utenti professionali, operatori) è competente in via esclusiva il **Foro di Milano**.
 
-Questa sezione va completata prima della pubblicazione con:
+L'utente consumatore ha altresì la facoltà di ricorrere alle procedure di risoluzione alternativa delle controversie (ADR/ODR) ai sensi del D.Lgs. 130/2015 e del Regolamento UE 524/2013. La piattaforma ODR europea è accessibile su: [https://ec.europa.eu/consumers/odr](https://ec.europa.eu/consumers/odr).
 
-- ragione sociale o nome del titolare
-- email di contatto legale/assistenza
-- eventuale indirizzo sede
+---
+
+## 17. Contatti
+
+Per assistenza, segnalazioni o qualunque comunicazione relativa al servizio:
+
+**Giuseppe [COGNOME — DA COMPLETARE]**
+Comune di Rho (MI), Italia
+Email: privacy@pitlap.app
+Sito: pitlap.app
+
+---
+
+*PitLap — pitlap.app*
+*Versione: 1.0 — in vigore dal 2026-06-03*
+*Ultimo aggiornamento: 2026-06-03*

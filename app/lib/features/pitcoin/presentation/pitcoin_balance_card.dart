@@ -46,7 +46,7 @@ class PitcoinBalanceCard extends ConsumerWidget {
                   const SizedBox(height: 6),
                   balanceAsync.when(
                     loading: () => const _LoadingTotal(),
-                    error: (_, __) => Text(
+                    error: (_, _) => Text(
                       '—',
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: Colors.white,
@@ -77,7 +77,7 @@ class PitcoinBalanceCard extends ConsumerWidget {
                     children: [
                       deltaAsync.when(
                         loading: () => const SizedBox.shrink(),
-                        error: (_, __) => const SizedBox.shrink(),
+                        error: (_, _) => const SizedBox.shrink(),
                         data: (delta) {
                           if (delta <= 0) return const SizedBox.shrink();
                           return Padding(
@@ -128,7 +128,7 @@ class PitcoinBalanceCompact extends ConsumerWidget {
 
     return balanceAsync.when(
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
       data: (balance) {
         if (balance == null) return const SizedBox.shrink();
         return Container(

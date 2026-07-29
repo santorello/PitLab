@@ -16,6 +16,7 @@ class TrackDetail {
     required this.availableServices,
     required this.availableServiceKeys,
     this.categoryKeys = const [],
+    this.imageUrl,
   });
 
   final String id;
@@ -36,6 +37,9 @@ class TrackDetail {
 
   /// Chiavi categoria reali da track_category_links → track_categories.key
   final List<String> categoryKeys;
+
+  /// URL cover/copertina (tracks.image_url).
+  final String? imageUrl;
 
   factory TrackDetail.fromMap(
     Map<String, dynamic> map, {
@@ -109,6 +113,7 @@ class TrackDetail {
               .toList()
           : const [],
       categoryKeys: parsedCategoryKeys,
+      imageUrl: map['image_url'] as String?,
     );
   }
 }

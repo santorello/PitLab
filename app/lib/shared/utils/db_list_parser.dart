@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:pitlap_app/app/bootstrap/error_reporting.dart';
+
 List<String> parseDbStringList(dynamic value) {
   if (value == null) return const [];
 
@@ -24,7 +26,8 @@ List<String> parseDbStringList(dynamic value) {
             .where((item) => item.isNotEmpty)
             .toList();
       }
-    } catch (_) {
+    } catch (e, st) {
+      AppErrorReporter.report(e, st, context: 'db_list_parser');
       // Non-JSON strings can still be plain text specs or Postgres arrays.
     }
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:pitlap_app/app/bootstrap/error_reporting.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/local_image_data_url.dart';
@@ -52,6 +53,17 @@ class AdaptiveImage extends StatelessWidget {
       cacheWidth: 1200,
       filterQuality: FilterQuality.medium,
       errorBuilder: (context, error, stackTrace) => fallback,
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded) {
+          return child;
+        }
+        return AnimatedOpacity(
+          opacity: frame == null ? 0.0 : 1.0,
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+          child: child,
+        );
+      },
     );
   }
 
@@ -63,7 +75,8 @@ class AdaptiveImage extends StatelessWidget {
 
     try {
       return base64Decode(value.substring(commaIndex + 1));
-    } catch (_) {
+    } catch (e, st) {
+      AppErrorReporter.report(e, st, context: 'adaptive_image');
       return null;
     }
   }

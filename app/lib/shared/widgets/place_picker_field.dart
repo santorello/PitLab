@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:pitlap_app/app/bootstrap/error_reporting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -118,7 +119,8 @@ class _PlacePickerFieldState extends ConsumerState<PlacePickerField> {
         _loading = false;
         _suggestions = results;
       });
-    } catch (_) {
+    } catch (e, st) {
+      AppErrorReporter.report(e, st, context: 'place_picker_field');
       if (!mounted) {
         return;
       }

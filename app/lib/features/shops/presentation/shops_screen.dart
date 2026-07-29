@@ -11,6 +11,7 @@ import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/pill.dart';
 import '../../../shared/widgets/place_card.dart';
 import '../../auth/application/auth_providers.dart';
+import '../../pitcoin/providers/pitcoin_providers.dart';
 import '../application/public_shops_provider.dart';
 import '../application/shop_editor_providers.dart';
 import '../application/shop_follows_providers.dart';
@@ -214,6 +215,9 @@ class _ShopsScreenState extends ConsumerState<ShopsScreen> {
                     Future<void>.delayed(const Duration(milliseconds: 1500), () {
                       if (!context.mounted) return;
                       ref.invalidate(shopFollowerCountProvider(shop.id));
+                      // D13: aggiorna il saldo PitCoin dopo il follow negozio.
+                      ref.invalidate(effectiveUserPitcoinBalanceProvider);
+                      ref.invalidate(effectiveUserPitcoinRecentDeltaProvider);
                     });
                   },
                   onTap: () => context.go('/shop/${shop.slug}'),

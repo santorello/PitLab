@@ -413,7 +413,7 @@ class _SpotlightBanner extends StatelessWidget {
                             width: (constraints.maxWidth * 0.72).clamp(
                               220.0,
                               300.0,
-                            ) as double,
+                            ),
                             child: _SpotlightCard(
                               title: t.name,
                               body: t.statusMessage.isNotEmpty

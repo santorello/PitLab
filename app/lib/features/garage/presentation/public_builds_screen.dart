@@ -79,7 +79,7 @@ class _PublicBuildsScreenState extends ConsumerState<PublicBuildsScreen> {
                         mainAxisExtent: columns == 1 ? 360 : 380,
                       ),
                       itemBuilder: (context, index) {
-                        return _BuildMarketplaceCard(build: filtered[index]);
+                        return _BuildMarketplaceCard(listing: filtered[index]);
                       },
                     );
                   },
@@ -135,18 +135,18 @@ class _BuildsSummary extends StatelessWidget {
 }
 
 class _BuildMarketplaceCard extends StatelessWidget {
-  const _BuildMarketplaceCard({required this.build});
+  const _BuildMarketplaceCard({required this.listing});
 
-  final PublicBuildListing build;
+  final PublicBuildListing listing;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final canOpenAuthor = build.author?.hasPublicProfile == true;
+    final canOpenAuthor = listing.author?.hasPublicProfile == true;
 
     return InkWell(
       onTap: canOpenAuthor
-          ? () => context.push('/u/${build.author!.publicSlug}')
+          ? () => context.push('/u/${listing.author!.publicSlug}')
           : null,
       borderRadius: BorderRadius.circular(18),
       child: Ink(
@@ -167,7 +167,7 @@ class _BuildMarketplaceCard extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     AdaptiveImage(
-                      source: build.primaryImageUrl,
+                      source: listing.primaryImageUrl,
                       fit: BoxFit.cover,
                       fallback: const _BuildImageFallback(),
                     ),
@@ -186,7 +186,7 @@ class _BuildMarketplaceCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    build.title,
+                    listing.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleLarge?.copyWith(
@@ -196,11 +196,11 @@ class _BuildMarketplaceCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      _AuthorAvatar(author: build.author),
+                      _AuthorAvatar(author: listing.author),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          build.authorName,
+                          listing.authorName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodyMedium?.copyWith(
@@ -217,10 +217,10 @@ class _BuildMarketplaceCard extends StatelessWidget {
                         ),
                     ],
                   ),
-                  if (build.meta.trim().isNotEmpty) ...[
+                  if (listing.meta.trim().isNotEmpty) ...[
                     const SizedBox(height: 10),
                     Text(
-                      build.meta.trim(),
+                      listing.meta.trim(),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodyMedium?.copyWith(
@@ -228,10 +228,10 @@ class _BuildMarketplaceCard extends StatelessWidget {
                       ),
                     ),
                   ],
-                  if (build.specsLabel.isNotEmpty) ...[
+                  if (listing.specsLabel.isNotEmpty) ...[
                     const SizedBox(height: 10),
                     Text(
-                      build.specsLabel,
+                      listing.specsLabel,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(

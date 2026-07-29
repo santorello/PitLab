@@ -3416,6 +3416,18 @@ abstract class AppLocalizations {
   /// **'I cannot read this image. Try JPG, PNG, or WebP.'**
   String get imageUploadUnreadableMessage;
 
+  /// No description provided for @mediaUploadNotAuthenticated.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to upload images.'**
+  String get mediaUploadNotAuthenticated;
+
+  /// No description provided for @mediaUploadGenericError.
+  ///
+  /// In en, this message translates to:
+  /// **'Image upload failed. Please try again.'**
+  String get mediaUploadGenericError;
+
   /// No description provided for @eventsCreateDateLabel.
   ///
   /// In en, this message translates to:
@@ -3551,7 +3563,7 @@ abstract class AppLocalizations {
   /// No description provided for @garageBuildCreatedMessage.
   ///
   /// In en, this message translates to:
-  /// **'Build added locally to the garage.'**
+  /// **'Build added to the garage.'**
   String get garageBuildCreatedMessage;
 
   /// No description provided for @garageBuildUpdatedMessage.
@@ -3583,6 +3595,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count}/{max} images'**
   String garageBuildImagesCount(int count, int max);
+
+  /// No description provided for @garageUploadPhotosAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload photos'**
+  String get garageUploadPhotosAction;
 
   /// No description provided for @processingUploadImages.
   ///
@@ -3937,6 +3955,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'—'**
   String get pitcoinPointsZero;
+
+  /// No description provided for @trackEditorCategorySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Track category'**
+  String get trackEditorCategorySection;
+
+  /// No description provided for @trackEditorCategorySectionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the track type — used in search filters.'**
+  String get trackEditorCategorySectionBody;
+
+  /// No description provided for @trackEditorServicesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Available services'**
+  String get trackEditorServicesSection;
+
+  /// No description provided for @trackEditorServicesSectionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the services confirmed at this track.'**
+  String get trackEditorServicesSectionBody;
+
+  /// No description provided for @trackEditorDraftsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts and pending approval'**
+  String get trackEditorDraftsSection;
+
+  /// No description provided for @trackEditorDraftsSectionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracks you have submitted that are awaiting review or are still in draft.'**
+  String get trackEditorDraftsSectionBody;
+
+  /// No description provided for @trackEditorDraftEditButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit track'**
+  String get trackEditorDraftEditButton;
+
+  /// No description provided for @trackEditorDraftPendingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting admin review'**
+  String get trackEditorDraftPendingLabel;
+
+  /// No description provided for @shareLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied to clipboard'**
+  String get shareLinkCopied;
+
+  /// No description provided for @shareAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get shareAction;
+
+  /// No description provided for @commentsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments'**
+  String get commentsSectionTitle;
+
+  /// No description provided for @commentsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No comments yet'**
+  String get commentsEmptyTitle;
+
+  /// No description provided for @commentsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Be the first to leave a comment on this content.'**
+  String get commentsEmptyBody;
+
+  /// No description provided for @commentsLoadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more comments'**
+  String get commentsLoadMore;
+
+  /// No description provided for @commentsInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a comment…'**
+  String get commentsInputHint;
+
+  /// No description provided for @commentsSubmitAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get commentsSubmitAction;
+
+  /// No description provided for @commentsPostError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not post the comment. Please try again.'**
+  String get commentsPostError;
+
+  /// No description provided for @commentsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading comments.'**
+  String get commentsLoadError;
+
+  /// No description provided for @commentsDeleteAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get commentsDeleteAction;
+
+  /// No description provided for @commentsDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete comment'**
+  String get commentsDeleteTitle;
+
+  /// No description provided for @commentsDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this comment? This action cannot be undone.'**
+  String get commentsDeleteBody;
+
+  /// No description provided for @commentsDeleteCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get commentsDeleteCancel;
+
+  /// No description provided for @commentsDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get commentsDeleteConfirm;
+
+  /// No description provided for @commentsReportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get commentsReportAction;
+
+  /// No description provided for @commentsReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report comment'**
+  String get commentsReportTitle;
+
+  /// No description provided for @commentsReportBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to report this comment to the moderation team?'**
+  String get commentsReportBody;
+
+  /// No description provided for @commentsReportCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get commentsReportCancel;
+
+  /// No description provided for @commentsReportConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get commentsReportConfirm;
+
+  /// No description provided for @commentsReportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment reported. Thank you.'**
+  String get commentsReportSuccess;
+
+  /// No description provided for @commentsReportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the report. Please try again.'**
+  String get commentsReportError;
+
+  /// No description provided for @commentsGuestCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to leave a comment.'**
+  String get commentsGuestCta;
+
+  /// No description provided for @commentsGuestLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get commentsGuestLogin;
+
+  /// No description provided for @commentsCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Comment} =1{1 comment} other{{count} comments}}'**
+  String commentsCountLabel(int count);
+
+  /// No description provided for @profileFollowAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
+  String get profileFollowAction;
+
+  /// No description provided for @profileFollowingAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get profileFollowingAction;
+
+  /// No description provided for @profileUnfollowAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfollow'**
+  String get profileUnfollowAction;
+
+  /// No description provided for @profileFollowerSingular.
+  ///
+  /// In en, this message translates to:
+  /// **'follower'**
+  String get profileFollowerSingular;
+
+  /// No description provided for @profileFollowerPlural.
+  ///
+  /// In en, this message translates to:
+  /// **'followers'**
+  String get profileFollowerPlural;
+
+  /// No description provided for @notificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTitle;
+
+  /// No description provided for @notificationsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recent notifications'**
+  String get notificationsDescription;
+
+  /// No description provided for @notificationsMarkAllRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get notificationsMarkAllRead;
+
+  /// No description provided for @notificationsLoadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get notificationsLoadMore;
+
+  /// No description provided for @notificationsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get notificationsEmptyTitle;
+
+  /// No description provided for @notificationsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone follows you or posts something new, you\'ll see it here.'**
+  String get notificationsEmptyBody;
+
+  /// No description provided for @notificationsErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load notifications.'**
+  String get notificationsErrorTitle;
 }
 
 class _AppLocalizationsDelegate

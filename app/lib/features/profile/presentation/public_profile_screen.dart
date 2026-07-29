@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/adaptive_image.dart';
+import '../../auth/application/auth_providers.dart';
 import '../../pitcoin/presentation/pitcoin_badges_section.dart';
 import '../../pitcoin/presentation/pitcoin_balance_card.dart';
+import '../../social/application/profile_follows_providers.dart';
 import '../application/public_profile_provider.dart';
 
 class PublicProfileScreen extends ConsumerWidget {
@@ -41,7 +45,7 @@ class PublicProfileScreen extends ConsumerWidget {
 
 // ── Contenuto principale ──────────────────────────────────────────────────────
 
-class _ProfileContent extends StatelessWidget {
+class _ProfileContent extends ConsumerWidget {
   const _ProfileContent({required this.profile});
 
   final PublicProfileRecord profile;
@@ -61,8 +65,16 @@ class _ProfileContent extends StatelessWidget {
   };
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final currentUser = ref.watch(currentUserProvider);
+    final isOwnProfile = currentUser?.id == profile.id;
+    final isFollowing =
+        ref.watch(isProfileFollowedProvider(profile.id));
+    final followerCount = ref
+        .watch(profileFollowerCountProvider(profile.id))
+        .maybeWhen(data: (v) => v, orElse: () => 0);
 
     return ListView(
       children: [
@@ -71,40 +83,75 @@ class _ProfileContent extends StatelessWidget {
           color: AppColors.graphite,
           child: Padding(
             padding: const EdgeInsets.all(28),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _Avatar(avatarUrl: profile.avatarUrl, displayName: profile.displayName),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        profile.displayName,
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _Avatar(avatarUrl: profile.avatarUrl, displayName: profile.displayName),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(_roleIcon, size: 16, color: AppColors.concrete),
-                          const SizedBox(width: 6),
                           Text(
-                            _roleLabel,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: AppColors.concrete,
+                            profile.displayName,
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          PitcoinBalanceCompact(publicSlug: profile.publicSlug),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(_roleIcon, size: 16, color: AppColors.concrete),
+                              const SizedBox(width: 6),
+                              Text(
+                                _roleLabel,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.concrete,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              PitcoinBalanceCompact(publicSlug: profile.publicSlug),
+                            ],
+                          ),
                         ],
+                      ),
+                    ),
+                  ],
+                ),
+                // ── Follow row (hidden on own profile) ─────────────────
+                if (!isOwnProfile) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      // Follower count chip
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.people_outline,
+                              size: 15, color: AppColors.concrete),
+                          const SizedBox(width: 5),
+                          Text(
+                            '$followerCount ${followerCount == 1 ? l10n.profileFollowerSingular : l10n.profileFollowerPlural}',
+                            style: theme.textTheme.bodySmall
+                                ?.copyWith(color: AppColors.concrete),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 16),
+                      // Follow / Unfollow button
+                      _FollowButton(
+                        profile: profile,
+                        currentUser: currentUser,
+                        isFollowing: isFollowing,
+                        l10n: l10n,
                       ),
                     ],
                   ),
-                ),
+                ],
               ],
             ),
           ),
@@ -158,6 +205,74 @@ class _ProfileContent extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+// ── Follow button ─────────────────────────────────────────────────────────────
+
+class _FollowButton extends ConsumerWidget {
+  const _FollowButton({
+    required this.profile,
+    required this.currentUser,
+    required this.isFollowing,
+    required this.l10n,
+  });
+
+  final PublicProfileRecord profile;
+  final dynamic currentUser;
+  final bool isFollowing;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (currentUser == null) {
+      // Guest: show CTA that redirects to login.
+      return OutlinedButton.icon(
+        onPressed: () {
+          context.go(
+            '/login?redirect=${Uri.encodeComponent('/u/${profile.publicSlug}')}',
+          );
+        },
+        icon: const Icon(Icons.person_add_outlined, size: 16, color: Colors.white70),
+        label: Text(
+          l10n.profileFollowAction,
+          style: const TextStyle(color: Colors.white70),
+        ),
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Colors.white30),
+          visualDensity: VisualDensity.compact,
+        ),
+      );
+    }
+
+    if (isFollowing) {
+      return OutlinedButton.icon(
+        onPressed: () {
+          ref.read(followedProfileIdsProvider.notifier).toggle(profile.id);
+        },
+        icon: const Icon(Icons.check, size: 16, color: Colors.white70),
+        label: Text(
+          l10n.profileFollowingAction,
+          style: const TextStyle(color: Colors.white70),
+        ),
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(color: AppColors.signalOrange.withAlpha(160)),
+          visualDensity: VisualDensity.compact,
+        ),
+      );
+    }
+
+    return FilledButton.icon(
+      onPressed: () {
+        ref.read(followedProfileIdsProvider.notifier).toggle(profile.id);
+      },
+      icon: const Icon(Icons.person_add_outlined, size: 16),
+      label: Text(l10n.profileFollowAction),
+      style: FilledButton.styleFrom(
+        backgroundColor: AppColors.signalOrange,
+        visualDensity: VisualDensity.compact,
+      ),
     );
   }
 }

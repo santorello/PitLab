@@ -8,6 +8,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/media/media_upload_controller.dart';
 import '../../../shared/media/media_upload_labels.dart';
+import '../../../shared/media/media_upload_service.dart';
 import '../../../shared/media/media_upload_state.dart';
 import '../../../shared/utils/local_image_data_url.dart';
 import '../../../shared/widgets/adaptive_image.dart';
@@ -75,7 +76,6 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
     if (_nameController.text.isNotEmpty) {
       return;
     }
-    final l10n = AppLocalizations.of(context)!;
     if (widget.isCreating) {
       _hoursController.text = 'Sab-Dom - 09:30-18:30';
       _hydrated = true;
@@ -152,18 +152,6 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
     }
     _localGalleryImages = localGallery;
     _galleryController.text = externalGallery.join('\n');
-  }
-
-  static String _imageUploadErrorMessage(
-    AppLocalizations l10n,
-    LocalImageDataUrlFailure? failure,
-  ) {
-    return switch (failure) {
-      LocalImageDataUrlFailure.inputTooLarge ||
-      LocalImageDataUrlFailure.outputTooLarge =>
-        l10n.imageUploadTooLargeMessage,
-      _ => l10n.imageUploadUnreadableMessage,
-    };
   }
 
   @override
@@ -327,6 +315,18 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                     OutlinedButton.icon(
                       onPressed: () async {
                         final messenger = ScaffoldMessenger.of(context);
+                        final uploadService = ref.read(mediaUploadServiceProvider);
+                        final userId = ref.read(effectiveUserIdProvider);
+                        if (uploadService == null || userId == null) {
+                          messenger.showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Devi essere autenticato per caricare immagini.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
                         final uploadController = MediaUploadController(
                           totalItems: 1,
                           initialStageLabel: 'Sto preparando la cover negozio',
@@ -349,53 +349,58 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                           }
                           return;
                         }
-                        final imageResult =
-                            await localImageDataUrlResultFromBytes(
-                              bytes: bytes,
-                              onProgress: (stage, progress) {
-                                if (!mounted) {
-                                  return;
-                                }
-                                uploadController.setStageLabel(
-                                  mediaUploadStageLabel(context, stage),
-                                );
-                                uploadController.updateItem(
-                                  index: 0,
-                                  stage: stage,
-                                  progress: progress,
-                                );
-                                setState(() {
-                                  _coverTransferState = uploadController.snapshot;
-                                });
-                              },
-                            );
-                        if (!mounted) return;
-                        if (imageResult.dataUrl == null) {
-                          uploadController.markError(0);
-                        } else {
+                        try {
+                          final result = await uploadService.uploadImage(
+                            bytes: bytes,
+                            userId: userId,
+                            entityType: 'shops',
+                            filePrefix: 'cover',
+                            onProgress: (stage, progress) {
+                              if (!mounted) return;
+                              uploadController.setStageLabel(
+                                mediaUploadStageLabel(context, stage),
+                              );
+                              uploadController.updateItem(
+                                index: 0,
+                                stage: stage,
+                                progress: progress,
+                              );
+                              setState(() {
+                                _coverTransferState = uploadController.snapshot;
+                              });
+                            },
+                          );
+                          if (!mounted) return;
                           uploadController.markDone(0);
-                        }
-                        setState(() {
-                          _uploadingCover = false;
-                          _coverTransferState = null;
-                        });
-                        final dataUrl = imageResult.dataUrl;
-                        if (dataUrl == null) {
+                          setState(() {
+                            _uploadingCover = false;
+                            _coverTransferState = null;
+                            _localCoverImage = '';
+                            _imageUrlController.text = result.publicUrl;
+                          });
+                        } on MediaUploadException catch (e) {
+                          if (!mounted) return;
+                          uploadController.markError(0);
+                          setState(() {
+                            _uploadingCover = false;
+                            _coverTransferState = uploadController.snapshot;
+                          });
+                          messenger.showSnackBar(
+                            SnackBar(content: Text(e.message)),
+                          );
+                        } catch (e) {
+                          if (!mounted) return;
+                          uploadController.markError(0);
+                          setState(() {
+                            _uploadingCover = false;
+                            _coverTransferState = uploadController.snapshot;
+                          });
                           messenger.showSnackBar(
                             SnackBar(
-                              content: Text(
-                                _imageUploadErrorMessage(
-                                  l10n,
-                                  imageResult.failure,
-                                ),
-                              ),
+                              content: Text('Errore caricamento cover: $e'),
                             ),
                           );
-                          return;
                         }
-                        setState(() {
-                          _localCoverImage = dataUrl;
-                        });
                       },
                       icon: const Icon(Icons.upload_file_outlined),
                       label: Text(l10n.shopImageUploadAction),
@@ -437,6 +442,18 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                     OutlinedButton.icon(
                       onPressed: () async {
                         final messenger = ScaffoldMessenger.of(context);
+                        final uploadService = ref.read(mediaUploadServiceProvider);
+                        final userId = ref.read(effectiveUserIdProvider);
+                        if (uploadService == null || userId == null) {
+                          messenger.showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Devi essere autenticato per caricare immagini.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
                         setState(() {
                           _uploadingGallery = true;
                           _galleryTransferState = null;
@@ -466,86 +483,91 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                           });
                           return;
                         }
-                        final takeCount =
-                            remainingSlots < maxLocalGalleryImages
+                        final takeCount = remainingSlots < maxLocalGalleryImages
                             ? remainingSlots
                             : maxLocalGalleryImages;
+                        final filesToUpload = files.take(takeCount).toList();
                         final uploadController = MediaUploadController(
-                          totalItems: takeCount,
-                          initialStageLabel:
-                              'Sto preparando la galleria negozio',
+                          totalItems: filesToUpload.length,
+                          initialStageLabel: 'Sto caricando la galleria negozio',
                         );
                         setState(() {
                           _galleryTransferState = uploadController.snapshot;
                         });
-                        final dataUrls = <String>[];
-                        LocalImageDataUrlFailure? lastFailure;
-                        var index = 0;
-                        for (final file in files.take(takeCount)) {
-                          final itemIndex = index;
-                          final bytes = file.bytes;
+                        final uploadedUrls = <String>[];
+                        String? lastError;
+                        for (var i = 0; i < filesToUpload.length; i++) {
+                          final bytes = filesToUpload[i].bytes;
                           if (bytes == null) {
-                            uploadController.markError(itemIndex);
-                            index += 1;
+                            uploadController.markError(i);
+                            setState(() {
+                              _galleryTransferState = uploadController.snapshot;
+                            });
                             continue;
                           }
-                          final imageResult =
-                              await localImageDataUrlResultFromBytes(
-                                bytes: bytes,
-                                onProgress: (stage, progress) {
-                                  if (!mounted) {
-                                    return;
-                                  }
-                                  uploadController.setStageLabel(
-                                    mediaUploadStageLabel(context, stage),
-                                  );
-                                  uploadController.updateItem(
-                                    index: itemIndex,
-                                    stage: stage,
-                                    progress: progress,
-                                  );
-                                  setState(() {
-                                    _galleryTransferState =
-                                        uploadController.snapshot;
-                                  });
-                                },
-                              );
-                          final dataUrl = imageResult.dataUrl;
-                          if (dataUrl != null) {
-                            dataUrls.add(dataUrl);
-                            uploadController.markDone(itemIndex);
-                          } else {
-                            lastFailure = imageResult.failure;
-                            uploadController.markError(itemIndex);
+                          try {
+                            final result = await uploadService.uploadImage(
+                              bytes: bytes,
+                              userId: userId,
+                              entityType: 'shops',
+                              filePrefix: 'gallery',
+                              onProgress: (stage, progress) {
+                                if (!mounted) return;
+                                uploadController.setStageLabel(
+                                  mediaUploadStageLabel(context, stage),
+                                );
+                                uploadController.updateItem(
+                                  index: i,
+                                  stage: stage,
+                                  progress: progress,
+                                );
+                                setState(() {
+                                  _galleryTransferState =
+                                      uploadController.snapshot;
+                                });
+                              },
+                            );
+                            uploadedUrls.add(result.publicUrl);
+                            uploadController.markDone(i);
+                          } on MediaUploadException catch (e) {
+                            lastError = e.message;
+                            uploadController.markError(i);
+                          } catch (e) {
+                            lastError = 'Errore caricamento foto $i';
+                            uploadController.markError(i);
                           }
-                          index += 1;
+                          if (mounted) {
+                            setState(() {
+                              _galleryTransferState = uploadController.snapshot;
+                            });
+                          }
                         }
                         if (!mounted) return;
                         setState(() {
                           _uploadingGallery = false;
+                          // Mantieni errori visibili per un tick, poi resetta
                           _galleryTransferState = null;
                         });
-                        if (lastFailure != null) {
+                        if (lastError != null) {
                           messenger.showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                _imageUploadErrorMessage(l10n, lastFailure),
-                              ),
-                            ),
+                            SnackBar(content: Text(lastError)),
                           );
                         }
-                        setState(() {
-                          final current = _galleryController.text
-                              .split('\n')
-                              .map((item) => item.trim())
-                              .where((item) => item.isNotEmpty)
-                              .toList();
-                          _galleryController.text = current.join('\n');
-                          _localGalleryImages = [
-                            ..._localGalleryImages,
-                            ...dataUrls,
-                          ];
-                        });
+                        if (uploadedUrls.isNotEmpty) {
+                          setState(() {
+                            final current = _galleryController.text
+                                .split('\n')
+                                .map((item) => item.trim())
+                                .where((item) => item.isNotEmpty)
+                                .toList();
+                            _galleryController.text = [
+                              ...current,
+                              ...uploadedUrls,
+                            ].join('\n');
+                            // Svuota le immagini locali ora che abbiamo URL reali
+                            _localGalleryImages = const [];
+                          });
+                        }
                       },
                       icon: const Icon(Icons.photo_library_outlined),
                       label: Text(l10n.shopGalleryUploadAction),

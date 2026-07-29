@@ -1,123 +1,92 @@
-# Cookie Policy
+# Cookie Policy e utilizzo del local storage
 
-Stato: bozza avanzata da finalizzare quando il perimetro reale dei cookie e degli strumenti equivalenti sara' definitivo.
+**Versione: 1.0 — in vigore dal 2026-06-03**
+**Ultimo aggiornamento: 2026-06-03**
 
-Data efficacia: `2026-04-08`
-
-Versione documento: `2026-04-08-draft`
+---
 
 ## 1. Premessa
 
-Questa Cookie Policy descrive l'uso di cookie e tecnologie simili nell'ambito di PitLap.
+La presente Cookie Policy descrive l'utilizzo di cookie e tecnologie equivalenti nell'ambito di PitLap (pitlap.app).
 
-Per "cookie" si intendono, in questa sede, anche strumenti equivalenti usati nelle web app per memorizzare o leggere informazioni dal dispositivo dell'utente, come local storage o tecnologie analoghe.
+Per "tecnologie equivalenti" si intendono, in questa sede, anche strumenti come il `localStorage` del browser, utilizzati nelle applicazioni web per memorizzare o leggere informazioni sul dispositivo dell'utente.
 
-## 2. Stato attuale del prodotto
+PitLap adotta un approccio **minimalista**: vengono utilizzati esclusivamente gli strumenti tecnici strettamente necessari al funzionamento del servizio. Non sono attivi cookie di analytics né di marketing o profilazione.
 
-Alla data di questa bozza, PitLap usa o prevede di usare principalmente strumenti tecnici necessari al funzionamento della web app e dell'esperienza autenticata.
+---
 
-Il progetto mantiene un approccio minimale:
+## 2. Inventario degli strumenti attivi
 
-- preferenza per strumenti tecnici essenziali
-- analytics solo se realmente utili e chiaramente motivati
-- nessun marketing o profilazione senza base giuridica adeguata e gestione preferenze dedicata
+### 2.1 Token di sessione Supabase (tecnico-necessario)
 
-## 3. Categorie di strumenti
+| Attributo | Valore |
+|---|---|
+| Nome / chiave | `sb-[project-ref]-auth-token` (localStorage) |
+| Fornitore | Supabase (gestito da PitLap) |
+| Tipo | Tecnico-necessario |
+| Finalità | Mantenimento della sessione autenticata dell'utente |
+| Dati memorizzati | Token di accesso e refresh token cifrati |
+| Durata | Durata della validità del token di sessione; viene rinnovato automaticamente fino al logout esplicito |
+| Lato | Client (web browser / WebView dell'app Android) |
+| Trasferimento a terzi | No — il token viene inviato esclusivamente al backend Supabase di PitLap |
 
-### 3.1 Strumenti tecnici necessari
+Questo strumento è strettamente necessario per erogare il servizio autenticato richiesto dall'utente. Non è richiesto il consenso separato per questo elemento (art. 122 D.Lgs. 196/2003, recepimento della Direttiva ePrivacy).
 
-Questi strumenti possono essere usati per:
+### 2.2 MapTiler — mappe e geocoding (funzionale, lato client)
 
-- mantenere la sessione autenticata
-- salvare preferenze funzionali come lingua o stato locale dell'interfaccia
-- supportare sicurezza, routing e corretto funzionamento della web app
+| Attributo | Valore |
+|---|---|
+| Fornitore | MapTiler AG, Svizzera |
+| Tipo | Funzionale (necessario per le funzionalità di mappa e ricerca luoghi) |
+| Finalità | Rendering delle mappe interattive, ricerca di luoghi e geocoding |
+| Dati trasmessi al fornitore | Indirizzo IP del dispositivo, query geografica testuale o coordinate |
+| Durata | Richieste in tempo reale; MapTiler può impostare cookie tecnici propri |
+| Lato | Client (le richieste partono direttamente dal dispositivo dell'utente) |
+| Privacy policy fornitore | [https://www.maptiler.com/privacy-policy/](https://www.maptiler.com/privacy-policy/) |
+| Termini di utilizzo | [https://www.maptiler.com/cloud/pricing/](https://www.maptiler.com/cloud/pricing/) |
 
-Per questa categoria potrebbe non essere richiesto un consenso separato, se e nella misura in cui tali strumenti siano strettamente necessari al servizio richiesto dall'utente.
+MapTiler è una società svizzera; la Svizzera beneficia di una decisione di adeguatezza della Commissione europea. L'uso del servizio implica che l'indirizzo IP dell'utente sia trasmesso ai server di MapTiler al momento dell'utilizzo delle funzionalità di mappa. Per maggiori dettagli, si rinvia alla privacy policy di MapTiler.
 
-### 3.2 Strumenti funzionali non strettamente necessari
+---
 
-Questi strumenti possono essere usati per:
+## 3. Strumenti non attivi
 
-- ricordare preferenze accessorie
-- migliorare l'esperienza utente
-- conservare dati non essenziali per comodita' d'uso
+### 3.1 Analytics
 
-L'eventuale base giuridica e il meccanismo di gestione preferenze dovranno essere valutati in base all'uso concreto.
+PitLap non utilizza al momento alcun strumento di analytics. Se in futuro verranno introdotti strumenti di analisi dell'utilizzo, questa policy verrà aggiornata indicando: fornitore, dati raccolti, finalità, durata, base giuridica e meccanismo di consenso.
 
-### 3.3 Analytics
+### 3.2 Marketing e profilazione
 
-PitLap non deve attivare analytics non strettamente necessari senza prima definire:
+PitLap non utilizza cookie o strumenti equivalenti per marketing, retargeting o profilazione. Tale categoria non verrà attivata senza: una valutazione preventiva del perimetro, un consenso valido separato e revocabile, un meccanismo di gestione delle preferenze adeguato e un aggiornamento della presente policy e dell'Informativa Privacy.
 
-- fornitore
-- dati raccolti
-- finalita'
-- durata
-- base giuridica
-- eventuale anonimizzazione o minimizzazione
+### 3.3 Sentry (crash reporting)
 
-Se verranno introdotti analytics, questa policy dovra' essere aggiornata con il dettaglio dei relativi strumenti.
+Sentry non è attualmente attivo. Qualora venisse attivato per la raccolta di segnalazioni di crash e log di errore, questa policy e l'Informativa Privacy verranno aggiornate con i relativi dettagli.
 
-### 3.4 Marketing e profilazione
+---
 
-PitLap non deve attivare cookie o strumenti equivalenti per marketing o profilazione senza:
+## 4. Banner cookie
 
-- una valutazione preventiva del perimetro
-- un consenso valido, separato e revocabile
-- un meccanismo di gestione preferenze adeguato
-- aggiornamento di Privacy Policy e documentazione correlata
+Poiché PitLap utilizza esclusivamente strumenti tecnico-necessari e uno strumento funzionale direttamente collegato alla funzionalità di mappa richiesta dall'utente, **non è attualmente presente un banner di consenso cookie**. Questa scelta è conforme alle Linee Guida del Garante per la protezione dei dati personali del 10 giugno 2021 e alle indicazioni del Gruppo di Lavoro "Articolo 29".
 
-## 4. Strumenti attualmente da tracciare
+Qualora venissero introdotti strumenti che richiedono consenso preventivo (analytics, marketing), verrà implementato un layer informativo con centro preferenze.
 
-In fase di sviluppo e test, PitLap puo' usare:
+---
 
-- storage locale del browser per preferenze e dati di supporto alla UI
-- meccanismi tecnici collegati ad autenticazione e sessione
-- integrazioni con servizi terzi lato applicazione, senza che cio' implichi automaticamente cookie di marketing
+## 5. Come gestire o disabilitare gli strumenti
 
-L'elenco definitivo degli strumenti attivi dovra' essere validato prima della pubblicazione.
+L'utente può cancellare in qualsiasi momento i dati memorizzati nel localStorage tramite le impostazioni del proprio browser (sezione "Cancella dati di navigazione" o equivalente) o tramite gli strumenti di sviluppo del browser.
 
-## 5. Gestione preferenze cookie
+La cancellazione del token di sessione comporta il logout automatico dall'applicazione.
 
-Quando saranno presenti strumenti che richiedono scelta dell'utente, PitLap dovra' offrire:
+---
 
-- un banner o layer informativo iniziale, se necessario
-- un centro preferenze o meccanismo equivalente
-- possibilita' di rivedere e modificare la scelta in un secondo momento
+## 6. Aggiornamenti
 
-## 6. Durata
+La presente policy verrà aggiornata in caso di modifiche ai fornitori, introduzione di nuovi strumenti di analytics o marketing, o cambiamenti rilevanti nel funzionamento dell'applicazione.
 
-La durata dei cookie o strumenti equivalenti dovra' essere documentata per ciascuna voce attiva, distinguendo almeno tra:
+---
 
-- sessione
-- durata limitata
-- durata persistente
-
-## 7. Terze parti
-
-Quando un servizio terzo comportera' lettura o scrittura di cookie o strumenti equivalenti lato utente, questa policy dovra' indicare almeno:
-
-- nome del fornitore
-- funzione svolta
-- link alla documentazione ufficiale
-- eventuale link alla privacy/cookie policy del fornitore
-
-## 8. Aggiornamenti
-
-Questa policy potra' essere aggiornata in caso di modifiche al funzionamento della web app, ai fornitori usati o agli strumenti di analytics/marketing introdotti.
-
-Le versioni effettive dovranno riportare:
-
-- data di efficacia
-- versione documento
-- storico minimo delle modifiche rilevanti
-
-## 9. Note operative prima della pubblicazione
-
-Prima del rilascio pubblico vanno completati almeno questi punti:
-
-- inventario effettivo di cookie e storage usati lato web
-- classificazione tecnica vs analytics vs marketing
-- durata di ogni strumento
-- terze parti coinvolte
-- criterio di consenso o non consenso
-- testo UI del banner o del centro preferenze
+*PitLap — pitlap.app*
+*Versione: 1.0 — in vigore dal 2026-06-03*
+*Ultimo aggiornamento: 2026-06-03*

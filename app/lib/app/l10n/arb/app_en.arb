@@ -631,6 +631,8 @@
   "eventsCreateImageLoaded": "Event photo ready",
   "imageUploadTooLargeMessage": "This image is too heavy for the preview. Try a photo under 5 MB or compress it before uploading.",
   "imageUploadUnreadableMessage": "I cannot read this image. Try JPG, PNG, or WebP.",
+  "mediaUploadNotAuthenticated": "Sign in to upload images.",
+  "mediaUploadGenericError": "Image upload failed. Please try again.",
   "eventsCreateDateLabel": "Date",
   "eventsCreateSave": "Save event",
   "eventsCreateSuccess": "Public event created. It now appears in the community event list.",
@@ -660,7 +662,7 @@
   "garageBuildSpecsHint": "Quick specs separated by commas",
   "garageBuildPublicToggle": "Make this build public",
   "garageBuildSaveAction": "Save build",
-  "garageBuildCreatedMessage": "Build added locally to the garage.",
+  "garageBuildCreatedMessage": "Build added to the garage.",
   "garageBuildUpdatedMessage": "Build updated.",
   "garageEditBuildAction": "Edit build",
   "garageBuildMaxImagesReached": "You can add up to {max} images per build.",
@@ -680,6 +682,7 @@
     }
   },
   "garageBuildImagesCount": "{count}/{max} images",
+  "garageUploadPhotosAction": "Upload photos",
   "@garageBuildImagesCount": {
     "placeholders": {
       "count": {
@@ -803,5 +806,60 @@
       }
     }
   },
-  "pitcoinPointsZero": "—"
+    "pitcoinPointsZero": "—",
+
+  "trackEditorCategorySection": "Track category",
+  "trackEditorCategorySectionBody": "Select the track type — used in search filters.",
+  "trackEditorServicesSection": "Available services",
+  "trackEditorServicesSectionBody": "Select the services confirmed at this track.",
+  "trackEditorDraftsSection": "Drafts and pending approval",
+  "trackEditorDraftsSectionBody": "Tracks you have submitted that are awaiting review or are still in draft.",
+  "trackEditorDraftEditButton": "Edit track",
+  "trackEditorDraftPendingLabel": "Awaiting admin review",
+
+  "shareLinkCopied": "Link copied to clipboard",
+  "shareAction": "Share",
+
+  "commentsSectionTitle": "Comments",
+  "commentsEmptyTitle": "No comments yet",
+  "commentsEmptyBody": "Be the first to leave a comment on this content.",
+  "commentsLoadMore": "Load more comments",
+  "commentsInputHint": "Write a comment…",
+  "commentsSubmitAction": "Send",
+  "commentsPostError": "Could not post the comment. Please try again.",
+  "commentsLoadError": "Error loading comments.",
+  "commentsDeleteAction": "Delete",
+  "commentsDeleteTitle": "Delete comment",
+  "commentsDeleteBody": "Are you sure you want to delete this comment? This action cannot be undone.",
+  "commentsDeleteCancel": "Cancel",
+  "commentsDeleteConfirm": "Delete",
+  "commentsReportAction": "Report",
+  "commentsReportTitle": "Report comment",
+  "commentsReportBody": "Do you want to report this comment to the moderation team?",
+  "commentsReportCancel": "Cancel",
+  "commentsReportConfirm": "Report",
+  "commentsReportSuccess": "Comment reported. Thank you.",
+  "commentsReportError": "Could not send the report. Please try again.",
+  "commentsGuestCta": "Sign in to leave a comment.",
+  "commentsGuestLogin": "Sign in",
+  "commentsCountLabel": "{count, plural, =0{Comment} =1{1 comment} other{{count} comments}}",
+  "@commentsCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFollowAction": "Follow",
+  "profileFollowingAction": "Following",
+  "profileUnfollowAction": "Unfollow",
+  "profileFollowerSingular": "follower",
+  "profileFollowerPlural": "followers",
+  "notificationsTitle": "Notifications",
+  "notificationsDescription": "Your recent notifications",
+  "notificationsMarkAllRead": "Mark all as read",
+  "notificationsLoadMore": "Load more",
+  "notificationsEmptyTitle": "No notifications yet",
+  "notificationsEmptyBody": "When someone follows you or posts something new, you'll see it here.",
+  "notificationsErrorTitle": "Could not load notifications."
 }

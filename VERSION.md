@@ -3,9 +3,9 @@
 ## Versione corrente
 
 - `project_name`: PitLap
-- `current_version`: 0.2.3
+- `current_version`: 0.3.0
 - `status`: pre-alpha
-- `release_date`: 2026-05-27
+- `release_date`: 2026-06-10
 
 ## Regola operativa
 
@@ -31,6 +31,24 @@ Linee guida:
 - `patch`: correzioni, piccoli miglioramenti o allineamenti
 
 ## Changelog
+
+### 0.3.0 - 2026-06-10
+
+Stato:
+
+- pre-alpha
+
+Contenuto:
+
+- **Fix QA gestore (E2E 2026-06-07)**: chiusi D07 (sezione "Bozze e in approvazione" sempre visibile in Gestione via `submitted_by`), D08/D09 (editor "Crea pista" allineato alle tassonomie DB `service_types`/`track_categories`, servizi e categorie persistiti già al salva-bozza). Nuovo delta `2026-06-10-draft-taxonomy-policies.sql` (policy RLS submitter su bozze, applicato su dev)
+- **Delta prod-ready** `2026-06-10-prod-alignment.sql`: replica per prod dei fix D01/D05/D10/D11 validati su dev (complete_onboarding canonico, GRANT role helpers, policy gestori su track_category_links e tracks + guard trigger moderazione). DA APPLICARE SU PROD
+- **Hardening DB** (cfr. `docs/db-hardening-2026-06-10.md`): consolidate le multiple permissive policies su spots/external_links/community_events/user_builds/profiles/track_category_links (advisor da 108 lint ai soli residui voluti su tracks), indici su 3 FK scoperte, censimento 32 indici inutilizzati (non rimossi), ACL SECURITY DEFINER documentate. Delta `2026-06-10-rls-consolidation.sql` applicato su dev
+- **Media upload reale**: bucket Storage pubblico `media` (5MB, immagini, path `<user_id>/<entity_type>/<file>`, policy owner-based, niente listing), `MediaUploadService` con resize 1600px + WebP q82 + EXIF fix, progress per stage reale, errori visibili con retry. Migrati avatar, cover pista/negozio, gallerie negozio, eventi, spot, submit-place e build: addio `data:image` e QuotaExceededError. Delta `2026-06-10-media-storage.sql`
+- **Commenti reali**: tabella `entity_comments` polimorfica (track/shop/event/community_event/spot/user_build) con RLS, guard moderazione admin-only, segnalazioni via RPC `report_comment`, view conteggi `entity_comment_counts`, azione PitCoin `comment_posted` (+5). Feature Flutter `features/comments/` con `CommentsSection` montata su dettaglio pista/negozio/evento/spot, conteggi batch sulle card community (zero N+1). Delta `2026-06-10-entity-comments.sql`
+- **Condividi reale**: helper `shareEntity` condiviso con link canonici dalle rotte go_router, copia negli appunti + snackbar, collegato a card e pagine dettaglio
+- **Segui profilo + notifiche in-app**: tabella `profile_follows` (RLS opt-in solo verso profili pubblici), contatore `get_profile_follower_count`, pulsante Segui sul profilo pubblico, azione PitCoin `profile_followed` (+2). Centro notifiche: completamento RLS su `notifications`/`notification_recipients`, trigger nuovi follower + attività dei seguiti (build pubblicata, evento creato), campanella con badge unread in AppScaffold (polling 2 min), schermata `/notifications` con mark-read e navigazione contestuale. Delta `2026-06-10-profile-follows-notifications.sql`
+- **Polish UI**: titoli sezione home uniformati, gap condizionali sezioni vuote, hero detail coerenti, micro-animazioni toggle follow/preferiti, fade-in immagini in `AdaptiveImage`, `EmptyStatePanel` condiviso (garage, gestione), fix contrasti outlined su hero scure, colori hardcoded → token AppColors/AppSpacing/AppRadius
+- nota operativa: per il go-live prod applicare in ordine i delta `2026-06-10-prod-alignment.sql`, `2026-06-10-rls-consolidation.sql`, `2026-06-10-draft-taxonomy-policies.sql`, `2026-06-10-media-storage.sql`, `2026-06-10-entity-comments.sql`, `2026-06-10-profile-follows-notifications.sql` (parte A fuori transazione) e abilitare Leaked Password Protection in Auth (dev+prod)
 
 ### 0.2.3 - 2026-05-27
 

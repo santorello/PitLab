@@ -1882,6 +1882,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'I cannot read this image. Try JPG, PNG, or WebP.';
 
   @override
+  String get mediaUploadNotAuthenticated => 'Sign in to upload images.';
+
+  @override
+  String get mediaUploadGenericError =>
+      'Image upload failed. Please try again.';
+
+  @override
   String get eventsCreateDateLabel => 'Date';
 
   @override
@@ -1955,7 +1962,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get garageBuildSaveAction => 'Save build';
 
   @override
-  String get garageBuildCreatedMessage => 'Build added locally to the garage.';
+  String get garageBuildCreatedMessage => 'Build added to the garage.';
 
   @override
   String get garageBuildUpdatedMessage => 'Build updated.';
@@ -1977,6 +1984,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String garageBuildImagesCount(int count, int max) {
     return '$count/$max images';
   }
+
+  @override
+  String get garageUploadPhotosAction => 'Upload photos';
 
   @override
   String get processingUploadImages => 'Preparing images';
@@ -2176,4 +2186,157 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pitcoinPointsZero => '—';
+
+  @override
+  String get trackEditorCategorySection => 'Track category';
+
+  @override
+  String get trackEditorCategorySectionBody =>
+      'Select the track type — used in search filters.';
+
+  @override
+  String get trackEditorServicesSection => 'Available services';
+
+  @override
+  String get trackEditorServicesSectionBody =>
+      'Select the services confirmed at this track.';
+
+  @override
+  String get trackEditorDraftsSection => 'Drafts and pending approval';
+
+  @override
+  String get trackEditorDraftsSectionBody =>
+      'Tracks you have submitted that are awaiting review or are still in draft.';
+
+  @override
+  String get trackEditorDraftEditButton => 'Edit track';
+
+  @override
+  String get trackEditorDraftPendingLabel => 'Awaiting admin review';
+
+  @override
+  String get shareLinkCopied => 'Link copied to clipboard';
+
+  @override
+  String get shareAction => 'Share';
+
+  @override
+  String get commentsSectionTitle => 'Comments';
+
+  @override
+  String get commentsEmptyTitle => 'No comments yet';
+
+  @override
+  String get commentsEmptyBody =>
+      'Be the first to leave a comment on this content.';
+
+  @override
+  String get commentsLoadMore => 'Load more comments';
+
+  @override
+  String get commentsInputHint => 'Write a comment…';
+
+  @override
+  String get commentsSubmitAction => 'Send';
+
+  @override
+  String get commentsPostError =>
+      'Could not post the comment. Please try again.';
+
+  @override
+  String get commentsLoadError => 'Error loading comments.';
+
+  @override
+  String get commentsDeleteAction => 'Delete';
+
+  @override
+  String get commentsDeleteTitle => 'Delete comment';
+
+  @override
+  String get commentsDeleteBody =>
+      'Are you sure you want to delete this comment? This action cannot be undone.';
+
+  @override
+  String get commentsDeleteCancel => 'Cancel';
+
+  @override
+  String get commentsDeleteConfirm => 'Delete';
+
+  @override
+  String get commentsReportAction => 'Report';
+
+  @override
+  String get commentsReportTitle => 'Report comment';
+
+  @override
+  String get commentsReportBody =>
+      'Do you want to report this comment to the moderation team?';
+
+  @override
+  String get commentsReportCancel => 'Cancel';
+
+  @override
+  String get commentsReportConfirm => 'Report';
+
+  @override
+  String get commentsReportSuccess => 'Comment reported. Thank you.';
+
+  @override
+  String get commentsReportError =>
+      'Could not send the report. Please try again.';
+
+  @override
+  String get commentsGuestCta => 'Sign in to leave a comment.';
+
+  @override
+  String get commentsGuestLogin => 'Sign in';
+
+  @override
+  String commentsCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count comments',
+      one: '1 comment',
+      zero: 'Comment',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get profileFollowAction => 'Follow';
+
+  @override
+  String get profileFollowingAction => 'Following';
+
+  @override
+  String get profileUnfollowAction => 'Unfollow';
+
+  @override
+  String get profileFollowerSingular => 'follower';
+
+  @override
+  String get profileFollowerPlural => 'followers';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get notificationsDescription => 'Your recent notifications';
+
+  @override
+  String get notificationsMarkAllRead => 'Mark all as read';
+
+  @override
+  String get notificationsLoadMore => 'Load more';
+
+  @override
+  String get notificationsEmptyTitle => 'No notifications yet';
+
+  @override
+  String get notificationsEmptyBody =>
+      'When someone follows you or posts something new, you\'ll see it here.';
+
+  @override
+  String get notificationsErrorTitle => 'Could not load notifications.';
 }

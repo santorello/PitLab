@@ -198,6 +198,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       final client = ref.read(authClientProvider);
       final city = _selectedLocation?.label ?? _cityController.text.trim();
       final location = _selectedLocation;
+      // Mappa la scelta "Chi sei?" sul ruolo applicativo (D04).
+      final role = switch (_selectedAccountType) {
+        'gestore_pista' => 'track_organizer',
+        'gestore_negozio' => 'shop_owner',
+        _ => 'user',
+      };
       try {
         await client?.rpc(
           'complete_onboarding',
@@ -208,6 +214,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             'p_home_country': location?.country,
             'p_home_latitude': location?.latitude,
             'p_home_longitude': location?.longitude,
+            'p_role': role,
           },
         );
       } catch (error) {
@@ -217,6 +224,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           params: {
             'p_preferred_city': city,
             'p_user_interests': _selectedInterests.toList(),
+            'p_role': role,
           },
         );
       }

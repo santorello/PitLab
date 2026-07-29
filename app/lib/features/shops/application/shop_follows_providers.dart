@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:pitlap_app/app/bootstrap/error_reporting.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -52,7 +53,8 @@ class ShopFollowsRepository {
       if (response is int) return response;
       if (response is num) return response.toInt();
       return 0;
-    } catch (_) {
+    } catch (e, st) {
+      AppErrorReporter.report(e, st, context: 'shop_follows_providers');
       return 0;
     }
   }
@@ -84,7 +86,8 @@ final shopFollowerCountProvider = FutureProvider.family<int, String>((ref, shopI
 
   try {
     return repository.fetchShopFollowerCount(shopId: shopId);
-  } catch (_) {
+  } catch (e, st) {
+    AppErrorReporter.report(e, st, context: 'shop_follows_providers');
     final followedIds = ref.watch(followedShopIdsProvider);
     return followedIds.contains(shopId) ? 1 : 0;
   }
@@ -104,7 +107,8 @@ final effectiveFollowedShopIdsProvider = FutureProvider<Set<String>>((ref) async
 
   try {
     return repository.fetchFollowedShopIds(userId: userId);
-  } catch (_) {
+  } catch (e, st) {
+    AppErrorReporter.report(e, st, context: 'shop_follows_providers');
     return const <String>{};
   }
 });
@@ -140,7 +144,8 @@ class FollowedShopIdsController extends Notifier<Set<String>> {
       final followedIds = await repository.fetchFollowedShopIds(userId: userId);
       _cached = followedIds;
       state = followedIds;
-    } catch (_) {
+    } catch (e, st) {
+      AppErrorReporter.report(e, st, context: 'shop_follows_providers');
       _cached = <String>{};
       state = _cached;
     }

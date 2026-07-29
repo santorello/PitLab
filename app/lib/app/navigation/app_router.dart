@@ -31,6 +31,7 @@ import '../../features/tracks/presentation/track_detail_screen.dart';
 import '../../features/tracks/presentation/track_editor_screen.dart';
 import '../../features/community/presentation/community_home_screen.dart';
 import '../../features/tracks/presentation/tracks_home_screen.dart';
+import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/tracks/presentation/managed_track_editor_screen.dart';
 import '../../shared/models/submitted_track.dart';
 
@@ -297,6 +298,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               initialType: state.uri.queryParameters['type'] ?? 'track',
               initialSpotSlug: state.uri.queryParameters['spotSlug'],
             ),
+          ),
+          GoRoute(
+            path: '/notifications',
+            name: 'notifications',
+            builder: (context, state) => const NotificationsScreen(),
           ),
         ],
       ),
