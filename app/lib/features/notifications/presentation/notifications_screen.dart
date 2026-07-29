@@ -122,6 +122,13 @@ class _NotificationList extends ConsumerWidget {
         final eventId = item.payload['event_id'] as String?;
         if (eventId != null) return '/event/$eventId';
         return '/events';
+      case 'track':
+        // track_status_changed / comment_received / approval_decided: slug nel payload.
+        final slug = item.payload['slug'] as String?;
+        return (slug != null && slug.isNotEmpty) ? '/track/$slug' : '/tracks';
+      case 'shop':
+        final slug = item.payload['slug'] as String?;
+        return (slug != null && slug.isNotEmpty) ? '/shop/$slug' : '/shops';
       case 'profile':
         // new_follower → profile of the follower
         final followerId = item.payload['follower_id'] as String?;
@@ -245,6 +252,8 @@ class _NotificationTile extends StatelessWidget {
   IconData _kindIcon(String kind) => switch (kind) {
         'new_follower' => Icons.person_add_outlined,
         'followed_activity' => Icons.notifications_active_outlined,
+        'track_status_changed' => Icons.flag_outlined,
+        'comment_received' => Icons.mode_comment_outlined,
         'approval_requested' => Icons.pending_outlined,
         'approval_decided' => Icons.check_circle_outline,
         'ownership_assigned' => Icons.handshake_outlined,

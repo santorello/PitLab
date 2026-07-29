@@ -44,6 +44,7 @@ class PlaceCard extends StatelessWidget {
   const PlaceCard({
     required this.media,
     required this.title,
+    this.overline,
     this.subtitle,
     this.typeBadge,
     this.signals,
@@ -57,6 +58,9 @@ class PlaceCard extends StatelessWidget {
 
   /// Widget media (immagine, placeholder, etc.). Costruito dal chiamante.
   final Widget media;
+
+  /// Overline opzionale sopra il titolo (piccolo, muted, es. "Bologna · Pista RC").
+  final String? overline;
 
   /// Titolo principale della card.
   final String title;
@@ -99,15 +103,15 @@ class PlaceCard extends StatelessWidget {
   /// Padding interno della card.
   EdgeInsets get _padding => EdgeInsets.all(AppSpacing.lg);
 
-  /// Aspect ratio media: 16:9 per mobile (Column), 4:3 per desktop (Row).
+  /// Aspect ratio media: 21:9 in Column (banner più basso, meno aria), 4:3 in Row.
   /// Usato calcolato dopo aver risolto il layout.
-  double _getMediaAspectRatio(bool isColumn) => isColumn ? 16 / 9 : 4 / 3;
+  double _getMediaAspectRatio(bool isColumn) => isColumn ? 21 / 9 : 4 / 3;
 
   /// Larghezza media in Row layout.
   static const double _mediaWidthRow = 280;
 
   /// Spacing verticale tra gli slot.
-  static const double _slotSpacing = 12;
+  static const double _slotSpacing = 8;
 
   @override
   Widget build(BuildContext context) {
@@ -168,17 +172,30 @@ class PlaceCard extends StatelessWidget {
     );
   }
 
-  /// Costruisce il widget media con aspect ratio e clip.
-  Widget _buildMediaSlot(bool isColumn) {
-    final aspectRatio = _getMediaAspectRatio(isColumn);
-    final mediaHeight = isColumn ? null : double.infinity;
+  /// Altezza fissa del banner media in layout Column: evita il gradiente enorme
+  /// quando manca l'immagine reale, senza dipendere dalla larghezza della card.
+  static const double _mediaHeightColumn = 168;
 
+  /// Costruisce il widget media con clip.
+  Widget _buildMediaSlot(bool isColumn) {
+    if (isColumn) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: SizedBox(
+          height: _mediaHeightColumn,
+          width: double.infinity,
+          child: media,
+        ),
+      );
+    }
+
+    // Row layout: media a sinistra, riempie l'altezza del contenuto.
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadius.lg),
       child: AspectRatio(
-        aspectRatio: aspectRatio,
+        aspectRatio: _getMediaAspectRatio(false),
         child: SizedBox(
-          height: mediaHeight,
+          height: double.infinity,
           child: media,
         ),
       ),
@@ -189,12 +206,27 @@ class PlaceCard extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     final children = <Widget>[];
 
+    // Overline (es. "Bologna · Pista RC") sopra il titolo.
+    if (overline != null && overline!.isNotEmpty) {
+      children.add(
+        Text(
+          overline!.toUpperCase(),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: AppColors.onSurfaceMuted,
+                letterSpacing: 0.5,
+                fontWeight: FontWeight.w500,
+              ),
+        ),
+      );
+      children.add(const SizedBox(height: 3));
+    }
+
     // Header: titolo + typeBadge a destra.
     children.add(_buildHeader(context));
 
-    // Subtitle (location).
+    // Subtitle (location) — gap ridotto per legarlo al titolo (blocco identità).
     if (subtitle != null) {
-      children.add(const SizedBox(height: _slotSpacing));
+      children.add(const SizedBox(height: 4));
       children.add(
         Text(
           subtitle!,

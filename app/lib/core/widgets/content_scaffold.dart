@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/theme/app_breakpoints.dart';
+import '../../app/theme/app_colors.dart';
 import 'content_scaffold_header.dart';
 import 'environment_banner.dart';
 
@@ -24,7 +25,11 @@ class ContentScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SafeArea(
+    // Sfondo opaco: evita il "bleed" della pagina precedente durante le
+    // transizioni go_router (le pagine figlie non hanno uno Scaffold proprio).
+    return ColoredBox(
+      color: AppColors.warmWhite,
+      child: SafeArea(
       child: Align(
         alignment: Alignment.topCenter,
         child: ConstrainedBox(
@@ -65,6 +70,7 @@ class ContentScaffold extends ConsumerWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }

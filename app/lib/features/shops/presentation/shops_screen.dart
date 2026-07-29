@@ -8,6 +8,7 @@ import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/adaptive_image.dart';
+import '../../../shared/widgets/card_stat_row.dart';
 import '../../../shared/widgets/pill.dart';
 import '../../../shared/widgets/place_card.dart';
 import '../../auth/application/auth_providers.dart';
@@ -453,37 +454,27 @@ class _ShopCard extends StatelessWidget {
           galleryImages: galleryImages,
         );
 
-        // Build type badge
-        final typeBadge = const Pill(
-          label: 'Negozio',
-          tone: PillTone.info,
-        );
-
-        // Build signals: specialties (max 3) + follower count
-        final signals = <Widget>[];
-        final visibleSpecialties =
-            specialties.length > 3 ? specialties.take(3).toList() : specialties;
-        for (final specialty in visibleSpecialties) {
-          signals.add(
-            Pill(label: specialty, tone: PillTone.neutral),
-          );
+        // Riga statistiche: specialità + salvataggi (i negozi non hanno stato).
+        final String specialtiesText;
+        if (specialties.isEmpty) {
+          specialtiesText = '';
+        } else if (specialties.length <= 2) {
+          specialtiesText = specialties.join(', ');
+        } else {
+          specialtiesText =
+              '${specialties.take(2).join(', ')} +${specialties.length - 2}';
         }
-        if (specialties.length > 3) {
-          signals.add(
-            Pill(
-              label: '+${specialties.length - 3}',
-              tone: PillTone.neutral,
-            ),
-          );
-        }
-        // Aggiunta count pill
-        signals.add(
-          Pill(
-            label: l10n.entitySavedCount(count),
-            tone: PillTone.neutral,
-            icon: Icons.groups_outlined,
+        final signals = <Widget>[
+          CardStatRow(
+            stats: [
+              if (specialtiesText.isNotEmpty)
+                CardStat(icon: Icons.sell_outlined, text: specialtiesText),
+              CardStat(
+                  icon: Icons.groups_outlined,
+                  text: l10n.entitySavedCount(count)),
+            ],
           ),
-        );
+        ];
 
         // Build footer leading CTA
         final footerLeading = FilledButton(
@@ -505,12 +496,13 @@ class _ShopCard extends StatelessWidget {
           ),
         ];
 
+        final overline = distance.isNotEmpty ? '$distance · Negozio' : 'Negozio';
+
         return PlaceCard(
           media: media,
           title: name,
-          subtitle: distance,
-          typeBadge: typeBadge,
-          signals: signals.isNotEmpty ? signals : null,
+          overline: overline,
+          signals: signals,
           body: subtitle.isNotEmpty ? subtitle : null,
           footerLeading: footerLeading,
           footerActions: footerActions.isNotEmpty ? footerActions : null,

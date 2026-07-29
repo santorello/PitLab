@@ -34,9 +34,8 @@ import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/models/track_list_item.dart';
 import '../../../shared/models/track_arrival_summary.dart';
 import '../../../shared/widgets/adaptive_image.dart';
-import '../../../shared/widgets/pill.dart';
+import '../../../shared/widgets/card_stat_row.dart';
 import '../../../shared/widgets/place_card.dart';
-import '../../../shared/widgets/status_badge.dart';
 import '../../auth/application/auth_providers.dart';
 import '../application/tracks_providers.dart';
 import 'tracks_home_filters.dart';
@@ -691,16 +690,6 @@ class _TrackCardV3 extends ConsumerWidget {
     };
   }
 
-  /// Mapps status to StatusBadgeKind.
-  static StatusBadgeKind _statusKind(String status) {
-    return switch (status) {
-      'open' => StatusBadgeKind.open,
-      'closed' => StatusBadgeKind.closed,
-      'wet' => StatusBadgeKind.scheduled,
-      _ => StatusBadgeKind.neutral,
-    };
-  }
-
   void _handleFavoriteToggle(
     BuildContext context,
     WidgetRef ref,
@@ -750,10 +739,11 @@ class _TrackCardV3 extends ConsumerWidget {
     );
     final servicesLabel =
         _TrackCardV2._servicesLabel(context, availableServiceCount);
+    // Invito "Sto arrivando" finché non hai segnato l'arrivo; poi conferma.
     final primaryCta = arrivalStatusAsync.maybeWhen(
       data: (arrival) =>
-          arrival?.status == 'coming' ? l10n.comingButton : l10n.signupButton,
-      orElse: () => l10n.signupButton,
+          arrival?.status == 'coming' ? l10n.trackArrivalConfirmed : l10n.comingButton,
+      orElse: () => l10n.comingButton,
     );
 
     // Build media: AdaptiveImage or placeholder
@@ -763,53 +753,30 @@ class _TrackCardV3 extends ConsumerWidget {
       serviceLabels: serviceLabels,
     );
 
-    // Build type badge (semplice Pill per "Pista RC")
-    final typeBadge = const Pill(
-      label: 'Pista RC',
-      tone: PillTone.signal,
-    );
-
-    // Build signals: status badge + category pills + arrival + services + followers
-    final signals = <Widget>[];
-    signals.add(
-      StatusBadge(
-        label: statusLabel,
-        kind: _statusKind(statusColor == AppColors.openGreen
-            ? 'open'
-            : statusColor == AppColors.closedRed
-                ? 'closed'
-                : 'wet'),
-      ),
-    );
-    // Categoria pills (max 3, troncati con +N se piu')
-    final visibleCategoryKeys = categoryKeys.length > 3
-        ? [...categoryKeys.take(3), '+${categoryKeys.length - 3}']
-        : categoryKeys;
-    for (final key in visibleCategoryKeys) {
-      if (key.startsWith('+')) {
-        signals.add(
-          Pill(
-            label: key,
-            tone: PillTone.neutral,
-          ),
-        );
-      } else {
-        signals.add(
-          Pill(
-            label: _categoryLabel(context, key),
-            tone: PillTone.signal,
-          ),
-        );
-      }
+    // Riga statistiche (stile Strava): stato · presenze · discipline.
+    // Colore solo sullo stato; presenze e discipline in grigio, come metadati.
+    final disciplineLabels =
+        categoryKeys.map((k) => _categoryLabel(context, k)).toList();
+    final String disciplineText;
+    if (disciplineLabels.isEmpty) {
+      disciplineText = '';
+    } else if (disciplineLabels.length <= 2) {
+      disciplineText = disciplineLabels.join(', ');
+    } else {
+      disciplineText =
+          '${disciplineLabels.take(2).join(', ')} +${disciplineLabels.length - 2}';
     }
-    // Arrival summary pill
-    signals.add(
-      Pill(
-        label: arrivalSummaryLabel,
-        tone: PillTone.neutral,
-        icon: Icons.group_outlined,
+
+    final signals = <Widget>[
+      CardStatRow(
+        stats: [
+          CardStat(dotColor: statusColor, text: statusLabel, textColor: statusColor),
+          CardStat(icon: Icons.group_outlined, text: arrivalSummaryLabel),
+          if (disciplineText.isNotEmpty)
+            CardStat(icon: Icons.flag_outlined, text: disciplineText),
+        ],
       ),
-    );
+    ];
 
     // Build footer leading CTA
     final footerLeading = ElevatedButton.icon(
@@ -844,12 +811,13 @@ class _TrackCardV3 extends ConsumerWidget {
       bodyText = '$servicesLabel · ${l10n.entitySavedCount(followerCount)}';
     }
 
+    final overline = city.isNotEmpty ? '$city · Pista RC' : 'Pista RC';
+
     return PlaceCard(
       media: media,
       title: title,
-      subtitle: city,
-      typeBadge: typeBadge,
-      signals: signals.isNotEmpty ? signals : null,
+      overline: overline,
+      signals: signals,
       body: note.isNotEmpty ? note : bodyText,
       footerLeading: footerLeading,
       footerActions: footerActions.isNotEmpty ? footerActions : null,

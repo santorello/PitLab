@@ -8,7 +8,6 @@ import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../pitcoin/presentation/pitcoin_badges_section.dart';
-import '../../pitcoin/presentation/pitcoin_balance_card.dart';
 import '../../social/application/profile_follows_providers.dart';
 import '../application/public_profile_provider.dart';
 
@@ -113,8 +112,7 @@ class _ProfileContent extends ConsumerWidget {
                                   color: AppColors.concrete,
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              PitcoinBalanceCompact(publicSlug: profile.publicSlug),
+                              // PitCoin: privati, non mostrati sul profilo altrui.
                             ],
                           ),
                         ],
@@ -172,9 +170,13 @@ class _ProfileContent extends ConsumerWidget {
         if (profile.builds.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: Text(
-              '🔧 Garage',
-              style: theme.textTheme.titleLarge,
+            child: Row(
+              children: [
+                Icon(Icons.precision_manufacturing_outlined,
+                    size: 20, color: AppColors.graphite),
+                const SizedBox(width: 8),
+                Text('Garage', style: theme.textTheme.titleLarge),
+              ],
             ),
           ),
           ...profile.builds.map((build) => Padding(

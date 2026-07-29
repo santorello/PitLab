@@ -350,6 +350,12 @@ abstract class AppLocalizations {
   /// **'I\'m coming'**
   String get comingButton;
 
+  /// No description provided for @trackArrivalConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival set'**
+  String get trackArrivalConfirmed;
+
   /// No description provided for @favoriteTrackButton.
   ///
   /// In en, this message translates to:
@@ -3845,7 +3851,7 @@ abstract class AppLocalizations {
   /// No description provided for @pitcoinBalanceSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'How active and useful you are to the PitLap community.'**
+  /// **'Stack them while you can: sooner or later you\'ll need them.'**
   String get pitcoinBalanceSubtitle;
 
   /// No description provided for @pitcoinBalanceDeltaWeek.

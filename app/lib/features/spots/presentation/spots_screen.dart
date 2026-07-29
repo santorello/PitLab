@@ -7,7 +7,7 @@ import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/adaptive_image.dart';
-import '../../../shared/widgets/pill.dart';
+import '../../../shared/widgets/card_stat_row.dart';
 import '../../../shared/widgets/place_card.dart';
 import '../application/spots_providers.dart';
 import '../domain/spot_catalog.dart';
@@ -120,46 +120,26 @@ class _SpotCard extends StatelessWidget {
     // Build media
     final media = _SpotMedia(spot: spot);
 
-    // Build type badge
-    final typeBadge = Pill(
-      label: spot.category,
-      tone: PillTone.warning,
-    );
+    // Overline "CITTÀ · CATEGORIA".
+    final overlineParts = [spot.city, spot.category]
+        .where((s) => s.trim().isNotEmpty)
+        .toList();
+    final overline = overlineParts.isEmpty ? 'Spot' : overlineParts.join(' · ');
 
-    // Build location subtitle
-    final subtitle = [
-      spot.city,
-      if ((spot.address ?? '').trim().isNotEmpty) spot.address!.trim(),
-    ].join(' · ');
-
-    // Build signals: bestFor + surface + photo count
-    final signals = <Widget>[];
+    // Riga statistiche: adatto a + fondo + foto.
+    final stats = <CardStat>[];
     if (spot.bestFor.isNotEmpty) {
-      signals.add(
-        Pill(
-          label: spot.bestFor,
-          tone: PillTone.signal,
-          icon: Icons.sports_motorsports_outlined,
-        ),
-      );
+      stats.add(CardStat(
+          icon: Icons.sports_motorsports_outlined, text: spot.bestFor));
     }
     if (spot.surface.isNotEmpty &&
         !spot.surface.toLowerCase().contains('confermare')) {
-      signals.add(
-        Pill(
-          label: spot.surface,
-          tone: PillTone.neutral,
-          icon: Icons.terrain_outlined,
-        ),
-      );
+      stats.add(CardStat(icon: Icons.terrain_outlined, text: spot.surface));
     }
-    signals.add(
-      Pill(
-        label: l10n.spotsPhotosCount(spot.photoCount),
-        tone: PillTone.neutral,
+    stats.add(CardStat(
         icon: Icons.photo_library_outlined,
-      ),
-    );
+        text: l10n.spotsPhotosCount(spot.photoCount)));
+    final signals = <Widget>[CardStatRow(stats: stats)];
 
     // Build footer leading CTA
     final footerLeading = FilledButton.icon(
@@ -186,9 +166,8 @@ class _SpotCard extends StatelessWidget {
     return PlaceCard(
       media: media,
       title: spot.title,
-      subtitle: subtitle,
-      typeBadge: typeBadge,
-      signals: signals.isNotEmpty ? signals : null,
+      overline: overline,
+      signals: signals,
       body: spot.note.isNotEmpty ? spot.note : null,
       footerLeading: footerLeading,
       footerActions: footerActions.isNotEmpty ? footerActions : null,

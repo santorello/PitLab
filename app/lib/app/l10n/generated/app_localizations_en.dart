@@ -143,6 +143,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get comingButton => 'I\'m coming';
 
   @override
+  String get trackArrivalConfirmed => 'Arrival set';
+
+  @override
   String get favoriteTrackButton => 'Favorite';
 
   @override
@@ -2121,7 +2124,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pitcoinBalanceSubtitle =>
-      'How active and useful you are to the PitLap community.';
+      'Stack them while you can: sooner or later you\'ll need them.';
 
   @override
   String pitcoinBalanceDeltaWeek(int count) {

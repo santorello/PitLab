@@ -49,6 +49,7 @@
   "spotsSuggestEditAction": "Suggest an update",
   "signupButton": "Sign me up",
   "comingButton": "I'm coming",
+  "trackArrivalConfirmed": "Arrival set",
   "favoriteTrackButton": "Favorite",
   "favoritedTrackButton": "Saved",
   "followTrackButton": "Follow track",
@@ -760,7 +761,7 @@
     }
   },
   "pitcoinBalanceTitle": "PitCoin",
-  "pitcoinBalanceSubtitle": "How active and useful you are to the PitLap community.",
+  "pitcoinBalanceSubtitle": "Stack them while you can: sooner or later you'll need them.",
   "pitcoinBalanceDeltaWeek": "+{count} this week",
   "@pitcoinBalanceDeltaWeek": {
     "placeholders": {

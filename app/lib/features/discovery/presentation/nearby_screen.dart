@@ -6,7 +6,7 @@ import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/adaptive_image.dart';
-import '../../../shared/widgets/pill.dart';
+import '../../../shared/widgets/card_stat_row.dart';
 import '../../../shared/widgets/place_card.dart';
 import '../../shops/application/public_shops_provider.dart';
 import '../../tracks/application/tracks_providers.dart';
@@ -344,36 +344,22 @@ class _NearbyPreviewCard extends StatelessWidget {
       type: type,
     );
 
-    // Build type badge
-    final typeBadge = Pill(
-      label: badge,
-      tone: type == 'track' ? PillTone.info : PillTone.warning,
-    );
+    // Overline "LUOGO · TIPO".
+    final overline =
+        [subtitle, badge].where((s) => s.trim().isNotEmpty).join(' · ');
 
-    // Build signals: primaryMeta + secondaryMeta + distance
-    // TODO(geolocation): aggiungere distanza come prima Pill quando geolocation utente sara' disponibile
-    // Formato atteso: "1,4 km" (virgola decimale italiana), tone: PillTone.signal
-    final signals = <Widget>[];
-    signals.add(
-      Pill(
-        label: primaryMeta,
-        tone: type == 'track' ? PillTone.success : PillTone.neutral,
+    // Riga statistiche compatta: meta principali + distanza.
+    // TODO(geolocation): distanza reale quando la geolocation utente sarà disponibile.
+    final signals = <Widget>[
+      CardStatRow(
+        stats: [
+          if (primaryMeta.trim().isNotEmpty) CardStat(text: primaryMeta),
+          if (secondaryMeta.trim().isNotEmpty) CardStat(text: secondaryMeta),
+          if (distance.trim().isNotEmpty)
+            CardStat(icon: Icons.place_outlined, text: distance),
+        ],
       ),
-    );
-    signals.add(
-      Pill(
-        label: secondaryMeta,
-        tone: PillTone.neutral,
-      ),
-    );
-    if (distance.trim().isNotEmpty) {
-      signals.add(
-        Pill(
-          label: distance,
-          tone: PillTone.signal,
-        ),
-      );
-    }
+    ];
 
     // Build footer leading CTA
     final footerLeading = FilledButton.icon(
@@ -392,9 +378,8 @@ class _NearbyPreviewCard extends StatelessWidget {
     return PlaceCard(
       media: media,
       title: title,
-      subtitle: subtitle,
-      typeBadge: typeBadge,
-      signals: signals.isNotEmpty ? signals : null,
+      overline: overline.isNotEmpty ? overline : null,
+      signals: signals,
       body: note.isNotEmpty ? note : null,
       footerLeading: footerLeading,
       footerActions: footerActions.isNotEmpty ? footerActions : null,

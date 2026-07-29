@@ -15,7 +15,7 @@ import '../../../shared/media/media_upload_state.dart';
 import '../../../shared/utils/local_image_data_url.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/image_transfer_progress_card.dart';
-import '../../../shared/widgets/pill.dart';
+import '../../../shared/widgets/card_stat_row.dart';
 import '../../../shared/widgets/place_card.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../profile/application/profile_hub_providers.dart';
@@ -1146,34 +1146,17 @@ class _EventCard extends StatelessWidget {
       badge: badge,
     );
 
-    // Build type badge
-    final typeBadge = Pill(
-      label: badge,
-      tone: PillTone.info,
-    );
-
-    // Build signals: creator + photo count
-    final signals = <Widget>[];
-    signals.add(
-      Pill(
-        label: creatorLabel,
-        tone: PillTone.neutral,
-        icon: Icons.person_outline,
+    // Riga statistiche: data + luogo + organizzatore.
+    final signals = <Widget>[
+      CardStatRow(
+        stats: [
+          CardStat(icon: Icons.event_outlined, text: date),
+          if (location.isNotEmpty)
+            CardStat(icon: Icons.place_outlined, text: location),
+          CardStat(icon: Icons.person_outline, text: creatorLabel),
+        ],
       ),
-    );
-    if (imageCount > 1) {
-      signals.add(
-        Pill(
-          label: _localeText(
-            context,
-            it: '$imageCount foto',
-            en: '$imageCount photos',
-          ),
-          tone: PillTone.neutral,
-          icon: Icons.photo_library_outlined,
-        ),
-      );
-    }
+    ];
 
     // Build footer leading CTA
     final footerLeading = FilledButton(
@@ -1204,16 +1187,12 @@ class _EventCard extends StatelessWidget {
       ),
     );
 
-    // Build body: location + note
-    final bodyText = '$location\n$note';
-
     return PlaceCard(
       media: media,
       title: title,
-      subtitle: null,
-      typeBadge: typeBadge,
-      signals: signals.isNotEmpty ? signals : null,
-      body: note.isNotEmpty ? bodyText : null,
+      overline: 'Evento',
+      signals: signals,
+      body: note.isNotEmpty ? note : null,
       footerLeading: footerLeading,
       footerActions: footerActions.isNotEmpty ? footerActions : null,
       onTap: onTap,
