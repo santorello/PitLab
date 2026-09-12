@@ -95,7 +95,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                             children: const [
                               TextSpan(text: 'Pit', style: TextStyle(color: Color(0xFF1A1A1A))),
-                              TextSpan(text: 'Lap 🏁', style: TextStyle(color: Color(0xFFFF6B35))),
+                              TextSpan(text: 'Lap', style: TextStyle(color: Color(0xFFFF6B35))),
                             ],
                           ),
                         ),
@@ -153,11 +153,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       TextField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(labelText: '✉️ ${l10n.emailLabel}'),
+                        decoration: InputDecoration(labelText: l10n.emailLabel),
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        '👤 ${l10n.loginAccountTypeTitle}',
+                        l10n.loginAccountTypeTitle,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 8),
@@ -284,6 +284,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          const Expanded(child: Divider()),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Text(
+                              l10n.loginOrDivider,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ),
+                          const Expanded(child: Divider()),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: _submitting
+                              ? null
+                              : () => _signInWithProvider(OAuthProvider.google),
+                          icon: const Icon(Icons.login, size: 20), // FR-27: icona piu pulita della "G" di g_mobiledata
+                          label: Text(l10n.loginContinueWithGoogle),
+                        ),
+                      ),
                       if ((widget.redirectPath ?? '').isNotEmpty) ...[
                         const SizedBox(height: 12),
                         Text(
@@ -368,6 +393,85 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(error.message)),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _submitting = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _signInWithProvider(OAuthProvider provider) async {
+    final client = ref.read(authClientProvider);
+    if (client == null) {
+      return;
+    }
+
+    // Stesso gating consensi del magic link: niente login senza terms + privacy.
+    if (!_acceptedTerms || !_acceptedPrivacyNotice) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.loginRequiredConsentsError),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _submitting = true;
+    });
+
+    try {
+      final redirectPath = widget.redirectPath ?? '/';
+      final params = <String, String>{
+        'redirect': redirectPath,
+        'termsAccepted': _acceptedTerms ? '1' : '0',
+        'privacySeen': _acceptedPrivacyNotice ? '1' : '0',
+        'marketingAccepted': _acceptedMarketing ? '1' : '0',
+        'roleIntent': _selectedAccountType,
+        'legalVersion': legalDocumentVersion,
+        'legalSource': 'oauth',
+      };
+      final redirectTo = kIsWeb
+          ? Uri(
+              scheme: Uri.base.scheme,
+              host: Uri.base.host,
+              port: Uri.base.hasPort ? Uri.base.port : null,
+              path: '/',
+              queryParameters: params,
+            ).toString()
+          // ponytail: deep link Android — richiede intent-filter nel manifest e
+          // l'URL in Supabase Auth > URL Configuration prima di funzionare su mobile.
+          : Uri(
+              scheme: 'io.pitlap.app',
+              host: 'login-callback',
+              queryParameters: params,
+            ).toString();
+
+      await client.auth.signInWithOAuth(
+        provider,
+        redirectTo: redirectTo,
+      );
+      // Il completamento avviene via redirect/deep link; la navigazione è
+      // gestita dal listener su currentUserProvider in initState.
+    } on AuthException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.message)),
+      );
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$error')),
       );
     } finally {
       if (mounted) {

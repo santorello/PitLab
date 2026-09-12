@@ -22,7 +22,7 @@ class PitcoinTransaction {
   /// Chiave dell'azione (FK su `pitcoin_action_definitions.action_key`).
   final String actionKey;
 
-  /// Punti accreditati (puo' essere 0 per placeholder di submission o
+  /// Punti accreditati (può essere 0 per placeholder di submission o
   /// negativo per future revoche).
   final int points;
 

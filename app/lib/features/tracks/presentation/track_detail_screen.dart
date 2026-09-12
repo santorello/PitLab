@@ -64,9 +64,13 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
           final heroDescription = track.description.isNotEmpty
               ? track.description
               : track.shortDescription;
+          // FR-14: il paese in DB è spesso in inglese ("Italy"). Mostriamo la
+          // città; il paese solo se non è Italia (dato per scontato nell'app IT).
+          final isItaly = const {'italia', 'italy', 'it'}
+              .contains(track.country.trim().toLowerCase());
           final locationText = [
             if (track.city.isNotEmpty) track.city,
-            if (track.country.isNotEmpty) track.country,
+            if (track.country.isNotEmpty && !isItaly) track.country,
           ].join(', ');
           final weatherRequest =
               track.latitude != null && track.longitude != null
@@ -99,9 +103,13 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
             data: (value) => value,
             orElse: () => 0,
           );
+          // FR-05/FR-06: la CTA principale è "Sto arrivando" finché l'utente
+          // non ha segnalato la presenza; se è già "coming" mostra lo stato
+          // confermato e il tap riapre il bottom sheet (che include "Annulla").
           final arrivalActionLabel = todayArrivalAsync.maybeWhen(
-            data: (arrival) => arrival?.status == 'coming' ? l10n.comingButton : l10n.signupButton,
-            orElse: () => l10n.signupButton,
+            data: (arrival) =>
+                arrival?.status == 'coming' ? l10n.trackArrivalConfirmed : l10n.comingButton,
+            orElse: () => l10n.comingButton,
           );
           final favoriteActionLabel = isFollowed
               ? l10n.favoritedTrackButton
@@ -595,7 +603,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('🚗 ${l10n.arrivalSheetTitle}', style: Theme.of(context).textTheme.titleLarge),
+                  Text(l10n.arrivalSheetTitle, style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
                     l10n.arrivalSheetBody(trackName),
@@ -798,7 +806,7 @@ class _TodayAtTrackCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('🏁 ${l10n.todayAtTrackTitle}', style: Theme.of(context).textTheme.titleLarge),
+            Text(l10n.todayAtTrackTitle, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 12),
             _buildArrivalSummary(context),
             const SizedBox(height: 16),
@@ -970,8 +978,8 @@ class _TodayAtTrackCard extends StatelessWidget {
             Text(
               summary.activeCount > 0
                   ? (isItalian
-                        ? '${summary.activeCount} persone hanno gia\' segnalato una presenza possibile per oggi.'
-                        : '${summary.activeCount} people have already signaled they may be at the track today.')
+                        ? '${summary.activeCount} ${summary.activeCount == 1 ? 'persona ha' : 'persone hanno'} già segnalato una presenza possibile per oggi.'
+                        : '${summary.activeCount} ${summary.activeCount == 1 ? 'person has' : 'people have'} already signaled they may be at the track today.')
                   : (isItalian
                         ? 'Nessuna presenza segnalata per oggi al momento.'
                         : 'No attendance has been reported for today yet.'),
@@ -1208,7 +1216,7 @@ class _WeatherVerdictCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('🌤️ ${l10n.weatherTrackTitle}', style: Theme.of(context).textTheme.titleLarge),
+                      Text(l10n.weatherTrackTitle, style: Theme.of(context).textTheme.titleLarge),
                       const SizedBox(height: 2),
                       Text(
                         l10n.weatherQuickVerdict,
@@ -1377,17 +1385,28 @@ class _CategoryTag extends StatelessWidget {
   /// Mappa la chiave DB in una label leggibile e un colore di accento.
   (String, Color) _resolve() {
     return switch (categoryKey) {
-      'buggy' => ('🏎 Buggy', const Color(0xFFFF6B35)),
-      'mini_z' => ('🔵 Mini-Z', const Color(0xFF4A90D9)),
-      'scaler' => ('🪨 Scaler', const Color(0xFF7E6B52)),
-      'bashing' => ('💥 Bashing', const Color(0xFFE74C3C)),
-      'indoor' => ('🏠 Indoor', const Color(0xFF27AE60)),
-      'outdoor' => ('☀️ Outdoor', const Color(0xFFF39C12)),
-      'droni' || 'drone' => ('🚁 Droni', const Color(0xFF8E44AD)),
-      'treni' || 'train' => ('🚂 Treni', const Color(0xFF16A085)),
-      _ => (categoryKey, const Color(0xFF95A5A6)),
+      'buggy' => ('Buggy', const Color(0xFFFF6B35)),
+      'mini_z' => ('Mini-Z', const Color(0xFF4A90D9)),
+      'scaler' => ('Scaler', const Color(0xFF7E6B52)),
+      'bashing' => ('Bashing', const Color(0xFFE74C3C)),
+      'indoor' => ('Indoor', const Color(0xFF27AE60)),
+      'outdoor' => ('Outdoor', const Color(0xFFF39C12)),
+      'droni' || 'drone' => ('Droni', const Color(0xFF8E44AD)),
+      'treni' || 'train' => ('Treni', const Color(0xFF16A085)),
+      'movimento_terra' => ('Movimento terra', const Color(0xFF95A5A6)),
+      'militare' => ('Militare', const Color(0xFF6B8E23)),
+      'mini4wd' || 'mini_4wd' => ('Mini 4WD', const Color(0xFF4A90D9)),
+      'francobolli' => ('Francobolli', const Color(0xFF95A5A6)),
+      // FR-13: fallback leggibile (title-case) invece dello slug grezzo.
+      _ => (_titleCase(categoryKey), const Color(0xFF95A5A6)),
     };
   }
+
+  static String _titleCase(String key) => key
+      .replaceAll('_', ' ')
+      .split(' ')
+      .map((w) => w.isEmpty ? w : '${w[0].toUpperCase()}${w.substring(1)}')
+      .join(' ');
 
   @override
   Widget build(BuildContext context) {

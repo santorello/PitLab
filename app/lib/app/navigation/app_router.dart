@@ -55,6 +55,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   var isAdmin = ref.read(isAdminProvider);
   var canManageTracks = ref.read(canManageTracksProvider);
   var canManageShops = ref.read(canManageShopsProvider);
+  var onboardingCompleted = ref.read(onboardingCompletedProvider);
+  var roleLoaded = ref.read(roleLoadedProvider);
 
   final notifier = _RouterNotifier();
 
@@ -76,6 +78,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     canManageShops = next;
     notifier.notify();
   });
+  ref.listen<bool>(onboardingCompletedProvider, (_, next) {
+    onboardingCompleted = next;
+    notifier.notify();
+  });
+  ref.listen<bool>(roleLoadedProvider, (_, next) {
+    roleLoaded = next;
+    notifier.notify();
+  });
 
   // Dispose del notifier quando il provider viene dismesso.
   ref.onDispose(notifier.dispose);
@@ -92,18 +102,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   String? requireAdmin(GoRouterState state) {
     final authRedirect = requireAuth(state);
     if (authRedirect != null) return authRedirect;
+    // FR-01: non reindirizzare finché il ruolo non è noto (evita la race
+    // tra boot del router e caricamento del profilo su deep-link /refresh).
+    if (!roleLoaded) return null;
     return isAdmin ? null : '/';
   }
 
   String? requireTrackManager(GoRouterState state) {
     final authRedirect = requireAuth(state);
     if (authRedirect != null) return authRedirect;
+    if (!roleLoaded) return null;
     return canManageTracks ? null : '/';
   }
 
   String? requireShopManager(GoRouterState state) {
     final authRedirect = requireAuth(state);
     if (authRedirect != null) return authRedirect;
+    if (!roleLoaded) return null;
     return canManageShops ? null : '/';
   }
 
@@ -116,6 +131,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     // refreshListenable fa sì che GoRouter rivaluti i redirect quando lo stato
     // di autenticazione cambia, senza ricreare l'intera istanza del router.
     refreshListenable: notifier,
+    // Gate onboarding: un utente autenticato che non ha completato l'onboarding
+    // viene portato su /onboarding. Escluse le rotte che deve poter raggiungere
+    // durante l'onboarding stesso (onboarding, login, pagine legali) per non
+    // creare loop. Vale sia per il magic link sia per il login Google.
+    redirect: (context, state) {
+      if (currentUser == null || onboardingCompleted) {
+        return null;
+      }
+      final path = state.uri.path;
+      if (path == '/onboarding' ||
+          path == '/login' ||
+          path.startsWith('/legal')) {
+        return null;
+      }
+      return '/onboarding';
+    },
     errorBuilder: (context, state) => const NotFoundScreen(),
     routes: [
       ShellRoute(
@@ -309,6 +340,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/login',
         name: 'login',
+        // FR-27: un utente già autenticato non deve restare su /login.
+        redirect: (context, state) {
+          if (currentUser == null) return null;
+          final target = state.uri.queryParameters['redirect'];
+          return (target != null && target.isNotEmpty) ? target : '/';
+        },
         builder: (context, state) => LoginScreen(
           redirectPath: state.uri.queryParameters['redirect'],
           authErrorCode: state.uri.queryParameters['authError'],

@@ -195,7 +195,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
     // effectiveUserIdProvider: in impersonazione l'attribution della bozza pista
     // (campo `submitted_by`) deve seguire l'utente osservato, non l'admin reale.
     // Senza questo, una bozza creata via impersonazione resta invisibile in /manager
-    // dell'utente impersonato perche' submittedTracksProvider filtra per submitted_by.
+    // dell'utente impersonato perché submittedTracksProvider filtra per submitted_by.
     final attributionUserId = ref.watch(effectiveUserIdProvider) ?? currentUser?.id;
 
     return ContentScaffold(

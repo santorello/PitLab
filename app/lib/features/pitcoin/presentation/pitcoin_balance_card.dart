@@ -7,7 +7,7 @@ import '../../../app/theme/app_colors.dart';
 import '../providers/pitcoin_providers.dart';
 
 /// Card riusabile che mostra il balance PitCoin dell'utente effettivo
-/// (loggato o impersonato) e una CTA verso lo storico attivita'.
+/// (loggato o impersonato) e una CTA verso lo storico attività.
 ///
 /// Visibile solo se l'utente e' autenticato.
 ///
@@ -38,7 +38,7 @@ class PitcoinBalanceCard extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '🪙 ${l10n.pitcoinBalanceTitle}',
+                    l10n.pitcoinBalanceTitle,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: Colors.white70,
                     ),

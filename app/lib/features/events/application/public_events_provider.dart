@@ -35,8 +35,32 @@ class PublicEventsRepository {
         .whereType<Map<String, dynamic>>()
         .map(mapPublicEventRow)
         .toList();
+
+    // FR-02: gli eventi creati dagli utenti vivono in `community_events`
+    // (nessuna colonna visibility → tutti pubblici). La sezione "In evidenza"
+    // deve includerli, altrimenti resta vuota anche con eventi futuri pubblici.
+    try {
+      final communityResponse = await _client
+          .from('community_events')
+          .select('''
+            id, author_id, title, location, venue, note, badge,
+            creator_label, creator_role, image_urls, starts_at, ends_at
+          ''')
+          .gte('starts_at', now)
+          .order('starts_at')
+          .limit(limit);
+      events.addAll(
+        (communityResponse as List<dynamic>)
+            .whereType<Map<String, dynamic>>()
+            .map(CreatedEventRecord.fromRow),
+      );
+    } catch (e, st) {
+      AppErrorReporter.report(e, st,
+          context: 'public_events_provider.community');
+    }
+
     events.sort(_compareEventsByStartDate);
-    return events;
+    return events.take(limit).toList();
   }
 
   Future<List<CreatedEventRecord>> fetchPastPublicEvents({int limit = 50}) async {
@@ -100,7 +124,7 @@ class PublicEventsRepository {
         'Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu',
         'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic',
       ];
-      return '${days[dt.weekday - 1]} ${dt.day} ${months[dt.month - 1]}';
+      return '${days[dt.weekday - 1]} ${dt.day} ${months[dt.month - 1]} ${dt.year}';
     } catch (e, st) {
       AppErrorReporter.report(e, st, context: 'public_events_provider');
       return '';

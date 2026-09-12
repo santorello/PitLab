@@ -153,7 +153,7 @@ class CreatedEventRecord {
         'Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu',
         'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic',
       ];
-      return '${days[dt.weekday - 1]} ${dt.day} ${months[dt.month - 1]}';
+      return '${days[dt.weekday - 1]} ${dt.day} ${months[dt.month - 1]} ${dt.year}';
     } catch (e, st) {
       AppErrorReporter.report(e, st, context: 'profile_hub_providers');
       return '';

@@ -245,7 +245,7 @@ class _ShopHero extends StatelessWidget {
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          _TypeBadge(label: '🏪 Negozio RC'),
+                          _TypeBadge(label: 'Negozio RC'),
                           if (shop.city.isNotEmpty)
                             _LocationBadge(city: shop.city),
                         ],
@@ -264,7 +264,7 @@ class _ShopHero extends StatelessWidget {
                               );
                               return;
                             }
-                            ref
+                            final nowFollowed = ref
                                 .read(followedShopIdsProvider.notifier)
                                 .toggle(shop.id);
                             // Delayed invalidation: wait for Supabase
@@ -272,6 +272,16 @@ class _ShopHero extends StatelessWidget {
                             Future<void>.delayed(
                               const Duration(milliseconds: 1500),
                               () => ref.invalidate(shopFollowerCountProvider(shop.id)),
+                            );
+                            // FR-26: snackbar di conferma come sulla pista.
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  nowFollowed
+                                      ? l10n.followShopSaved(shop.name)
+                                      : l10n.followShopRemoved(shop.name),
+                                ),
+                              ),
                             );
                           },
                           icon: Icon(

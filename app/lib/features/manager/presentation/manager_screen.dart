@@ -122,7 +122,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '🏁 ${l10n.managerNoTracksTitle}',
+                              l10n.managerNoTracksTitle,
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: 8),
@@ -183,7 +183,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '🏁 Cosa troverai qui',
+                              'Cosa troverai qui',
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: 8),
@@ -244,7 +244,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '🚀 Le tue piste in preparazione',
+                            'Le tue piste in preparazione',
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const SizedBox(height: 8),
@@ -276,7 +276,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '✅ Le tue piste approvate',
+                            'Le tue piste approvate',
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const SizedBox(height: 8),
@@ -308,7 +308,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '🏪 I tuoi negozi in gestione',
+                            'I tuoi negozi in gestione',
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const SizedBox(height: 8),
@@ -337,7 +337,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '🌐 Piste già in PitLap',
+                          'Piste già in PitLap',
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 8),
@@ -490,7 +490,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '🏁 ${l10n.managerAssignedTracksTitle}',
+                        l10n.managerAssignedTracksTitle,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
@@ -505,7 +505,6 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                         (track) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: _ManagedTrackCard(
-                            slug: track.slug,
                             name: track.name,
                             city: track.city,
                             status: track.status,
@@ -538,7 +537,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '🚀 Bozze e in approvazione',
+                                'Bozze e in approvazione',
                                 style: Theme.of(context).textTheme.titleLarge,
                               ),
                               const SizedBox(height: 8),
@@ -571,7 +570,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '🏪 I tuoi negozi in gestione',
+                          'I tuoi negozi in gestione',
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 8),
@@ -600,7 +599,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '📝 Ultimi aggiornamenti',
+                        'Ultimi aggiornamenti',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
@@ -684,7 +683,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '📡 ${l10n.managerTodayTitle}',
+                        l10n.managerTodayTitle,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
@@ -1375,7 +1374,6 @@ class _StatusHistoryItem extends StatelessWidget {
 
 class _ManagedTrackCard extends StatelessWidget {
   const _ManagedTrackCard({
-    required this.slug,
     required this.name,
     required this.city,
     required this.status,
@@ -1384,7 +1382,6 @@ class _ManagedTrackCard extends StatelessWidget {
     required this.onEdit,
   });
 
-  final String slug;
   final String name;
   final String city;
   final String status;
@@ -1394,6 +1391,15 @@ class _ManagedTrackCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    // FR-19: etichetta di stato leggibile (non lo slug DB "open" minuscolo).
+    final statusLabel = switch (status) {
+      'open' => l10n.statusOpen,
+      'wet' => l10n.statusWet,
+      'closed' => l10n.statusClosed,
+      'info' => 'Aggiornamento scheda',
+      _ => l10n.statusUnknown,
+    };
     return InkWell(
       onTap: onOpen,
       borderRadius: BorderRadius.circular(18),
@@ -1415,16 +1421,12 @@ class _ManagedTrackCard extends StatelessWidget {
                 context,
               ).textTheme.bodyMedium?.copyWith(color: AppColors.steel),
             ),
-            const SizedBox(height: 2),
-            Text(
-              '/track/$slug',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: AppColors.steel),
-            ),
+            // FR-19: rimosso il path di routing grezzo "/track/<slug>".
             const SizedBox(height: 10),
             Text(
-              statusMessage.trim().isEmpty ? status : '$status - $statusMessage',
+              statusMessage.trim().isEmpty
+                  ? statusLabel
+                  : '$statusLabel - $statusMessage',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 14),

@@ -446,11 +446,15 @@ class SupabaseTracksRepository implements TracksRepository {
       'updated_at': DateTime.now().toUtc().toIso8601String(),
     }, onConflict: 'track_id');
 
+    // FR-10: valorizza esplicitamente updated_at. La timeline ordina per
+    // updated_at desc con NULLS LAST: senza timestamp le nuove righe finivano
+    // in fondo (oltre il limit) e non comparivano tra gli "Ultimi aggiornamenti".
     await _client.from('track_status_history').insert({
       'track_id': trackId,
       'status': status,
       'message': normalizedMessage.isEmpty ? null : normalizedMessage,
       'updated_by': userId,
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
     });
 
     final serviceTypes = await _client

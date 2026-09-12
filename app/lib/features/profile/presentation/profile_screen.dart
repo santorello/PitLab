@@ -138,7 +138,7 @@ class ProfileScreen extends ConsumerWidget {
         .toList();
     final overviewTiles = [
       _OverviewTileData(
-        emoji: '🏁',
+        icon: Icons.flag_outlined,
         label: l10n.profileFavoriteTracks,
         value: followedTrackIdsAsync.maybeWhen(
           data: (ids) => ids.length.toString(),
@@ -161,7 +161,7 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
       _OverviewTileData(
-        emoji: '🛒',
+        icon: Icons.storefront_outlined,
         label: l10n.profileFavoriteShops,
         value: savedShopIdsAsync.maybeWhen(
           data: (ids) => ids.length.toString(),
@@ -184,7 +184,7 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
       _OverviewTileData(
-        emoji: '📅',
+        icon: Icons.event_outlined,
         label: l10n.profileCreatedEventsTitle,
         value: createdEventsAsync.maybeWhen(
           data: (events) => events.length.toString(),
@@ -207,7 +207,7 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
       _OverviewTileData(
-        emoji: '🔧',
+        icon: Icons.build_outlined,
         label: l10n.profileFavoriteBuilds,
         value: garageState.builds.length.toString(),
         helper: _profileText(
@@ -242,7 +242,7 @@ class ProfileScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '👤 ${l10n.profileTitle}',
+                    l10n.profileTitle,
                     style: Theme.of(
                       context,
                     ).textTheme.labelLarge?.copyWith(color: Colors.white70),
@@ -271,7 +271,7 @@ class ProfileScreen extends ConsumerWidget {
                               _profileText(
                                 context,
                                 it:
-                                    'Il tuo spazio personale per profilo, garage, eventi e attivita\' dentro PitLap.',
+                                    'Il tuo spazio personale per profilo, garage, eventi e attività dentro PitLap.',
                                 en:
                                     'Your personal space for profile, garage, events, and activity inside PitLap.',
                               ),
@@ -285,13 +285,13 @@ class ProfileScreen extends ConsumerWidget {
                               children: [
                                 _StatusChip(
                                   label: sessionUser != null
-                                      ? '🟢 ${l10n.accountActiveNow}'
-                                      : '👀 ${l10n.guestModeLabel}',
+                                      ? l10n.accountActiveNow
+                                      : l10n.guestModeLabel,
                                 ),
-                                _StatusChip(label: '🌐 $languageValue'),
+                                _StatusChip(label: languageValue),
                                 _StatusChip(
                                   label:
-                                      '🏷️ ${_roleLabel(l10n, roleValue)}',
+                                      _roleLabel(l10n, roleValue),
                                 ),
                                 if (isImpersonating)
                                   _StatusChip(
@@ -340,7 +340,7 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ),
           _ProfileSection(
-            eyebrow: '🧭 View d’insieme',
+            eyebrow: 'View d’insieme',
             title: 'Panoramica account',
             body:
                 'Una lettura rapida di ciò che segui, salvi e pubblichi dentro PitLap.',
@@ -358,7 +358,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 18),
           _ProfileSection(
-            eyebrow: '🪪 Identita',
+            eyebrow: 'Identità',
             title: l10n.profileBasicsTitle,
             body: l10n.profileBasicsBody,
             child: _ProfileBasicsEditor(
@@ -370,7 +370,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 18),
           _ProfileSection(
-            eyebrow: '⚡ Collegamenti',
+            eyebrow: 'Collegamenti',
             title: l10n.profileQuickLinksTitle,
             body: l10n.profileQuickLinksBody,
             child: Wrap(
@@ -378,17 +378,17 @@ class ProfileScreen extends ConsumerWidget {
               runSpacing: 12,
               children: [
                 _QuickLinkCard(
-                  emoji: '🏎️',
+                  icon: Icons.directions_car_outlined,
                   label: l10n.garageTitle,
                   onTap: () => context.go('/garage'),
                 ),
                 _QuickLinkCard(
-                  emoji: '📅',
+                  icon: Icons.event_outlined,
                   label: l10n.eventsTitle,
                   onTap: () => context.go('/events'),
                 ),
                 _QuickLinkCard(
-                  emoji: '🔐',
+                  icon: Icons.privacy_tip_outlined,
                   label: l10n.legalPrivacyTitle,
                   onTap: () => context.go('/legal/privacy'),
                 ),
@@ -397,7 +397,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 18),
           _ProfileSection(
-            eyebrow: '🔗 Presenza',
+            eyebrow: 'Presenza',
             title: l10n.externalLinksTitle,
             body: l10n.externalLinksProfileBody,
             child: Column(
@@ -422,7 +422,7 @@ class ProfileScreen extends ConsumerWidget {
           if (sessionUser != null) ...[
             const SizedBox(height: 18),
             _ProfileSection(
-              eyebrow: '🏆 ${l10n.pitcoinBadgesTitle}',
+              eyebrow: l10n.pitcoinBadgesTitle,
               title: l10n.pitcoinBadgesTitle,
               body: l10n.pitcoinBadgesSubtitle,
               child: const PitcoinBadgesSection(),
@@ -430,7 +430,7 @@ class ProfileScreen extends ConsumerWidget {
           ],
           const SizedBox(height: 18),
           _ProfileSection(
-            eyebrow: '🛡️ Privacy',
+            eyebrow: 'Privacy',
             title: l10n.profilePrivacyTitle,
             body: l10n.profilePrivacyBody,
             child: Column(
@@ -444,7 +444,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 18),
           _ProfileSection(
-            eyebrow: '⚙️ Impostazioni',
+            eyebrow: 'Impostazioni',
             title: l10n.profileSettingsTitle,
             body: l10n.profileSettingsBody,
             child: Column(
@@ -938,8 +938,8 @@ String _cleanProfileEyebrow(String value) {
   if (value.contains('View d')) {
     return 'Panoramica';
   }
-  if (value.contains('Identita')) {
-    return 'Identita\'';
+  if (value.contains('Identità')) {
+    return 'Identità';
   }
   if (value.contains('Collegamenti')) {
     return 'Collegamenti';
@@ -977,14 +977,14 @@ String _profileText(
 
 class _OverviewTileData {
   const _OverviewTileData({
-    required this.emoji,
+    required this.icon,
     required this.label,
     required this.value,
     required this.helper,
     required this.onTap,
   });
 
-  final String emoji;
+  final IconData icon;
   final String label;
   final String value;
   final String helper;
@@ -1012,7 +1012,7 @@ class _OverviewTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(data.emoji, style: const TextStyle(fontSize: 18)),
+            Icon(data.icon, size: 20, color: AppColors.signalOrange),
             const SizedBox(height: 10),
             Text(
               data.label,
@@ -1045,12 +1045,12 @@ class _OverviewTile extends StatelessWidget {
 
 class _QuickLinkCard extends StatelessWidget {
   const _QuickLinkCard({
-    required this.emoji,
+    required this.icon,
     required this.label,
     required this.onTap,
   });
 
-  final String emoji;
+  final IconData icon;
   final String label;
   final VoidCallback onTap;
 
@@ -1064,7 +1064,7 @@ class _QuickLinkCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(emoji),
+          Icon(icon, size: 18),
           const SizedBox(width: 10),
           Text(label),
         ],
@@ -1099,6 +1099,8 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
   bool _saving = false;
   bool _uploadingAvatar = false;
   MediaUploadBatchState? _avatarTransferState;
+  // FR-23: avatar salvato come data-URI base64: non riversarlo nel campo URL.
+  String? _uploadedAvatarData;
 
   @override
   void dispose() {
@@ -1124,7 +1126,15 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
       }
       _syncedProfileSignature = signature;
       _displayNameController.text = profile?.displayName ?? '';
-      _avatarUrlController.text = profile?.avatarUrl ?? '';
+      final loadedAvatar = profile?.avatarUrl ?? '';
+      if (loadedAvatar.startsWith('data:')) {
+        // Immagine caricata (base64): tienila fuori dal campo di testo.
+        _uploadedAvatarData = loadedAvatar;
+        _avatarUrlController.text = '';
+      } else {
+        _uploadedAvatarData = null;
+        _avatarUrlController.text = loadedAvatar;
+      }
       _languageCode = profile?.preferredLanguage ?? Localizations.localeOf(context).languageCode;
     });
 
@@ -1182,9 +1192,9 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _AvatarPreview(
-              imageUrl: _avatarUrlController.text.trim().isEmpty
-                  ? null
-                  : _avatarUrlController.text.trim(),
+              imageUrl: _avatarUrlController.text.trim().isNotEmpty
+                  ? _avatarUrlController.text.trim()
+                  : _uploadedAvatarData,
               fallbackLabel: _displayNameController.text.trim().isEmpty
                   ? widget.emailValue
                   : _displayNameController.text.trim(),
@@ -1204,10 +1214,26 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
                     ),
                     onChanged: (_) {
                       if (_editing) {
+                        // Un URL digitato sostituisce l'immagine caricata.
+                        _uploadedAvatarData = null;
                         setState(() {});
                       }
                     },
                   ),
+                  if (_uploadedAvatarData != null &&
+                      _avatarUrlController.text.trim().isEmpty) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      _profileText(
+                        context,
+                        it: 'Immagine caricata dal dispositivo in uso.',
+                        en: 'Image uploaded from your device in use.',
+                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.steel,
+                          ),
+                    ),
+                  ],
                   const SizedBox(height: 12),
                   FilledButton.tonalIcon(
                     onPressed: !_editing || !widget.canEdit || _uploadingAvatar
@@ -1397,6 +1423,7 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
         setState(() {
           _avatarTransferState = uploadController.snapshot;
           _avatarUrlController.text = result.publicUrl;
+          _uploadedAvatarData = null;
         });
       } on MediaUploadException catch (e) {
         if (!mounted) return;
@@ -1448,7 +1475,9 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
         userId: userId,
         displayName: _displayNameController.text.trim(),
         languageCode: _languageCode,
-        avatarUrl: _avatarUrlController.text.trim().isEmpty ? null : _avatarUrlController.text.trim(),
+        avatarUrl: _avatarUrlController.text.trim().isNotEmpty
+            ? _avatarUrlController.text.trim()
+            : _uploadedAvatarData,
       );
       ref.read(localeProvider.notifier).setLocale(Locale(_languageCode));
       ref.invalidate(effectiveUserProfileProvider);

@@ -398,6 +398,16 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String followShopSaved(String shopName) {
+    return '$shopName aggiunto ai preferiti.';
+  }
+
+  @override
+  String followShopRemoved(String shopName) {
+    return '$shopName rimosso dai preferiti.';
+  }
+
+  @override
   String get loginTitle => 'Accedi a PitLap';
 
   @override
@@ -432,6 +442,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get loginSending => 'Invio in corso...';
+
+  @override
+  String get loginOrDivider => 'oppure';
+
+  @override
+  String get loginContinueWithGoogle => 'Continua con Google';
 
   @override
   String get loginTermsConsentLabel => 'Accetto i Termini di Servizio';
@@ -492,7 +508,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'PitLap tratta dati account (email e identificativo utente), dati profilo (nome visibile, lingua), preferenze, piste salvate, presenze giornaliere in pista, contenuti di garage o profilo pubblico resi visibili su scelta dell\'utente, e dati tecnici minimi necessari per sicurezza, autenticazione e corretto funzionamento del servizio.';
 
   @override
-  String get legalPrivacySectionPurposeTitle => 'Finalita\' del trattamento';
+  String get legalPrivacySectionPurposeTitle => 'Finalità del trattamento';
 
   @override
   String get legalPrivacySectionPurposeBody =>
@@ -510,14 +526,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get legalPrivacySectionRightsBody =>
-      'Ai sensi degli artt. 15-22 GDPR, l\'utente ha diritto di: accedere ai propri dati; ottenerne la rettifica o la cancellazione; richiedere la limitazione del trattamento; opporsi al trattamento basato su legittimo interesse; ricevere i dati in formato strutturato (portabilita\'); revocare il consenso in qualsiasi momento senza pregiudizio per la liceità del trattamento anteriore. Per esercitare questi diritti: privacy@pitlap.app. In caso di violazione, è possibile proporre reclamo all\'autorita\' di controllo competente (Garante per la protezione dei dati personali, www.garanteprivacy.it).';
+      'Ai sensi degli artt. 15-22 GDPR, l\'utente ha diritto di: accedere ai propri dati; ottenerne la rettifica o la cancellazione; richiedere la limitazione del trattamento; opporsi al trattamento basato su legittimo interesse; ricevere i dati in formato strutturato (portabilita\'); revocare il consenso in qualsiasi momento senza pregiudizio per la liceità del trattamento anteriore. Per esercitare questi diritti: beppe.apps@gmail.com. In caso di violazione, è possibile proporre reclamo all\'autorità di controllo competente (Garante per la protezione dei dati personali, www.garanteprivacy.it).';
 
   @override
   String get legalPrivacySectionControllerTitle => 'Titolare del trattamento';
 
   @override
   String get legalPrivacySectionControllerBody =>
-      'Titolare del trattamento è PitLap (progetto in fase pre-lancio). I dati di contatto definitivi saranno indicati prima dell\'apertura al pubblico. Per qualsiasi richiesta relativa alla privacy scrivere a: privacy@pitlap.app.';
+      'Titolare del trattamento è Giuseppe Santoro, Comune di Rho (MI), Italia. Per qualsiasi richiesta relativa alla protezione dei dati personali (inclusa la revoca dei consensi e l\'esercizio dei diritti) scrivere a: beppe.apps@gmail.com. Non è stato nominato un Responsabile della Protezione dei Dati (DPO), non obbligatorio per la presente scala di trattamento ai sensi dell\'art. 37 GDPR; il punto di contatto è l\'indirizzo email indicato.';
 
   @override
   String get legalPrivacySectionProcessorsTitle => 'Responsabili e fornitori';
@@ -546,6 +562,13 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get legalPrivacySectionSecurityBody =>
       'PitLap adotta misure tecniche e organizzative adeguate per proteggere i dati da accessi non autorizzati, alterazioni o divulgazioni indebite. L\'autenticazione avviene tramite magic link (senza password da memorizzare); i dati sono trasmessi via HTTPS; i servizi infrastrutturali sono soggetti ai controlli di sicurezza di Supabase. In caso di violazione dei dati personali, saranno applicate le procedure di notifica previste dagli artt. 33-34 GDPR.';
+
+  @override
+  String get legalPrivacySectionAgeTitle => 'Età minima';
+
+  @override
+  String get legalPrivacySectionAgeBody =>
+      'Il servizio è riservato agli utenti che hanno compiuto almeno 14 anni, età minima prevista dall\'art. 8 GDPR come recepito in Italia (art. 2-quinquies del D.Lgs. 196/2003). Al momento della registrazione l\'utente dichiara di avere almeno 14 anni. PitLap non raccoglie consapevolmente dati di minori di 14 anni: qualora il titolare accerti che un utente non ha l\'età minima, l\'account verrà sospeso e i dati cancellati senza indugio. Per segnalazioni: beppe.apps@gmail.com.';
 
   @override
   String get legalTermsTitle => 'Termini di Servizio';
@@ -595,7 +618,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get legalTermsSectionLiabilityBody =>
-      'Nella misura consentita dalla legge, PitLap non è responsabile per danni diretti o indiretti derivanti dall\'uso o dall\'impossibilita\' di uso del servizio, da errori nelle informazioni fornite da utenti o terzi, da interruzioni del servizio o da accessi non autorizzati a causa di eventi fuori dal controllo ragionevole di PitLap. Questa limitazione non si applica in caso di dolo o colpa grave.';
+      'Nella misura consentita dalla legge, PitLap non è responsabile per danni diretti o indiretti derivanti dall\'uso o dall\'impossibilità di uso del servizio, da errori nelle informazioni fornite da utenti o terzi, da interruzioni del servizio o da accessi non autorizzati a causa di eventi fuori dal controllo ragionevole di PitLap. Questa limitazione non si applica in caso di dolo o colpa grave.';
 
   @override
   String get legalTermsSectionGoverningTitle =>
@@ -640,7 +663,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get legalCookiesSectionMarketingBody =>
-      'PitLap non installa cookie di marketing o profilazione. Qualora venissero introdotti, saranno preceduti da una richiesta di consenso esplicita, specifica e revocabile in qualsiasi momento, in conformita\' con la normativa vigente.';
+      'PitLap non installa cookie di marketing o profilazione. Qualora venissero introdotti, saranno preceduti da una richiesta di consenso esplicita, specifica e revocabile in qualsiasi momento, in conformità con la normativa vigente.';
 
   @override
   String get legalCookiesSectionStatusTitle => 'Gestione delle preferenze';
@@ -838,12 +861,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get garageBuildsTitle => 'Build recenti';
 
   @override
-  String garageBuildsCount(Object count) {
-    return '$count modelli in vetrina';
+  String garageBuildsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count modelli in vetrina',
+      one: '1 modello in vetrina',
+    );
+    return '$_temp0';
   }
 
   @override
-  String get garageVisibilityTitle => 'Visibilita\' garage';
+  String get garageVisibilityTitle => 'Visibilità garage';
 
   @override
   String get garageVisibilityBody =>
@@ -856,7 +885,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get garageTogglePublic => 'Pubblico';
 
   @override
-  String get garageBuildVisibilityTitle => 'Visibilita\' delle build';
+  String get garageBuildVisibilityTitle => 'Visibilità delle build';
 
   @override
   String get garageBuildVisibilityBody =>
@@ -991,7 +1020,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get adminOverviewBody =>
-      'Quadro sintetico delle entità chiave che l\'admin dovra\' controllare nella dashboard reale.';
+      'Quadro sintetico delle entità chiave che l\'admin dovrà controllare nella dashboard reale.';
 
   @override
   String get adminUsersMetric => 'Utenti';
@@ -1286,7 +1315,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileTogglePublic => 'Profilo pubblico';
 
   @override
-  String get profileGarageVisibilityTitle => 'Visibilita\' garage';
+  String get profileGarageVisibilityTitle => 'Visibilità garage';
 
   @override
   String get profileGarageVisibilityBody =>
@@ -1818,7 +1847,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get profileBasicsBody =>
-      'Qui puoi aggiornare subito nome visibile, lingua e foto profilo. Il resto dei dati arrivera\' nel flusso onboarding.';
+      'Qui puoi aggiornare subito nome visibile, lingua e foto profilo. Il resto dei dati arriverà nel flusso onboarding.';
 
   @override
   String get profilePhotoUrl => 'Foto profilo (URL)';
@@ -1924,7 +1953,13 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String garagePublicBuildsCount(int count) {
-    return '$count build pubbliche';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count build pubbliche',
+      one: '1 build pubblica',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2019,6 +2054,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get nearbyFilterShops => 'Negozi';
 
   @override
+  String get nearbyBadgeTrack => 'Pista RC';
+
+  @override
+  String get nearbyBadgeShop => 'Negozio';
+
+  @override
   String get nearbyNoResults => 'Nessun risultato per i filtri attivi.';
 
   @override
@@ -2038,7 +2079,13 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String nearbyServicesCount(int count) {
-    return '$count servizi';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count servizi',
+      one: '1 servizio',
+    );
+    return '$_temp0';
   }
 
   @override

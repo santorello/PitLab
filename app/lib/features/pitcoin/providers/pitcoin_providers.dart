@@ -80,7 +80,7 @@ class PitcoinTransactionsQuery {
 ///
 /// Pattern di pagination "load more" lato widget: la prima pagina chiede
 /// `before=null`; le successive ripassano l'`awarded_at` dell'ultima riga
-/// gia' visibile. La RLS lato server impedisce a non-owner di vedere righe.
+/// già visibile. La RLS lato server impedisce a non-owner di vedere righe.
 final userPitcoinTransactionsProvider =
     FutureProvider.family<List<PitcoinTransaction>, PitcoinTransactionsQuery>(
         (ref, query) async {

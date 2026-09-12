@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/bootstrap/bootstrap.dart';
@@ -11,6 +13,12 @@ void main() {
   // init and the whole widget tree share one error-handling context.
   AppErrorReporter.runGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    // URL puliti su web (path invece di hash): i link condivisi come /tracks o
+    // /legal/privacy atterrano sulla pagina giusta. Richiede il fallback SPA
+    // lato host (vedi web/_redirects per Cloudflare Pages).
+    if (kIsWeb) {
+      usePathUrlStrategy();
+    }
     AppErrorReporter.init();
 
     if (AppConfig.hasSupabaseConfig) {

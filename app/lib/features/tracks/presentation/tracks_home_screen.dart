@@ -155,7 +155,14 @@ class _TracksHomeScreenState extends ConsumerState<TracksHomeScreen> {
           ),
           if (availableCities.isNotEmpty) ...[
             const SizedBox(height: 12),
-            DropdownButtonFormField<String?>(
+            // FR-29: vincola la larghezza del menu Città (a piena larghezza
+            // veniva tagliato dal bordo destro del viewport).
+            Align(
+              alignment: Alignment.centerLeft,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 360),
+                child: DropdownButtonFormField<String?>(
+              isExpanded: true,
               initialValue: _activeCity,
               decoration: InputDecoration(
                 labelText: _cityFilterLabel(context),
@@ -178,6 +185,8 @@ class _TracksHomeScreenState extends ConsumerState<TracksHomeScreen> {
                   _activeCity = value;
                 });
               },
+                ),
+              ),
             ),
           ],
           const SizedBox(height: 16),

@@ -6,7 +6,7 @@ import '../../../app/theme/app_colors.dart';
 import '../data/models/pitcoin_badge.dart';
 import '../providers/pitcoin_providers.dart';
 
-/// Vetrina badge. Due modalita':
+/// Vetrina badge. Due modalità:
 ///
 /// - **owner**: griglia col catalogo completo. Ottenute = colorate.
 ///   Non ancora ottenute = grigie. Per via dello stato corrente la progress
@@ -19,7 +19,7 @@ class PitcoinBadgesSection extends ConsumerWidget {
     super.key,
   });
 
-  /// Se valorizzato, modalita' pubblica: legge le sole badge ottenute
+  /// Se valorizzato, modalità pubblica: legge le sole badge ottenute
   /// dell'utente identificato dal public_slug.
   final String? forSlug;
 

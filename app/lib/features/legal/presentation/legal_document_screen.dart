@@ -108,6 +108,10 @@ class LegalDocumentScreen extends StatelessWidget {
             title: l10n.legalPrivacySectionSecurityTitle,
             body: l10n.legalPrivacySectionSecurityBody,
           ),
+          _LegalSection(
+            title: l10n.legalPrivacySectionAgeTitle,
+            body: l10n.legalPrivacySectionAgeBody,
+          ),
         ],
       LegalDocumentType.terms => [
           _LegalSection(

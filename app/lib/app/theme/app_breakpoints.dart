@@ -5,10 +5,10 @@ class AppBreakpoints {
   static const double cardStack = 720;
 
   /// Sotto questa soglia AppScaffold usa NavigationBar in basso, sopra usa NavigationRail.
-  /// Mantiene il valore gia' usato da AppScaffold per non rompere niente.
+  /// Mantiene il valore già usato da AppScaffold per non rompere niente.
   static const double navRail = 1100;
 
-  /// Larghezza massima del contenuto centrato in pagina, gia' usato da ContentScaffold.
+  /// Larghezza massima del contenuto centrato in pagina, già usato da ContentScaffold.
   static const double contentMaxWidth = 1200;
 
   static bool isCompact(double width) => width < cardStack;

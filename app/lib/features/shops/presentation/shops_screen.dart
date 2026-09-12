@@ -96,7 +96,7 @@ class _ShopsScreenState extends ConsumerState<ShopsScreen> {
                       border: Border.all(color: AppColors.signalOrange.withAlpha(80)),
                     ),
                     child: const Text(
-                      '🏪 Gestione negozio',
+                      'Gestione negozio',
                       style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
@@ -141,7 +141,7 @@ class _ShopsScreenState extends ConsumerState<ShopsScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Bozze, schede in approvazione e negozi gia\' preparati dal tuo account.',
+                        'Bozze, schede in approvazione e negozi già preparati dal tuo account.',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: AppColors.steel,
                         ),
@@ -477,8 +477,13 @@ class _ShopCard extends StatelessWidget {
         ];
 
         // Build footer leading CTA
+        // FR-15: CTA arancione come le card piste (uniforma il colore primario).
         final footerLeading = FilledButton(
           onPressed: onTap,
+          style: FilledButton.styleFrom(
+            backgroundColor: AppColors.signalOrange,
+            foregroundColor: Colors.white,
+          ),
           child: Text(l10n.shopOpenDetailsAction),
         );
 
@@ -570,7 +575,7 @@ class _ShopMedia extends StatelessWidget {
                           color: Colors.white.withAlpha(170),
                           borderRadius: BorderRadius.circular(AppRadius.pill),
                         ),
-                        child: const Text('Shop'),
+                        child: const Text('Negozio'),
                       ),
                       const Spacer(),
                       Icon(

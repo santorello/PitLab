@@ -399,6 +399,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String followShopSaved(String shopName) {
+    return '$shopName added to favourites.';
+  }
+
+  @override
+  String followShopRemoved(String shopName) {
+    return '$shopName removed from favourites.';
+  }
+
+  @override
   String get loginTitle => 'Log in to PitLap';
 
   @override
@@ -433,6 +443,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginSending => 'Sending...';
+
+  @override
+  String get loginOrDivider => 'or';
+
+  @override
+  String get loginContinueWithGoogle => 'Continue with Google';
 
   @override
   String get loginTermsConsentLabel => 'I accept the Terms of Service';
@@ -510,14 +526,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legalPrivacySectionRightsBody =>
-      'Under Arts. 15-22 GDPR, users have the right to: access their personal data; obtain rectification or erasure; request restriction of processing; object to processing based on legitimate interest; receive data in a structured format (portability); withdraw consent at any time without affecting the lawfulness of prior processing. To exercise these rights: privacy@pitlap.app. Users may also lodge a complaint with the competent supervisory authority.';
+      'Under Arts. 15-22 GDPR, users have the right to: access their personal data; obtain rectification or erasure; request restriction of processing; object to processing based on legitimate interest; receive data in a structured format (portability); withdraw consent at any time without affecting the lawfulness of prior processing. To exercise these rights: beppe.apps@gmail.com. Users may also lodge a complaint with the competent supervisory authority (in Italy, the Garante per la protezione dei dati personali, www.garanteprivacy.it).';
 
   @override
   String get legalPrivacySectionControllerTitle => 'Data controller';
 
   @override
   String get legalPrivacySectionControllerBody =>
-      'The data controller is PitLap (pre-launch project). Full controller details will be provided before public launch. For any privacy-related enquiry: privacy@pitlap.app.';
+      'The data controller is Giuseppe Santoro, Municipality of Rho (MI), Italy. For any request regarding personal data protection (including withdrawal of consent and exercise of your rights) write to: beppe.apps@gmail.com. No Data Protection Officer (DPO) has been appointed, as it is not mandatory for this scale of processing under Art. 37 GDPR; the contact point is the email address above.';
 
   @override
   String get legalPrivacySectionProcessorsTitle =>
@@ -547,6 +563,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get legalPrivacySectionSecurityBody =>
       'PitLap implements appropriate technical and organisational measures to protect data against unauthorised access, alteration or disclosure. Authentication relies on magic links (no password to store); data is transmitted over HTTPS; infrastructure services are subject to Supabase\'s security controls. In the event of a personal data breach, notification procedures under Arts. 33-34 GDPR will be applied.';
+
+  @override
+  String get legalPrivacySectionAgeTitle => 'Minimum age';
+
+  @override
+  String get legalPrivacySectionAgeBody =>
+      'The service is reserved for users aged at least 14, the minimum age set by Art. 8 GDPR as implemented in Italy (Art. 2-quinquies of Legislative Decree 196/2003). On registration, the user declares to be at least 14 years old. PitLap does not knowingly collect data from children under 14: should the controller find that a user does not meet the minimum age, the account will be suspended and the data deleted without delay. Reports: beppe.apps@gmail.com.';
 
   @override
   String get legalTermsTitle => 'Terms of Service';
@@ -839,8 +862,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get garageBuildsTitle => 'Recent builds';
 
   @override
-  String garageBuildsCount(Object count) {
-    return '$count showcase models';
+  String garageBuildsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count showcase models',
+      one: '1 showcase model',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1924,7 +1953,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String garagePublicBuildsCount(int count) {
-    return '$count public builds';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count public builds',
+      one: '1 public build',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2019,6 +2054,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nearbyFilterShops => 'Shops';
 
   @override
+  String get nearbyBadgeTrack => 'RC track';
+
+  @override
+  String get nearbyBadgeShop => 'Shop';
+
+  @override
   String get nearbyNoResults => 'No results for the active filters.';
 
   @override
@@ -2038,7 +2079,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String nearbyServicesCount(int count) {
-    return '$count services';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count services',
+      one: '1 service',
+    );
+    return '$_temp0';
   }
 
   @override

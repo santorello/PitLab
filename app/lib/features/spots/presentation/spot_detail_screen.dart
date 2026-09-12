@@ -58,7 +58,13 @@ class SpotDetailScreen extends ConsumerWidget {
 
     return ContentScaffold(
       title: spot.title,
-      description: l10n.spotsDescription,
+      // FR-22: descrizione contestuale dello spot, non il sottotitolo generico
+      // della pagina lista.
+      description: spot.note.trim().isNotEmpty
+          ? spot.note.trim()
+          : (spot.city.trim().isNotEmpty
+              ? spot.city.trim()
+              : l10n.spotsDescription),
       child: ListView(
         children: [
           Card(

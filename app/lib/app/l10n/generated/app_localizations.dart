@@ -794,6 +794,18 @@ abstract class AppLocalizations {
   /// **'{trackName} removed from favorites.'**
   String followTrackRemoved(Object trackName);
 
+  /// No description provided for @followShopSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'{shopName} added to favourites.'**
+  String followShopSaved(String shopName);
+
+  /// No description provided for @followShopRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{shopName} removed from favourites.'**
+  String followShopRemoved(String shopName);
+
   /// No description provided for @loginTitle.
   ///
   /// In en, this message translates to:
@@ -859,6 +871,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sending...'**
   String get loginSending;
+
+  /// No description provided for @loginOrDivider.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get loginOrDivider;
+
+  /// No description provided for @loginContinueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get loginContinueWithGoogle;
 
   /// No description provided for @loginTermsConsentLabel.
   ///
@@ -983,7 +1007,7 @@ abstract class AppLocalizations {
   /// No description provided for @legalPrivacySectionRightsBody.
   ///
   /// In en, this message translates to:
-  /// **'Under Arts. 15-22 GDPR, users have the right to: access their personal data; obtain rectification or erasure; request restriction of processing; object to processing based on legitimate interest; receive data in a structured format (portability); withdraw consent at any time without affecting the lawfulness of prior processing. To exercise these rights: privacy@pitlap.app. Users may also lodge a complaint with the competent supervisory authority.'**
+  /// **'Under Arts. 15-22 GDPR, users have the right to: access their personal data; obtain rectification or erasure; request restriction of processing; object to processing based on legitimate interest; receive data in a structured format (portability); withdraw consent at any time without affecting the lawfulness of prior processing. To exercise these rights: beppe.apps@gmail.com. Users may also lodge a complaint with the competent supervisory authority (in Italy, the Garante per la protezione dei dati personali, www.garanteprivacy.it).'**
   String get legalPrivacySectionRightsBody;
 
   /// No description provided for @legalPrivacySectionControllerTitle.
@@ -995,7 +1019,7 @@ abstract class AppLocalizations {
   /// No description provided for @legalPrivacySectionControllerBody.
   ///
   /// In en, this message translates to:
-  /// **'The data controller is PitLap (pre-launch project). Full controller details will be provided before public launch. For any privacy-related enquiry: privacy@pitlap.app.'**
+  /// **'The data controller is Giuseppe Santoro, Municipality of Rho (MI), Italy. For any request regarding personal data protection (including withdrawal of consent and exercise of your rights) write to: beppe.apps@gmail.com. No Data Protection Officer (DPO) has been appointed, as it is not mandatory for this scale of processing under Art. 37 GDPR; the contact point is the email address above.'**
   String get legalPrivacySectionControllerBody;
 
   /// No description provided for @legalPrivacySectionProcessorsTitle.
@@ -1045,6 +1069,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PitLap implements appropriate technical and organisational measures to protect data against unauthorised access, alteration or disclosure. Authentication relies on magic links (no password to store); data is transmitted over HTTPS; infrastructure services are subject to Supabase\'s security controls. In the event of a personal data breach, notification procedures under Arts. 33-34 GDPR will be applied.'**
   String get legalPrivacySectionSecurityBody;
+
+  /// No description provided for @legalPrivacySectionAgeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum age'**
+  String get legalPrivacySectionAgeTitle;
+
+  /// No description provided for @legalPrivacySectionAgeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The service is reserved for users aged at least 14, the minimum age set by Art. 8 GDPR as implemented in Italy (Art. 2-quinquies of Legislative Decree 196/2003). On registration, the user declares to be at least 14 years old. PitLap does not knowingly collect data from children under 14: should the controller find that a user does not meet the minimum age, the account will be suspended and the data deleted without delay. Reports: beppe.apps@gmail.com.'**
+  String get legalPrivacySectionAgeBody;
 
   /// No description provided for @legalTermsTitle.
   ///
@@ -1559,8 +1595,8 @@ abstract class AppLocalizations {
   /// No description provided for @garageBuildsCount.
   ///
   /// In en, this message translates to:
-  /// **'{count} showcase models'**
-  String garageBuildsCount(Object count);
+  /// **'{count, plural, =1{1 showcase model} other{{count} showcase models}}'**
+  String garageBuildsCount(int count);
 
   /// No description provided for @garageVisibilityTitle.
   ///
@@ -3491,7 +3527,7 @@ abstract class AppLocalizations {
   /// No description provided for @garagePublicBuildsCount.
   ///
   /// In en, this message translates to:
-  /// **'{count} public builds'**
+  /// **'{count, plural, =1{1 public build} other{{count} public builds}}'**
   String garagePublicBuildsCount(int count);
 
   /// No description provided for @garageAddBuildAction.
@@ -3662,6 +3698,18 @@ abstract class AppLocalizations {
   /// **'Shops'**
   String get nearbyFilterShops;
 
+  /// No description provided for @nearbyBadgeTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'RC track'**
+  String get nearbyBadgeTrack;
+
+  /// No description provided for @nearbyBadgeShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop'**
+  String get nearbyBadgeShop;
+
   /// No description provided for @nearbyNoResults.
   ///
   /// In en, this message translates to:
@@ -3701,7 +3749,7 @@ abstract class AppLocalizations {
   /// No description provided for @nearbyServicesCount.
   ///
   /// In en, this message translates to:
-  /// **'{count} services'**
+  /// **'{count, plural, =1{1 service} other{{count} services}}'**
   String nearbyServicesCount(int count);
 
   /// No description provided for @nearbyShopGeneric.

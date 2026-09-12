@@ -147,7 +147,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                 child: Text(
                   _localeText(
                     context,
-                    it: 'Questo spot puo\' essere modificato solo dall\'owner o da un admin.',
+                    it: 'Questo spot può essere modificato solo dall\'owner o da un admin.',
                     en: 'This spot can only be edited by its owner or an admin.',
                   ),
                 ),
@@ -178,7 +178,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                     border: Border.all(color: AppColors.signalOrange.withAlpha(80)),
                   ),
                   child: const Text(
-                    '📬 Invia una segnalazione',
+                    'Invia una segnalazione',
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -215,17 +215,17 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                 _submissionType = value;
               });
             },
-            decoration: InputDecoration(labelText: '🔖 ${l10n.submissionTypeLabel}'),
+            decoration: InputDecoration(labelText: l10n.submissionTypeLabel),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _nameController,
-            decoration: InputDecoration(labelText: '📝 ${l10n.submissionPlaceName}'),
+            decoration: InputDecoration(labelText: l10n.submissionPlaceName),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _cityController,
-            decoration: InputDecoration(labelText: '🏙️ ${l10n.submissionCity}'),
+            decoration: InputDecoration(labelText: l10n.submissionCity),
           ),
           const SizedBox(height: 16),
           if (_submissionType == 'spot') ...[

@@ -211,6 +211,8 @@ class PlaceCard extends StatelessWidget {
       children.add(
         Text(
           overline!.toUpperCase(),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: AppColors.onSurfaceMuted,
                 letterSpacing: 0.5,

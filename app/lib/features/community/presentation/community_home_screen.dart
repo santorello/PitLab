@@ -15,6 +15,7 @@ import '../../../features/spots/application/spots_providers.dart';
 import '../../../features/tracks/application/tracks_providers.dart';
 import '../../../shared/utils/share_entity.dart';
 import '../../../shared/widgets/adaptive_image.dart';
+import '../../../shared/widgets/pitlap_logo.dart';
 import '../application/activity_feed_provider.dart';
 import '../application/home_dashboard_provider.dart';
 import '../domain/activity_feed_item.dart';
@@ -214,24 +215,7 @@ class _TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppColors.signalOrange, AppColors.orange200],
-            ),
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.signalOrange.withAlpha(80),
-                blurRadius: 14,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child: const Icon(Icons.bolt, color: Colors.white),
-        ),
+        const PitLapLogo(size: 38),
         const SizedBox(width: 10),
         RichText(
           text: TextSpan(
@@ -1018,7 +1002,7 @@ class _BuildOfWeekSection extends StatelessWidget {
                           const Icon(Icons.star, color: Color(0xFFFBBF24)),
                           const SizedBox(width: 6),
                           Text(
-                            'Featured',
+                            'In evidenza',
                             style: Theme.of(context)
                                 .textTheme
                                 .labelLarge
@@ -2381,7 +2365,7 @@ String _eventHeroLabel(String eventType) {
     'track_event' => 'evento pista',
     'community_event' => 'evento community',
     'new_spot' => 'nuovo spot',
-    _ => 'novita',
+    _ => 'novità',
   };
 }
 
@@ -2402,7 +2386,10 @@ String _relativeTimeLabel(DateTime createdAt) {
   if (difference.inMinutes < 60) return '${difference.inMinutes} min fa';
   if (difference.inHours < 24) return '${difference.inHours}h fa';
   if (difference.inDays < 7) return '${difference.inDays}g fa';
-  return '${local.day}/${local.month}/${local.year}';
+  // FR-37: formato IT uniforme con zero-padding (gg/mm/aaaa).
+  final dd = local.day.toString().padLeft(2, '0');
+  final mm = local.month.toString().padLeft(2, '0');
+  return '$dd/$mm/${local.year}';
 }
 
 String _heroDateToken(ActivityFeedItem item) {

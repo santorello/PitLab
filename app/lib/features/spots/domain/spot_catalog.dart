@@ -140,7 +140,7 @@ class SpotCatalog {
       bestFor: 'Freestyle, cinewhoop, micro FPV',
       surface: 'Area aperta con prato e visuale ampia',
       note:
-          'Buona visibilita\' e spazio per voli tranquilli. Da verificare sempre contesto, sicurezza e regole locali prima di usarlo.',
+          'Buona visibilità e spazio per voli tranquilli. Da verificare sempre contesto, sicurezza e regole locali prima di usarlo.',
       imageAccent: Color(0xFF059669),
       photoCount: 3,
       latitude: 44.7212,

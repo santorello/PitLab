@@ -54,7 +54,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                   border: Border.all(color: AppColors.signalOrange.withAlpha(80)),
                 ),
                 child: Text(
-                  '🎉 ${_localeText(context, it: 'Gare & Appuntamenti', en: 'Races & Events')}',
+                  _localeText(context, it: 'Gare & Appuntamenti', en: 'Races & Events'),
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: AppColors.graphite,
                     fontWeight: FontWeight.w700,
@@ -90,8 +90,8 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                             child: Text(
                               _localeText(
                                 context,
-                                it: '✨ In evidenza',
-                                en: '✨ Highlights',
+                                it: 'In evidenza',
+                                en: 'Highlights',
                               ),
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
@@ -115,7 +115,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                           _localeText(
                             context,
                             it:
-                                'Una selezione rapida per capire dove c\'e movimento e cosa vale la pena aprire.',
+                                'Una selezione rapida per capire dove c\'è movimento e cosa vale la pena aprire.',
                             en:
                                 'A quick selection to see where activity is happening and what is worth opening.',
                           ),
@@ -1156,13 +1156,11 @@ class _EventCard extends StatelessWidget {
       badge: badge,
     );
 
-    // Riga statistiche: data + luogo + organizzatore.
+    // Riga statistiche: data + organizzatore (il luogo va nell'overline).
     final signals = <Widget>[
       CardStatRow(
         stats: [
           CardStat(icon: Icons.event_outlined, text: date),
-          if (location.isNotEmpty)
-            CardStat(icon: Icons.place_outlined, text: location),
           CardStat(icon: Icons.person_outline, text: creatorLabel),
         ],
       ),
@@ -1200,7 +1198,7 @@ class _EventCard extends StatelessWidget {
     return PlaceCard(
       media: media,
       title: title,
-      overline: 'Evento',
+      overline: location.isNotEmpty ? '$location · Evento' : 'Evento',
       signals: signals,
       body: note.isNotEmpty ? note : null,
       footerLeading: footerLeading,

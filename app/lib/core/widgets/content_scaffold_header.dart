@@ -164,7 +164,7 @@ class ContentScaffoldHeader extends ConsumerWidget {
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  child: const Text('→ Admin'),
+                  child: const Text('Admin'),
                 ),
                 TextButton(
                   onPressed: () {
@@ -263,20 +263,6 @@ class _HeaderActions extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                  ),
-                  SizedBox(width: AppSpacing.xs),
-                  Flexible(
-                    child: Text(
-                      currentUserEmail,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withAlpha(170),
-                          ),
                     ),
                   ),
                 ],

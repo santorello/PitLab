@@ -188,10 +188,10 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
         ? _localCoverImage
         : _imageUrlController.text.trim();
 
-    // In modalita' creazione il form e' sempre accessibile a chi ha gia' superato
+    // In modalità creazione il form e' sempre accessibile a chi ha già superato
     // il redirect del router (`requireShopManager` sul percorso `/shops/new`):
     // bypassiamo l'AsyncValue di `canEditShopSlugProvider` che per uno slug fittizio
-    // ('__new__') puo' restare in loading e nascondere l'intero form.
+    // ('__new__') può restare in loading e nascondere l'intero form.
     final canEditShop = widget.isCreating
         ? true
         : canEditShopAsync.maybeWhen(

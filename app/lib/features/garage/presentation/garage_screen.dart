@@ -170,7 +170,7 @@ class _GarageBody extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('🚗 ${l10n.garageBuildsTitle}',
+                  Text(l10n.garageBuildsTitle,
                       style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 16),
                   ...state.builds.map(

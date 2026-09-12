@@ -9,6 +9,29 @@ import '../application/admin_providers.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../shops/application/shop_editor_providers.dart';
 
+// FR-18: etichette leggibili per ruoli/stati (allineate a /profiles) invece
+// dei valori DB grezzi.
+String adminRoleLabel(String role) => switch (role) {
+  'track_organizer' => 'Organizzatore pista',
+  'shop_owner' || 'shop_manager' => 'Gestore negozio',
+  'admin' => 'Admin',
+  'user' => 'Pilota',
+  _ => role,
+};
+
+String adminApprovalLabel(String status) => switch (status) {
+  'approved' => 'Approvato',
+  'rejected' => 'Rifiutato',
+  'pending' => 'In attesa',
+  _ => status,
+};
+
+String adminVisibilityLabel(String v) => switch (v) {
+  'public' => 'Pubblico',
+  'hidden' => 'Nascosto',
+  _ => v,
+};
+
 class AdminSettingsScreen extends ConsumerStatefulWidget {
   const AdminSettingsScreen({super.key});
 
@@ -45,6 +68,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     final allTracksAsync = ref.watch(adminAllTracksProvider);
     final allShopsAsync = ref.watch(adminAllShopsProvider);
     final allEventsAsync = ref.watch(adminAllEventsProvider);
+    final feedbackAsync = ref.watch(adminFeedbackProvider);
+    final feedback = feedbackAsync.asData?.value ?? const <AdminFeedbackRecord>[];
 
     return ContentScaffold(
       title: l10n.adminTitle,
@@ -75,7 +100,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     border: Border.all(color: AppColors.signalOrange.withAlpha(80)),
                   ),
                   child: const Text(
-                    '⚙️ Pannello admin',
+                    'Pannello admin',
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -101,14 +126,16 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                   spacing: 10,
                   runSpacing: 10,
                   children: [
-                    _AdminChip(label: '📊 Dashboard'),
-                    _AdminChip(label: '✅ Approvazioni'),
-                    _AdminChip(label: '👥 Utenti'),
-                    _AdminChip(label: '🏁 Piste'),
-                    _AdminChip(label: '🏪 Negozi'),
-                    _AdminChip(label: '📅 Eventi'),
+                    _AdminChip(label: 'Dashboard'),
+                    _AdminChip(label: 'Approvazioni'),
+                    _AdminChip(label: 'Utenti'),
+                    _AdminChip(label: 'Piste'),
+                    _AdminChip(label: 'Negozi'),
+                    _AdminChip(label: 'Eventi'),
                     if (approvals.isNotEmpty)
-                      _AdminChip(label: '🔔 ${approvals.length} in coda'),
+                      _AdminChip(label: '${approvals.length} in coda'),
+                    if (feedback.isNotEmpty)
+                      _AdminChip(label: '${feedback.length} feedback'),
                   ],
                 ),
               ],
@@ -156,6 +183,27 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                       ),
                       child: Text(
                         'Inbox admin: ${approvals.length} richiesta${approvals.length == 1 ? '' : 'e'} da controllare.',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: AppColors.graphite,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                  ],
+                  if (feedback.isNotEmpty) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEAF3DE),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: AppColors.openGreen.withValues(alpha: 0.35),
+                        ),
+                      ),
+                      child: Text(
+                        'Hai ${feedback.length} feedback dagli utenti da leggere (sezione "Feedback utenti").',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: AppColors.graphite,
                           fontWeight: FontWeight.w700,
@@ -269,42 +317,15 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             ),
             const SizedBox(height: 18),
 
-            // ── Spot & Garage ─────────────────────────────────────────────
+            // FR-24: rimossa la card di note tecniche interne
+            // (nomi tabelle Supabase, is_custom, owner_id, view, SharedPreferences).
+
+            // ── Feedback utenti ───────────────────────────────────────────
             _AdminSectionCard(
-              title: 'Spot & Garage',
-              body: 'Stato attuale del backend per spot e garage.',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _InfoBanner(
-                    icon: Icons.place_outlined,
-                    title: 'Spot — su Supabase',
-                    body:
-                        'Gli spot sono salvati nella tabella `spots` su Supabase con RLS. I 3 spot di default sono seedati. Gli utenti autenticati possono aggiungere spot custom (is_custom=true, owner_id). La discovery guest legge la view `public_spots`, che mantiene il contenuto pubblico ma non espone `owner_id` al client.',
-                  ),
-                  const SizedBox(height: 14),
-                  _InfoBanner(
-                    icon: Icons.directions_car_outlined,
-                    title: 'Garage / Build — su Supabase',
-                    body:
-                        'Le build del garage sono salvate su Supabase nella tabella `user_builds`. La migrazione dal locale al remoto è completata.',
-                  ),
-                  const SizedBox(height: 14),
-                  _InfoBanner(
-                    icon: Icons.event_outlined,
-                    title: 'Community Events — su Supabase',
-                    body:
-                        'Gli eventi creati dagli utenti sono salvati nella tabella `community_events`. Ottimismo UI attivo: l\'evento appare subito e l\'UUID server sostituisce l\'ID temporaneo in background.',
-                  ),
-                  const SizedBox(height: 14),
-                  _InfoBanner(
-                    icon: Icons.link_outlined,
-                    title: 'Link esterni — su Supabase',
-                    body:
-                        'I link esterni (Instagram, sito, YouTube, ecc.) di piste, negozi e profili sono salvati nella tabella `external_links`. Sincronizzazione ottimistica attiva con fallback a SharedPreferences.',
-                  ),
-                ],
-              ),
+              title: 'Feedback utenti',
+              body:
+                  'Messaggi inviati dagli utenti (anche guest). Visibili solo a te.',
+              child: _AdminFeedbackSection(feedbackAsync: feedbackAsync),
             ),
           ],
           const SizedBox(height: 32),
@@ -414,7 +435,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                           ? Icons.radio_button_checked
                           : Icons.radio_button_off,
                     ),
-                    title: Text(r),
+                    title: Text(adminRoleLabel(r)),
                     onTap: () => setDialogState(() => selected = r),
                   ),
                 )
@@ -662,7 +683,7 @@ class _AdminUsersPanelState extends ConsumerState<_AdminUsersPanel> {
   final TextEditingController _searchController = TextEditingController();
 
   static const _roles = <String?>[null, 'user', 'track_organizer', 'shop_owner', 'admin'];
-  static const _roleLabels = <String>['Tutti', 'user', 'track_org', 'shop_owner', 'admin'];
+  static const _roleLabels = <String>['Tutti', 'Pilota', 'Organizzatore', 'Gestore negozio', 'Admin'];
 
   @override
   void dispose() {
@@ -897,7 +918,7 @@ class _UserRow extends StatelessWidget {
                 border: Border.all(color: roleColor.withAlpha(80)),
               ),
               child: Text(
-                user.role,
+                adminRoleLabel(user.role),
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: roleColor,
                   fontWeight: FontWeight.w700,
@@ -1146,7 +1167,7 @@ class _AdminEventsSection extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             e.source == 'community_events'
-                                ? 'Community event'
+                                ? 'Evento community'
                                 : 'Evento ufficiale',
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(color: AppColors.steel),
@@ -1156,7 +1177,7 @@ class _AdminEventsSection extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     _StatusPill(
-                      label: e.visibility,
+                      label: adminVisibilityLabel(e.visibility),
                       color: e.visibility == 'public'
                           ? Colors.green.shade600
                           : AppColors.steel,
@@ -1207,6 +1228,79 @@ class _AdminEventsSection extends StatelessWidget {
 }
 
 // ─── Shared entity row (tracks + shops) ──────────────────────────────────────
+
+class _AdminFeedbackSection extends StatelessWidget {
+  const _AdminFeedbackSection({required this.feedbackAsync});
+
+  final AsyncValue<List<AdminFeedbackRecord>> feedbackAsync;
+
+  static String _fmt(DateTime d) {
+    final l = d.toLocal();
+    String two(int n) => n.toString().padLeft(2, '0');
+    return '${two(l.day)}/${two(l.month)}/${l.year} ${two(l.hour)}:${two(l.minute)}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return feedbackAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Text('Errore nel caricamento feedback: $e'),
+      data: (items) {
+        if (items.isEmpty) {
+          return Text(
+            'Nessun feedback ricevuto.',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.steel),
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (final f in items)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceMuted,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.borderStrong),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        f.message,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(color: AppColors.graphite),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        '${_fmt(f.createdAt)} · ${f.contactEmail ?? (f.userId != null ? 'utente' : 'guest')}'
+                        '${(f.page != null && f.page!.isNotEmpty) ? ' · ${f.page}' : ''}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(color: AppColors.steel),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
 
 class _EntityRow extends StatelessWidget {
   const _EntityRow({
@@ -1279,13 +1373,13 @@ class _EntityRow extends StatelessWidget {
                 ),
               ),
               _StatusPill(
-                label: approvalStatus,
+                label: adminApprovalLabel(approvalStatus),
                 color: _approvalColor(),
               ),
               if (showPublicStatus) ...[
                 const SizedBox(width: 6),
                 _StatusPill(
-                  label: isPublic ? 'pub' : 'hid',
+                  label: isPublic ? 'Pubblico' : 'Nascosto',
                   color: isPublic ? Colors.blue.shade600 : AppColors.steel,
                 ),
               ],
@@ -1395,52 +1489,6 @@ class _ActionButton extends StatelessWidget {
         minimumSize: Size.zero,
         side: BorderSide(color: effectiveColor.withAlpha(80)),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      ),
-    );
-  }
-}
-
-class _InfoBanner extends StatelessWidget {
-  const _InfoBanner({
-    required this.icon,
-    required this.title,
-    required this.body,
-  });
-
-  final IconData icon;
-  final String title;
-  final String body;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F7F3),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.concrete),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 20, color: AppColors.steel),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: Theme.of(context).textTheme.titleSmall),
-                const SizedBox(height: 4),
-                Text(
-                  body,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.steel,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

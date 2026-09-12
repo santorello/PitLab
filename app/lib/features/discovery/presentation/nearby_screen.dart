@@ -41,7 +41,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
               (track) => _NearbyItem(
                 title: track.name,
                 subtitle: track.city,
-                badge: '🏁 ${l10n.nearbyFilterTracks}',
+                badge: l10n.nearbyBadgeTrack,
                 note: track.statusMessage.isNotEmpty
                     ? track.statusMessage
                     : track.shortDescription,
@@ -66,7 +66,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
               (shop) => _NearbyItem(
                 title: shop.name,
                 subtitle: shop.city,
-                badge: '🏪 ${l10n.nearbyFilterShops}',
+                badge: l10n.nearbyBadgeShop,
                 note: shop.shortDescription.isNotEmpty
                     ? shop.shortDescription
                     : shop.subtitle,
@@ -137,17 +137,17 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
             runSpacing: 10,
             children: [
               _TypeChip(
-                label: '🌐 ${l10n.nearbyFilterAll}',
+                label: l10n.nearbyFilterAll,
                 selected: _type == 'all',
                 onTap: () => setState(() => _type = 'all'),
               ),
               _TypeChip(
-                label: '🏁 ${l10n.nearbyFilterTracks}',
+                label: l10n.nearbyFilterTracks,
                 selected: _type == 'track',
                 onTap: () => setState(() => _type = 'track'),
               ),
               _TypeChip(
-                label: '🏪 ${l10n.nearbyFilterShops}',
+                label: l10n.nearbyFilterShops,
                 selected: _type == 'shop',
                 onTap: () => setState(() => _type = 'shop'),
               ),

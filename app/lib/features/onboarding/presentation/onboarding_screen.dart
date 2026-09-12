@@ -238,6 +238,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         ),
       );
 
+      // Rileggi il profilo così il gate del router vede onboarding_completed=true
+      // ed evita il rimbalzo di ritorno su /onboarding.
+      ref.invalidate(userProfileProvider);
+      await ref.read(userProfileProvider.future);
+      if (!mounted) return;
+
       router.go('/');
     } catch (error) {
       if (!mounted) return;

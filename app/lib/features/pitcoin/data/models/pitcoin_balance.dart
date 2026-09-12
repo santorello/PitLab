@@ -13,7 +13,7 @@ class PitcoinBalance {
   /// UUID del profilo proprietario del balance.
   final String userId;
 
-  /// Somma cumulativa attuale (puo' includere delta negativi futuri).
+  /// Somma cumulativa attuale (può includere delta negativi futuri).
   final int totalPoints;
 
   /// Somma delle sole transazioni positive nella vita dell'account.

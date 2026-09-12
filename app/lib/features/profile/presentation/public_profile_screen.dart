@@ -20,8 +20,21 @@ class PublicProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(publicProfileProvider(publicSlug));
 
+    // FR-20: titolo dinamico sul ruolo del profilo (non sempre "Pilota").
+    final title = profileAsync.maybeWhen(
+      data: (profile) => profile == null
+          ? 'Profilo pilota'
+          : switch (profile.role) {
+              'track_organizer' => 'Profilo organizzatore',
+              'shop_owner' || 'shop_manager' => 'Profilo gestore negozio',
+              'admin' => 'Profilo staff PitLap',
+              _ => 'Profilo pilota',
+            },
+      orElse: () => 'Profilo pubblico',
+    );
+
     return ContentScaffold(
-      title: 'Profilo pilota',
+      title: title,
       description: 'Profilo pubblico PitLap',
       child: profileAsync.when(
         loading: () => const Center(

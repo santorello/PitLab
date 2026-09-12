@@ -143,6 +143,10 @@
   "arrivalSavedMessage": "{selection} saved for today at {trackName}.",
   "followTrackSaved": "{trackName} added to favorites.",
   "followTrackRemoved": "{trackName} removed from favorites.",
+  "followShopSaved": "{shopName} added to favourites.",
+  "@followShopSaved": {"placeholders": {"shopName": {"type": "String"}}},
+  "followShopRemoved": "{shopName} removed from favourites.",
+  "@followShopRemoved": {"placeholders": {"shopName": {"type": "String"}}},
   "loginTitle": "Log in to PitLap",
   "loginBody": "Enter your email and we'll send you a quick sign-in link to access PitLap.",
   "loginExistingAccountHint": "If you already have an account, you will use the same access. If this is your first time, PitLap will prepare your basic profile.",
@@ -154,6 +158,8 @@
   "emailLabel": "Email",
   "loginSendLink": "Receive sign-in link",
   "loginSending": "Sending...",
+  "loginOrDivider": "or",
+  "loginContinueWithGoogle": "Continue with Google",
   "loginTermsConsentLabel": "I accept the Terms of Service",
   "loginTermsConsentHint": "Required to create or use a PitLap account.",
   "loginPrivacyNoticeLabel": "I have read the Privacy Notice",
@@ -174,9 +180,9 @@
   "legalPrivacySectionLegalBasisTitle": "Legal bases",
   "legalPrivacySectionLegalBasisBody": "Contract performance (Art. 6(1)(b) GDPR): account management, authentication and essential features. Legitimate interest (Art. 6(1)(f) GDPR): technical security, abuse prevention and service integrity. Consent (Art. 6(1)(a) GDPR): marketing emails and other optional purposes. Legal obligation (Art. 6(1)(c) GDPR): compliance with applicable law where required.",
   "legalPrivacySectionRightsTitle": "Data subject rights",
-  "legalPrivacySectionRightsBody": "Under Arts. 15-22 GDPR, users have the right to: access their personal data; obtain rectification or erasure; request restriction of processing; object to processing based on legitimate interest; receive data in a structured format (portability); withdraw consent at any time without affecting the lawfulness of prior processing. To exercise these rights: privacy@pitlap.app. Users may also lodge a complaint with the competent supervisory authority.",
+  "legalPrivacySectionRightsBody": "Under Arts. 15-22 GDPR, users have the right to: access their personal data; obtain rectification or erasure; request restriction of processing; object to processing based on legitimate interest; receive data in a structured format (portability); withdraw consent at any time without affecting the lawfulness of prior processing. To exercise these rights: beppe.apps@gmail.com. Users may also lodge a complaint with the competent supervisory authority (in Italy, the Garante per la protezione dei dati personali, www.garanteprivacy.it).",
   "legalPrivacySectionControllerTitle": "Data controller",
-  "legalPrivacySectionControllerBody": "The data controller is PitLap (pre-launch project). Full controller details will be provided before public launch. For any privacy-related enquiry: privacy@pitlap.app.",
+  "legalPrivacySectionControllerBody": "The data controller is Giuseppe Santoro, Municipality of Rho (MI), Italy. For any request regarding personal data protection (including withdrawal of consent and exercise of your rights) write to: beppe.apps@gmail.com. No Data Protection Officer (DPO) has been appointed, as it is not mandatory for this scale of processing under Art. 37 GDPR; the contact point is the email address above.",
   "legalPrivacySectionProcessorsTitle": "Processors and sub-processors",
   "legalPrivacySectionProcessorsBody": "PitLap uses Supabase Inc. (USA) as provider for database, authentication and storage services, hosted on AWS infrastructure in the eu-west-2 region (Ireland). Data is physically stored within the European Union. Supabase acts as a data processor under Art. 28 GDPR; the Data Processing Agreement is available at supabase.com/privacy. No other third-party providers with access to users' personal data are currently in use.",
   "legalPrivacySectionTransfersTitle": "International transfers",
@@ -185,6 +191,8 @@
   "legalPrivacySectionRetentionBody": "Account data is retained for the duration of the service relationship. Upon account deletion, personal data is erased within 30 days, unless retention is required by law. Track attendance records are automatically deleted after 1 day. Technical security logs are retained for a maximum of 90 days.",
   "legalPrivacySectionSecurityTitle": "Security",
   "legalPrivacySectionSecurityBody": "PitLap implements appropriate technical and organisational measures to protect data against unauthorised access, alteration or disclosure. Authentication relies on magic links (no password to store); data is transmitted over HTTPS; infrastructure services are subject to Supabase's security controls. In the event of a personal data breach, notification procedures under Arts. 33-34 GDPR will be applied.",
+  "legalPrivacySectionAgeTitle": "Minimum age",
+  "legalPrivacySectionAgeBody": "The service is reserved for users aged at least 14, the minimum age set by Art. 8 GDPR as implemented in Italy (Art. 2-quinquies of Legislative Decree 196/2003). On registration, the user declares to be at least 14 years old. PitLap does not knowingly collect data from children under 14: should the controller find that a user does not meet the minimum age, the account will be suspended and the data deleted without delay. Reports: beppe.apps@gmail.com.",
   "legalTermsTitle": "Terms of Service",
   "legalTermsDescription": "Conditions governing the use of PitLap. By using the service, users accept these terms.",
   "legalTermsSectionServiceTitle": "Service scope",
@@ -270,7 +278,14 @@
   "garageVisibilityPrivate": "Private by default",
   "garageVisibilityPublic": "Make it public",
   "garageBuildsTitle": "Recent builds",
-  "garageBuildsCount": "{count} showcase models",
+  "garageBuildsCount": "{count, plural, =1{1 showcase model} other{{count} showcase models}}",
+  "@garageBuildsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "garageVisibilityTitle": "Garage visibility",
   "garageVisibilityBody": "The garage starts private, but each build can become public whenever the user wants to show it.",
   "garageTogglePrivate": "Private",
@@ -643,7 +658,7 @@
   "clearSearchAction": "Clear search",
   "profileQuickLinksTitle": "Quick links",
   "profileQuickLinksBody": "Fast access to the areas you are already using in the current tests.",
-  "garagePublicBuildsCount": "{count} public builds",
+  "garagePublicBuildsCount": "{count, plural, =1{1 public build} other{{count} public builds}}",
   "@garagePublicBuildsCount": {
     "placeholders": {
       "count": {
@@ -703,13 +718,15 @@
   "nearbyFilterAll": "All",
   "nearbyFilterTracks": "Tracks",
   "nearbyFilterShops": "Shops",
+  "nearbyBadgeTrack": "RC track",
+  "nearbyBadgeShop": "Shop",
   "nearbyNoResults": "No results for the active filters.",
   "nearbyNearMeButton": "Near me",
   "nearbyOpenInMap": "Open in map",
   "nearbyOpenTrack": "Open track",
   "nearbyOpenShop": "Open shop",
   "nearbyNoServices": "No services",
-  "nearbyServicesCount": "{count} services",
+  "nearbyServicesCount": "{count, plural, =1{1 service} other{{count} services}}",
   "@nearbyServicesCount": {
     "placeholders": {
       "count": {

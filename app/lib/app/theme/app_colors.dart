@@ -22,7 +22,7 @@ class AppColors {
   static const surfaceImpersonation = Color(0xFFFFF4E6);
 
   // Border scale
-  static const borderSubtle = Color(0xFFE8EAEE);  // bordi piu' leggeri di concrete
+  static const borderSubtle = Color(0xFFE8EAEE);  // bordi più leggeri di concrete
   static const borderStrong = concrete;            // alias semantico esplicito
 
   // Orange family (6 toni hardcoded, nominati)

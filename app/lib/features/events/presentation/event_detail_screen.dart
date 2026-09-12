@@ -104,7 +104,7 @@ class EventDetailScreen extends ConsumerWidget {
                     border: Border.all(color: AppColors.signalOrange.withAlpha(80)),
                   ),
                   child: Text(
-                    '🎉 ${event.badge}',
+                    event.badge,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: AppColors.graphite,
                       fontWeight: FontWeight.w700,
@@ -230,7 +230,7 @@ class EventDetailScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '📋 ${l10n.eventsDetailOverviewTitle}',
+                    l10n.eventsDetailOverviewTitle,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: AppSpacing.sm),

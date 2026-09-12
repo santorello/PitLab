@@ -810,3 +810,51 @@ class AdminUsersController extends Notifier<AdminUsersState> {
     unawaited(_loadPage(reset: true));
   }
 }
+
+// ─── Feedback utenti (admin-only) ────────────────────────────────────────────
+
+class AdminFeedbackRecord {
+  const AdminFeedbackRecord({
+    required this.id,
+    required this.message,
+    required this.createdAt,
+    this.contactEmail,
+    this.page,
+    this.userId,
+  });
+
+  final String id;
+  final String message;
+  final DateTime createdAt;
+  final String? contactEmail;
+  final String? page;
+  final String? userId;
+}
+
+/// Lista feedback (RLS: leggibile solo dall'admin). Ordinati dal più recente.
+final adminFeedbackProvider =
+    FutureProvider<List<AdminFeedbackRecord>>((ref) async {
+  final client = ref.watch(authClientProvider);
+  final role = ref.watch(effectiveUserRoleProvider);
+  if (client == null || role != 'admin') return const [];
+
+  final rows = await client
+      .from('feedback')
+      .select('id, message, contact_email, page, user_id, created_at')
+      .order('created_at', ascending: false)
+      .limit(200);
+
+  return (rows as List<dynamic>)
+      .whereType<Map<String, dynamic>>()
+      .map((r) => AdminFeedbackRecord(
+            id: r['id'] as String? ?? '',
+            message: r['message'] as String? ?? '',
+            contactEmail: r['contact_email'] as String?,
+            page: r['page'] as String?,
+            userId: r['user_id'] as String?,
+            createdAt:
+                DateTime.tryParse(r['created_at'] as String? ?? '') ??
+                    DateTime.now(),
+          ))
+      .toList();
+});
