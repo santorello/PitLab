@@ -1,4 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Rete: obbligatoria per Supabase (in release non basta il manifest debug/profile). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Posizione: usata da "Vicino a te" e dall'inserimento luoghi (geolocator). -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <application
         android:label="PitLap"
         android:name="${applicationName}"
@@ -23,6 +29,17 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- Deep link per il ritorno dall'OAuth Google (redirect
+                 io.pitlap.app://login-callback). Deve combaciare con il
+                 redirectTo del client e con i Redirect URL in Supabase. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="io.pitlap.app"
+                    android:host="login-callback"/>
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
