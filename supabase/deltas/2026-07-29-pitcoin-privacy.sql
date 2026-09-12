@@ -25,3 +25,7 @@ select
 from public.profiles p
 left join public.user_pitcoin_balances b on b.user_id = p.id
 where p.is_public = true and p.public_slug is not null;
+
+-- Il CREATE OR REPLACE riporta la view a SECURITY DEFINER: ripristina invoker
+-- (sicuro: i punti sono comunque esposti solo per p.id = auth.uid()).
+alter view public.public_user_pitcoin set (security_invoker = on);
