@@ -1,7 +1,7 @@
 # Termini di Servizio
 
-**Versione: 1.0 — in vigore dal 2026-06-03**
-**Ultimo aggiornamento: 2026-06-03**
+**Versione: 1.1 — in vigore dal 2026-09-12**
+**Ultimo aggiornamento: 2026-09-12**
 
 ---
 
@@ -9,9 +9,9 @@
 
 PitLap (pitlap.app) è una piattaforma digitale dedicata alla community del modellismo radiocomandato (RC). Il servizio è gestito da:
 
-**Giuseppe [COGNOME — DA COMPLETARE]**
+**Giuseppe Santoro**
 Comune di Rho (MI), Italia
-Email: privacy@pitlap.app
+Email: beppe.apps@gmail.com
 
 Il servizio comprende, a seconda delle funzionalità disponibili nella versione corrente:
 
@@ -141,7 +141,22 @@ Il servizio integra fornitori terzi per autenticazione, backend, mappe, geocodin
 
 ---
 
-## 13. Limitazione di responsabilità
+## 13. Donazioni volontarie
+
+L'applicazione può esporre un pulsante che rinvia a una pagina esterna di donazione ("Offri un caffè allo sviluppatore").
+
+Ogni donazione è **volontaria, spontanea e a fondo perduto**. In particolare:
+
+- non costituisce corrispettivo di alcun bene o servizio;
+- **non dà diritto ad alcun contenuto, funzionalità, vantaggio o riconoscimento digitale** all'interno di PitLap: nessun PitCoin, nessun badge, nessuna funzione aggiuntiva, nessuna priorità di moderazione o visibilità;
+- non instaura alcun rapporto contrattuale ulteriore tra l'utente e il titolare;
+- non è rimborsabile, salvo i diritti inderogabili riconosciuti dalla legge e le procedure di contestazione previste dal fornitore di pagamento.
+
+Il pagamento è gestito integralmente dal fornitore terzo (PayPal) secondo i suoi termini: PitLap non tratta dati di pagamento. Gli utenti che accedono al servizio tramite l'applicazione Android possono in alternativa sostenere il progetto dal sito web.
+
+---
+
+## 14. Limitazione di responsabilità
 
 Nei limiti massimi consentiti dalla legge applicabile, e fatte salve le responsabilità inderogabili previste dalla normativa a tutela dei consumatori (D.Lgs. 206/2005 — Codice del Consumo), PitLap non è responsabile per danni indiretti, perdita di opportunità, mancata partecipazione a eventi, errori di dati o decisioni operative prese esclusivamente sulla base delle informazioni presenti nel servizio.
 
@@ -149,9 +164,9 @@ Questa clausola non esclude né limita responsabilità che non possano essere es
 
 ---
 
-## 14. Chiusura, sospensione e cancellazione dell'account
+## 15. Chiusura, sospensione e cancellazione dell'account
 
-L'utente può richiedere la cancellazione del proprio account in qualsiasi momento tramite la funzione in-app **"Richiedi cancellazione account"** o scrivendo a privacy@pitlap.app.
+L'utente può richiedere la cancellazione del proprio account in qualsiasi momento tramite la funzione in-app **"Richiedi cancellazione account"** o scrivendo a beppe.apps@gmail.com.
 
 I dati dell'account vengono conservati per 30 giorni dalla richiesta, al termine dei quali vengono eliminati in modo definitivo, salvo obblighi di legge.
 
@@ -159,7 +174,7 @@ PitLap può sospendere o chiudere account in caso di: violazione dei termini, ab
 
 ---
 
-## 15. Modifiche ai termini
+## 16. Modifiche ai termini
 
 PitLap può aggiornare i presenti termini. Le modifiche rilevanti saranno comunicate tramite avviso in-app o email con congruo preavviso. Continuando a utilizzare il servizio dopo la data di efficacia della nuova versione, l'utente accetta le modifiche apportate.
 
@@ -167,7 +182,7 @@ Ogni versione riporta la data di efficacia e il numero di versione.
 
 ---
 
-## 16. Legge applicabile e foro competente
+## 17. Legge applicabile e foro competente
 
 I presenti Termini di Servizio sono disciplinati dalla **legge italiana**.
 
@@ -179,17 +194,17 @@ L'utente consumatore ha altresì la facoltà di ricorrere alle procedure di riso
 
 ---
 
-## 17. Contatti
+## 18. Contatti
 
 Per assistenza, segnalazioni o qualunque comunicazione relativa al servizio:
 
-**Giuseppe [COGNOME — DA COMPLETARE]**
+**Giuseppe Santoro**
 Comune di Rho (MI), Italia
-Email: privacy@pitlap.app
+Email: beppe.apps@gmail.com
 Sito: pitlap.app
 
 ---
 
 *PitLap — pitlap.app*
 *Versione: 1.0 — in vigore dal 2026-06-03*
-*Ultimo aggiornamento: 2026-06-03*
+*Ultimo aggiornamento: 2026-07-30*

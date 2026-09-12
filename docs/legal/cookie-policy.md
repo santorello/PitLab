@@ -1,7 +1,7 @@
 # Cookie Policy e utilizzo del local storage
 
-**Versione: 1.0 — in vigore dal 2026-06-03**
-**Ultimo aggiornamento: 2026-06-03**
+**Versione: 1.1 — in vigore dal 2026-09-12**
+**Ultimo aggiornamento: 2026-09-12**
 
 ---
 
@@ -12,6 +12,8 @@ La presente Cookie Policy descrive l'utilizzo di cookie e tecnologie equivalenti
 Per "tecnologie equivalenti" si intendono, in questa sede, anche strumenti come il `localStorage` del browser, utilizzati nelle applicazioni web per memorizzare o leggere informazioni sul dispositivo dell'utente.
 
 PitLap adotta un approccio **minimalista**: vengono utilizzati esclusivamente gli strumenti tecnici strettamente necessari al funzionamento del servizio. Non sono attivi cookie di analytics né di marketing o profilazione.
+
+Il pulsante "Offri un caffè allo sviluppatore" non installa alcun cookie: si limita ad aprire nel browser il sito del fornitore di pagamento (PayPal), dove si applicano esclusivamente l'informativa e i cookie di tale fornitore.
 
 ---
 

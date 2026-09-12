@@ -4,7 +4,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../app/bootstrap/app_config.dart';
 
-const String legalDocumentVersion = '2026-04-03-draft';
+/// Versione dei documenti legali attualmente pubblicati (privacy, termini,
+/// cookie): viene registrata in `user_consents.document_version` per poter
+/// dimostrare QUALE testo l'utente ha accettato (accountability, art. 5 §2
+/// GDPR). Va aggiornata a ogni revisione dei documenti in `docs/legal/`.
+const String legalDocumentVersion = '1.1';
 
 class UserConsentRecord {
   const UserConsentRecord({
@@ -30,6 +34,7 @@ class UserProfileRecord {
     this.avatarUrl,
     this.publicSlug,
     this.isPublic = false,
+    this.onboardingCompleted = true,
   });
 
   final String displayName;
@@ -42,6 +47,10 @@ class UserProfileRecord {
 
   /// Se true, il profilo è visibile ai guest tramite /u/:publicSlug.
   final bool isPublic;
+
+  /// Se false, l'utente non ha ancora completato l'onboarding.
+  /// Default true: stato sconosciuto = non forzare l'onboarding.
+  final bool onboardingCompleted;
 }
 
 class AuthProfileRepository {
@@ -66,7 +75,7 @@ class AuthProfileRepository {
   Future<UserProfileRecord?> fetchProfile(String userId) async {
     final response = await _client
         .from('profiles')
-        .select('display_name, avatar_url, preferred_language, role, public_slug, is_public')
+        .select('display_name, avatar_url, preferred_language, role, public_slug, is_public, onboarding_completed')
         .eq('id', userId)
         .maybeSingle();
 
@@ -81,6 +90,7 @@ class AuthProfileRepository {
       role: response['role'] as String? ?? 'user',
       publicSlug: response['public_slug'] as String?,
       isPublic: response['is_public'] as bool? ?? false,
+      onboardingCompleted: response['onboarding_completed'] as bool? ?? true,
     );
   }
 
@@ -261,6 +271,30 @@ final currentUserRoleProvider = Provider<String>((ref) {
     data: (profile) => profile?.role ?? 'user',
     orElse: () => 'user',
   );
+});
+
+/// True quando l'onboarding è completato oppure lo stato non è ancora noto
+/// (loading / profilo assente). Il default true evita di forzare l'onboarding
+/// su utenti esistenti durante il caricamento o sui guest.
+final onboardingCompletedProvider = Provider<bool>((ref) {
+  final profileAsync = ref.watch(userProfileProvider);
+  return profileAsync.maybeWhen(
+    data: (profile) => profile?.onboardingCompleted ?? true,
+    orElse: () => true,
+  );
+});
+
+/// True quando il ruolo dell'utente è noto (profilo caricato in stato data
+/// oppure errore), o quando non c'è utente autenticato (nulla da caricare).
+/// I guard di rotta admin/manager NON devono reindirizzare finché questo è
+/// false, per evitare la race tra boot del router e caricamento del ruolo.
+final roleLoadedProvider = Provider<bool>((ref) {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) {
+    return true;
+  }
+  final profileAsync = ref.watch(userProfileProvider);
+  return profileAsync.hasValue || profileAsync.hasError;
 });
 
 /// Stato completo di impersonazione: identità specifica di un utente.

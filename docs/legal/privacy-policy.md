@@ -1,7 +1,7 @@
 # Informativa sul trattamento dei dati personali (Privacy Policy)
 
-**Versione: 1.0 — in vigore dal 2026-06-03**
-**Ultimo aggiornamento: 2026-06-03**
+**Versione: 1.1 — in vigore dal 2026-09-12**
+**Ultimo aggiornamento: 2026-09-12**
 
 ---
 
@@ -9,9 +9,9 @@
 
 Il titolare del trattamento dei dati personali raccolti tramite PitLap è:
 
-**Giuseppe [COGNOME — DA COMPLETARE]**
+**Giuseppe Santoro**
 Comune di Rho (MI), Italia
-Email privacy: privacy@pitlap.app
+Email privacy: beppe.apps@gmail.com
 
 **Responsabile della Protezione dei Dati (DPO):** non nominato. La nomina di un DPO non è obbligatoria per la presente scala di trattamento ai sensi dell'art. 37 del Regolamento (UE) 2016/679 (GDPR). Il punto di contatto per qualunque questione relativa alla protezione dei dati personali è l'indirizzo email indicato sopra.
 
@@ -71,6 +71,17 @@ PitLap (pitlap.app) è una piattaforma digitale dedicata alla community del mode
 - Presa visione della presente Informativa Privacy (con timestamp e versione documento)
 - Eventuale consenso marketing via email (attualmente non raccolto durante la beta — vedi § 11)
 
+### 3.7 Segnalazioni e richieste di contatto
+
+Dati raccolti tramite la funzione "Invia feedback", disponibile anche senza account:
+
+- Testo del messaggio inviato dall'utente
+- Indirizzo email di contatto, **solo se fornito volontariamente** per ricevere un riscontro
+- Identificativo utente tecnico, solo se il messaggio è inviato da utente autenticato (assente nei messaggi inviati come ospite)
+- Pagina dell'applicazione da cui è partita la segnalazione e user agent del dispositivo, a soli fini diagnostici
+
+L'utente è invitato a non inserire nel testo libero del messaggio dati personali non necessari, propri o di terzi.
+
 ---
 
 ## 4. Finalità del trattamento
@@ -99,6 +110,11 @@ Tracciare consensi e prese visione per dimostrare la conformità normativa.
 
 Per inviare aggiornamenti, novità o comunicazioni promozionali relative a PitLap. **Questa finalità è attualmente sospesa: durante la beta chiusa nessuna email marketing viene inviata e il relativo opt-in non viene raccolto.** Quando il marketing verrà attivato, sarà richiesto un consenso separato, specifico e revocabile in qualsiasi momento.
 **Base giuridica (futura):** consenso dell'interessato (art. 6 §1 lett. a GDPR).
+
+### 4.6 Gestione delle segnalazioni e assistenza
+
+Per ricevere, analizzare e dare riscontro alle segnalazioni di malfunzionamento, ai suggerimenti e alle richieste di contatto inviate tramite la funzione "Invia feedback", nonché per correggere i difetti rilevati e migliorare il servizio.
+**Base giuridica:** legittimo interesse del titolare a garantire il corretto funzionamento e il miglioramento del servizio (art. 6 §1 lett. f GDPR); quando l'utente fornisce spontaneamente un recapito per essere ricontattato, il trattamento di tale recapito si fonda sul riscontro alla richiesta dell'interessato.
 
 ---
 
@@ -130,11 +146,16 @@ I dati personali possono essere comunicati ai seguenti fornitori che operano com
 | **Supabase** | Backend: autenticazione, database Postgres, storage immagini | Germania (eu-central-1, Francoforte) — **UE** | Dati ospitati nell'UE; nessun trasferimento extra-SEE per il progetto pitlap-prod |
 | **MapTiler** | Mappe interattive e geocoding (richieste lato dispositivo dell'utente) | Svizzera | Paese terzo con decisione di adeguatezza della Commissione UE; ove applicabile: Clausole Contrattuali Standard (SCC) |
 | **Open-Meteo** | Previsioni meteo per le piste outdoor; riceve coordinate o nome della città | Austria — **UE** | Dati ospitati nell'UE |
+| **Resend** | Invio delle email transazionali del servizio (accesso via magic link, notifiche di sistema) e inoltro al titolare delle segnalazioni inviate tramite "Invia feedback" | Stati Uniti | Paese terzo: trasferimento garantito da Clausole Contrattuali Standard (SCC) ex art. 46 §2 lett. c GDPR |
 | **Sentry** (crash reporting) | Eventuale: non ancora attivo. Sarà incluso in un aggiornamento di questa informativa se e quando attivato. | — | — |
 
 MapTiler riceve l'indirizzo IP del dispositivo dell'utente e la query geografica direttamente dal client al momento della visualizzazione delle mappe o del geocoding. Si applicano le [condizioni di utilizzo](https://www.maptiler.com/cloud/pricing/) e la privacy policy di MapTiler.
 
 Open-Meteo riceve coordinate geografiche o il nome della città per restituire le previsioni meteo. Si applicano i [termini di Open-Meteo](https://open-meteo.com/en/terms).
+
+Resend tratta l'indirizzo email del destinatario e il contenuto del messaggio per il solo tempo necessario al recapito e alla gestione dei log di consegna. Si applica la [privacy policy di Resend](https://resend.com/legal/privacy-policy).
+
+**Donazioni volontarie.** L'applicazione espone un pulsante "Offri un caffè allo sviluppatore" che si limita a rinviare l'utente, tramite il browser del dispositivo, alla pagina di donazione ospitata da **PayPal**. PitLap non raccoglie, non tratta e non riceve alcun dato di pagamento: l'eventuale donazione avviene interamente sull'infrastruttura di PayPal, che opera in tale contesto come **titolare autonomo** del trattamento secondo la propria informativa. PitLap riceve dal fornitore unicamente l'accredito economico, senza dati della carta o del conto del donatore.
 
 ---
 
@@ -145,6 +166,8 @@ I dati archiviati su Supabase risiedono nella regione UE (Francoforte, Germania)
 MapTiler è una società svizzera: la Svizzera beneficia di una decisione di adeguatezza della Commissione europea. Ove applicabile, il trasferimento è ulteriormente garantito da Clausole Contrattuali Standard.
 
 Open-Meteo opera in Austria, Paese UE: nessun trasferimento extra-SEE.
+
+Resend è una società statunitense: il trasferimento dei dati necessari all'invio delle email (indirizzo del destinatario e contenuto del messaggio) avviene verso un Paese terzo ed è garantito dalle Clausole Contrattuali Standard adottate dalla Commissione europea, integrate dalle misure tecniche e organizzative dichiarate dal fornitore.
 
 ---
 
@@ -157,6 +180,7 @@ Open-Meteo opera in Austria, Paese UE: nessun trasferimento extra-SEE.
 | Check-in "Sto arrivando" | Storicizzati e ripuliti automaticamente tramite upsert giornaliero; il dato corrente viene sostituito ogni giorno |
 | Log tecnici | 90 giorni (rotazione automatica) |
 | Dati dei consensi | Per tutta la durata dell'account + il tempo necessario a dimostrare la conformità (almeno 5 anni a fini difensivi) |
+| Segnalazioni inviate tramite "Invia feedback" | 24 mesi dalla ricezione, o fino alla chiusura della segnalazione se successiva |
 | Dati di sessione (token) | Durata della validità del token di sessione Supabase |
 
 ---
@@ -196,7 +220,7 @@ L'utente può esercitare, in qualsiasi momento, i seguenti diritti ai sensi degl
 - **Portabilità** dei dati, ove applicabile
 - **Revoca del consenso** in qualsiasi momento, senza pregiudicare la liceità del trattamento basato sul consenso prestato prima della revoca
 
-Per esercitare questi diritti, l'utente può scrivere a: **privacy@pitlap.app**
+Per esercitare questi diritti, l'utente può scrivere a: **beppe.apps@gmail.com**
 
 L'utente ha inoltre il diritto di proporre **reclamo al Garante per la protezione dei dati personali** (Autorità di controllo italiana): [www.garanteprivacy.it](https://www.garanteprivacy.it)
 
@@ -214,10 +238,10 @@ Se in futuro venissero introdotti elementi di profilazione rilevante, questa sez
 
 La presente informativa può essere aggiornata nel tempo. Le modifiche rilevanti saranno comunicate agli utenti tramite avviso in-app o email, ove opportuno. Ogni versione riporta la data di efficacia e il numero di versione.
 
-Lo storico delle versioni è disponibile su richiesta scrivendo a privacy@pitlap.app.
+Lo storico delle versioni è disponibile su richiesta scrivendo a beppe.apps@gmail.com.
 
 ---
 
 *PitLap — pitlap.app*
 *Versione: 1.0 — in vigore dal 2026-06-03*
-*Ultimo aggiornamento: 2026-06-03*
+*Ultimo aggiornamento: 2026-07-30*
