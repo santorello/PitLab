@@ -1,5 +1,6 @@
 {
   "SUPABASE_URL": "https://your-project-ref.supabase.co",
   "SUPABASE_PUBLISHABLE_KEY": "your-publishable-key",
-  "MAPTILER_API_KEY": ""
+  "MAPTILER_API_KEY": "",
+  "DONATION_URL": "https://paypal.me/tuo-handle"
 }

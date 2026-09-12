@@ -6,7 +6,9 @@ import '../../app/l10n/generated/app_localizations.dart';
 import '../../app/theme/app_breakpoints.dart';
 import '../../app/theme/app_colors.dart';
 import '../../features/auth/application/auth_providers.dart';
+import '../../features/feedback/presentation/feedback_dialog.dart';
 import '../../features/notifications/presentation/notification_bell.dart';
+import '../../features/support/presentation/coffee_button.dart';
 
 class AppScaffold extends ConsumerStatefulWidget {
   const AppScaffold({required this.child, super.key});
@@ -120,7 +122,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
               curve: Curves.easeOutCubic,
               width: _isRailExpanded ? 220 : 88,
               child: NavigationRail(
-                selectedIndex: selectedIndex,
+                selectedIndex: selectedIndex < 0 ? null : selectedIndex,
                 onDestinationSelected: (index) =>
                     context.go(visibleDestinations[index].location),
                 scrollable: true,
@@ -142,7 +144,16 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                   padding: const EdgeInsets.fromLTRB(0, 8, 0, 16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [NotificationBell()],
+                    children: [
+                      IconButton(
+                        onPressed: () => showFeedbackDialog(context),
+                        icon: const Icon(Icons.feedback_outlined,
+                            color: AppColors.concrete),
+                        tooltip: 'Invia feedback',
+                      ),
+                      const CoffeeButton(color: AppColors.concrete),
+                      const NotificationBell(),
+                    ],
                   ),
                 ),
                 leading: Padding(
@@ -220,7 +231,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
         child: widget.child,
       ),
       bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
+        selectedIndex: selectedIndex < 0 ? 0 : selectedIndex,
         onDestinationSelected: (index) =>
             context.go(visibleDestinations[index].location),
         destinations: visibleDestinations
@@ -333,9 +344,15 @@ class _MobileTopBar extends StatelessWidget implements PreferredSizeWidget {
           ],
         ),
       ),
-      actions: const [
-        NotificationBell(),
-        SizedBox(width: 4),
+      actions: [
+        IconButton(
+          onPressed: () => showFeedbackDialog(context),
+          icon: const Icon(Icons.feedback_outlined, color: Colors.white),
+          tooltip: 'Invia feedback',
+        ),
+        const CoffeeButton(),
+        const NotificationBell(),
+        const SizedBox(width: 4),
       ],
     );
   }
@@ -366,16 +383,22 @@ extension on AppScaffold {
       normalizedLocation = '/shops';
     } else if (path.startsWith('/event/')) {
       normalizedLocation = '/events';
+    } else if (path.startsWith('/builds')) {
+      // FR-28: le build pubbliche appartengono al mondo Garage.
+      normalizedLocation = '/garage';
+    } else if (path.startsWith('/profiles') || path.startsWith('/u/')) {
+      // FR-28: elenco/profilo pubblico → voce Profilo.
+      normalizedLocation = '/profile';
     }
-    // /notifications has no nav-bar entry; indexWhere returns -1 → falls back
-    // to 0 (Home), which is acceptable.
     final index = destinations.indexWhere((item) {
       if (item.location == '/') {
         return normalizedLocation == '/';
       }
       return normalizedLocation.startsWith(item.location);
     });
-    return index < 0 ? 0 : index;
+    // FR-28: -1 = nessuna voce corrispondente (es. /notifications, /legal/*).
+    // Su desktop il NavigationRail mostra "nessuna selezione" invece di Home.
+    return index;
   }
 
   String _label(BuildContext context, _Destination item) {
