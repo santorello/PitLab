@@ -36,14 +36,17 @@
 - [ ] Smoke test: pulsante caffè visibile solo quando `DONATION_URL` è valorizzato, apertura in browser esterno su Android e Web
 - [ ] Smoke test feedback da **guest** e da utente loggato, verificando riga in tabella `feedback` e arrivo email
 
-## C. Database produzione
+## C. Database produzione — ✅ COMPLETATA 2026-09-13
 
-- [ ] Ripristinare `pitlap-prod` (`klfjvyytubiorqzfisdu`) dalla dashboard
-- [ ] Applicare in ordine i 6 delta del 10 giugno: `2026-06-10-prod-alignment.sql`, `-rls-consolidation.sql`, `-draft-taxonomy-policies.sql`, `-media-storage.sql`, `-entity-comments.sql`, `-profile-follows-notifications.sql` (parte A fuori transazione)
-- [ ] Applicare `2026-07-29-pitcoin-privacy.sql`
-- [ ] Applicare `2026-07-30-feedback.sql`
-- [ ] Verificare parità dev↔prod (tabelle, view, funzioni, policy, trigger) e advisor security/performance
-- [ ] Sanare i ~38 lint `multiple_permissive_policies` introdotti dai delta 0.3.0 (regressione rispetto al consolidamento di giugno) e le 2 FK non indicizzate su `entity_comments` / `entity_comment_reports`
+- [x] `pitlap-prod` ripristinato dall'auto-pausa
+- [x] Applicati i 6 delta del 10 giugno, i 4 del 18 giugno / 29-30 luglio, piu' 3 nuovi nati dal confronto:
+  - `2026-09-12-keepalive-table.sql` — la tabella `keepalive` era nata a mano su dev e non era in nessun delta: senza questa il delta del 18 giugno falliva
+  - `2026-09-13-prod-grants-alignment.sql` — su prod 48 oggetti su 49 avevano ancora i grant di DEFAULT Supabase (anon con privilegi di scrittura su profiles/tracks/shops/user_consents); l'hardening di giugno non era mai stato replicato
+  - `2026-09-13b-prod-spots-column-grants.sql` — correzione: il `revoke all` del file precedente aveva azzerato anche i grant di COLONNA, lasciando `spots` senza nemmeno il SELECT
+- [x] Eseguiti separatamente gli `ALTER TYPE ... ADD VALUE` (7 valori enum), che non stanno nella stessa transazione in cui vengono usati
+- [x] **Parita' dev↔prod verificata: 11 impronte md5 su 11 identiche** — tabelle, viste, funzioni, policy, trigger, indici, enum, grant di tabella, grant di colonna, grant di funzione, stato RLS
+- [x] Advisor sicurezza prod: nessun ERROR; solo WARN attesi sugli helper SECURITY DEFINER usati dentro le RLS policy
+- [ ] Sanare i ~38 lint `multiple_permissive_policies` e le FK non indicizzate (presenti su ENTRAMBE le istanze, non e' un disallineamento)
 
 ## D. Email e Edge Function
 
@@ -86,6 +89,17 @@
 - [ ] Imposare lunghezza minima password ≥ 8
 - [ ] Attivare MFA sull'account admin
 - [ ] Creare l'admin di produzione: registrarsi su prod, poi promuovere a `role='admin'`
+
+## H-bis. Debito tecnico emerso (non bloccante)
+
+- [ ] **Stringere i grant larghi su entrambe le istanze.** L'hardening di giugno ristrinse 26 tabelle, ma tutto cio' che e' nato dopo (`entity_comments`, `feedback`, `profile_follows`, `user_build_votes`, `weekly_featured_builds`, i cataloghi `pitcoin_*`, le viste `home_*`) ha ancora `anon` con DELETE/INSERT/UPDATE/TRUNCATE a livello di GRANT — su dev come su prod. La RLS copre, ma il secondo strato manca. Intervento da fare su entrambe e da testare, separato da qualunque operazione di parita'.
+- [ ] **Scrivere sempre un delta per ogni modifica fatta a mano sul DB.** Due drift trovati il 2026-09-13 (`keepalive` inesistente nei delta, hardening dei grant mai replicato) venivano entrambi da modifiche applicate direttamente su dev.
+
+### Nota di metodo per i prossimi allineamenti
+
+`revoke all on all tables` cancella **anche i grant di colonna**, che non compaiono in `information_schema.role_table_grants` ma solo in `.column_privileges`. Un allineamento generato leggendo i soli grant di tabella li perde in silenzio: e' esattamente cosi' che `spots` e' rimasta senza permessi. Confrontare sempre entrambe le viste di catalogo.
+
+---
 
 ## H. Gate finale
 
