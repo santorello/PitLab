@@ -1,7 +1,7 @@
 # Informativa sul trattamento dei dati personali (Privacy Policy)
 
-**Versione: 1.1 — in vigore dal 2026-09-12**
-**Ultimo aggiornamento: 2026-09-12**
+**Versione: 1.2 — in vigore dal 2026-09-15**
+**Ultimo aggiornamento: 2026-09-15**
 
 ---
 
@@ -22,7 +22,7 @@ Email privacy: beppe.apps@gmail.com
 PitLap (pitlap.app) è una piattaforma digitale dedicata alla community del modellismo radiocomandato (RC). Il servizio è attualmente in fase di **beta chiusa su invito** e comprende:
 
 - consultazione di piste, negozi, eventi e contenuti informativi
-- accesso utente tramite email e magic link
+- accesso utente tramite email e magic link oppure tramite account Google (Accedi con Google)
 - profilo utente con nickname, città di riferimento, foto e preferenze
 - check-in "Sto arrivando": segnalazione della presenza giornaliera in pista
 - garage personale con build, modelli e foto
@@ -37,6 +37,7 @@ PitLap (pitlap.app) è una piattaforma digitale dedicata alla community del mode
 ### 3.1 Dati account
 
 - Indirizzo email (necessario per accesso tramite magic link)
+- In caso di accesso con Google: nome, indirizzo email e immagine del profilo Google, ricevuti tramite il protocollo OAuth con i soli permessi di base (`openid`, `email`, `profile`). Questi dati sono usati esclusivamente per autenticare l'utente e precompilare il nome visibile e la foto del profilo; PitLap non accede ad altri dati dell'account Google, non li vende e non li usa per pubblicità. L'utente può revocare l'accesso in qualsiasi momento dalle impostazioni del proprio account Google.
 - Identificativo utente tecnico (UUID generato da Supabase Auth)
 - Data di creazione dell'account e metadati di sessione
 
@@ -62,7 +63,7 @@ PitLap (pitlap.app) è una piattaforma digitale dedicata alla community del mode
 
 ### 3.5 Dati tecnici e di sicurezza
 
-- Log tecnici applicativi (rotazione automatica, conservati per 90 giorni)
+- Log tecnici di piattaforma (accessi alle API, errori) conservati dal fornitore Supabase secondo il piano del progetto: PitLap non conserva log applicativi propri (vedi § 9)
 - Informazioni necessarie alla sicurezza, all'integrità del sistema e alla prevenzione di abusi
 
 ### 3.6 Dati relativi ai consensi
@@ -146,7 +147,7 @@ I dati personali possono essere comunicati ai seguenti fornitori che operano com
 | **Supabase** | Backend: autenticazione, database Postgres, storage immagini | Germania (eu-central-1, Francoforte) — **UE** | Dati ospitati nell'UE; nessun trasferimento extra-SEE per il progetto pitlap-prod |
 | **MapTiler** | Mappe interattive e geocoding (richieste lato dispositivo dell'utente) | Svizzera | Paese terzo con decisione di adeguatezza della Commissione UE; ove applicabile: Clausole Contrattuali Standard (SCC) |
 | **Open-Meteo** | Previsioni meteo per le piste outdoor; riceve coordinate o nome della città | Austria — **UE** | Dati ospitati nell'UE |
-| **Resend** | Invio delle email transazionali del servizio (accesso via magic link, notifiche di sistema) e inoltro al titolare delle segnalazioni inviate tramite "Invia feedback" | Stati Uniti | Paese terzo: trasferimento garantito da Clausole Contrattuali Standard (SCC) ex art. 46 §2 lett. c GDPR |
+| **Resend** | Invio delle email transazionali del servizio (accesso via magic link, notifiche di sistema) e inoltro al titolare delle segnalazioni inviate tramite "Invia feedback" | Irlanda (eu-west-1) — **UE**; fornitore con sede negli Stati Uniti | Dati delle email ospitati nell'UE. Per eventuali accessi dalla casa madre statunitense: Clausole Contrattuali Standard (SCC) ex art. 46 §2 lett. c GDPR |
 | **Sentry** (crash reporting) | Eventuale: non ancora attivo. Sarà incluso in un aggiornamento di questa informativa se e quando attivato. | — | — |
 
 MapTiler riceve l'indirizzo IP del dispositivo dell'utente e la query geografica direttamente dal client al momento della visualizzazione delle mappe o del geocoding. Si applicano le [condizioni di utilizzo](https://www.maptiler.com/cloud/pricing/) e la privacy policy di MapTiler.
@@ -167,7 +168,7 @@ MapTiler è una società svizzera: la Svizzera beneficia di una decisione di ade
 
 Open-Meteo opera in Austria, Paese UE: nessun trasferimento extra-SEE.
 
-Resend è una società statunitense: il trasferimento dei dati necessari all'invio delle email (indirizzo del destinatario e contenuto del messaggio) avviene verso un Paese terzo ed è garantito dalle Clausole Contrattuali Standard adottate dalla Commissione europea, integrate dalle misure tecniche e organizzative dichiarate dal fornitore.
+Il dominio di invio di PitLap è configurato su Resend nella regione **Irlanda (eu-west-1)**: i dati delle email — indirizzo del destinatario e contenuto del messaggio — risiedono quindi nell'Unione europea. Resend resta una società con sede negli Stati Uniti e un accesso ai dati da parte della casa madre non è escluso: per questa eventualità il trasferimento è garantito dalle Clausole Contrattuali Standard adottate dalla Commissione europea, integrate dalle misure tecniche e organizzative dichiarate dal fornitore.
 
 ---
 
@@ -175,10 +176,10 @@ Resend è una società statunitense: il trasferimento dei dati necessari all'inv
 
 | Categoria di dati | Periodo di conservazione |
 |---|---|
-| Dati account e profilo | Per tutta la durata dell'account attivo + 30 giorni dalla richiesta di cancellazione |
+| Dati account e profilo | Per tutta la durata dell'account attivo. In caso di richiesta di cancellazione: rimozione a cura del titolare entro 30 giorni dalla richiesta |
 | Foto e contenuti pubblicati | Finché pubblicati o fino alla cancellazione da parte dell'utente (o dell'account) |
-| Check-in "Sto arrivando" | Storicizzati e ripuliti automaticamente tramite upsert giornaliero; il dato corrente viene sostituito ogni giorno |
-| Log tecnici | 90 giorni (rotazione automatica) |
+| Check-in "Sto arrivando" | Cancellati automaticamente il giorno successivo a quello cui si riferiscono, da una procedura di pulizia giornaliera |
+| Log tecnici | PitLap non conserva log applicativi propri. I log tecnici di piattaforma (accessi alle API, errori) sono conservati da Supabase per i periodi previsti dal piano del progetto |
 | Dati dei consensi | Per tutta la durata dell'account + il tempo necessario a dimostrare la conformità (almeno 5 anni a fini difensivi) |
 | Segnalazioni inviate tramite "Invia feedback" | 24 mesi dalla ricezione, o fino alla chiusura della segnalazione se successiva |
 | Dati di sessione (token) | Durata della validità del token di sessione Supabase |
@@ -243,5 +244,5 @@ Lo storico delle versioni è disponibile su richiesta scrivendo a beppe.apps@gma
 ---
 
 *PitLap — pitlap.app*
-*Versione: 1.0 — in vigore dal 2026-06-03*
-*Ultimo aggiornamento: 2026-07-30*
+*Versione: 1.2 — in vigore dal 2026-09-15*
+*Ultimo aggiornamento: 2026-09-15*

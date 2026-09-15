@@ -83,11 +83,14 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
           final weatherForecastAsync = weatherRequest == null
               ? const AsyncValue<List<TrackWeatherDay>>.data(<TrackWeatherDay>[])
               : ref.watch(trackWeatherProvider(weatherRequest));
+          // Se Open-Meteo non risponde, o la pista non ha coordinate, la lista
+          // resta vuota e la scheda meteo mostra "previsioni non disponibili".
+          // Prima c'era un _mockWeatherForTrack che inventava tre giorni con
+          // date fisse ("2 Apr") e verdetti tipo "oggi si corre": consigli
+          // meteo falsi presentati come veri (difetto A-11).
           final weatherDays = weatherForecastAsync.maybeWhen(
-            data: (forecast) => forecast.isEmpty
-                ? _mockWeatherForTrack(context, track.slug)
-                : _mapWeatherDays(context, forecast),
-            orElse: () => _mockWeatherForTrack(context, track.slug),
+            data: (forecast) => _mapWeatherDays(context, forecast),
+            orElse: () => const <_WeatherDay>[],
           );
           final todayArrivalAsync = ref.watch(todayArrivalStatusProvider(track.id));
           final todayArrivalSummaryAsync = ref.watch(
@@ -252,12 +255,15 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                   value: _heroPresenceValue(context, todayArrivalSummary),
                                   color: AppColors.signalOrange,
                                 ),
-                                _HeroQuickFact(
-                                  icon: Icons.cloud_outlined,
-                                  label: l10n.weatherLabel,
-                                  value: l10n.weatherTodayVerdict(weatherDays.first.verdict),
-                                  color: weatherDays.first.color,
-                                ),
+                                if (weatherDays.isNotEmpty)
+                                  _HeroQuickFact(
+                                    icon: Icons.cloud_outlined,
+                                    label: l10n.weatherLabel,
+                                    value: l10n.weatherTodayVerdict(
+                                      weatherDays.first.verdict,
+                                    ),
+                                    color: weatherDays.first.color,
+                                  ),
                                 _HeroQuickFact(
                                   icon: Icons.handyman_outlined,
                                   label: l10n.servicesLabel,
@@ -357,14 +363,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
-              _WeatherVerdictCard(
-                days: weatherDays,
-                isLive: weatherForecastAsync.hasValue &&
-                    weatherForecastAsync.maybeWhen(
-                      data: (forecast) => forecast.isNotEmpty,
-                      orElse: () => false,
-                    ),
-              ),
+              _WeatherVerdictCard(days: weatherDays),
               const SizedBox(height: AppSpacing.lg),
               _TodayAtTrackCard(
                 key: _todayKey,
@@ -425,59 +424,6 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
     }
 
     await launchUrl(uri, mode: LaunchMode.platformDefault);
-  }
-
-  static List<_WeatherDay> _mockWeatherForTrack(BuildContext context, String slug) {
-    final l10n = AppLocalizations.of(context)!;
-    if (slug == 'offroad-parma') {
-      return [
-        _WeatherDay(
-          label: l10n.todayLabel,
-          shortDate: '2 Apr',
-          verdict: l10n.weatherOk,
-          note: l10n.weatherOutdoorOkNote,
-          color: AppColors.openGreen,
-        ),
-        _WeatherDay(
-          label: l10n.weatherDaySun,
-          shortDate: '3 Apr',
-          verdict: l10n.weatherWarning,
-          note: l10n.weatherOutdoorWarningNote,
-          color: AppColors.warningAmber,
-        ),
-        _WeatherDay(
-          label: l10n.weatherDayMon,
-          shortDate: '4 Apr',
-          verdict: l10n.weatherNo,
-          note: l10n.weatherOutdoorNoNote,
-          color: AppColors.closedRed,
-        ),
-      ];
-    }
-
-    return [
-      _WeatherDay(
-        label: l10n.todayLabel,
-        shortDate: '2 Apr',
-        verdict: l10n.weatherOk,
-        note: l10n.weatherIndoorOkNote,
-        color: AppColors.openGreen,
-      ),
-      _WeatherDay(
-        label: l10n.weatherDaySun,
-        shortDate: '3 Apr',
-        verdict: l10n.weatherOk,
-        note: l10n.weatherIndoorRegularNote,
-        color: AppColors.openGreen,
-      ),
-      _WeatherDay(
-        label: l10n.weatherDayMon,
-        shortDate: '4 Apr',
-        verdict: l10n.weatherWarning,
-        note: l10n.weatherIndoorWarningNote,
-        color: AppColors.warningAmber,
-      ),
-    ];
   }
 
   static List<_WeatherDay> _mapWeatherDays(
@@ -1180,13 +1126,11 @@ class _ArrivalOptionTile extends StatelessWidget {
 }
 
 class _WeatherVerdictCard extends StatelessWidget {
-  const _WeatherVerdictCard({
-    required this.days,
-    required this.isLive,
-  });
+  const _WeatherVerdictCard({required this.days});
 
+  /// Vuota quando Open-Meteo non ha risposto o la pista non ha coordinate.
+  /// In quel caso la scheda lo dice, invece di mostrare previsioni inventate.
   final List<_WeatherDay> days;
-  final bool isLive;
 
   @override
   Widget build(BuildContext context) {
@@ -1227,46 +1171,58 @@ class _WeatherVerdictCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: days.first.color.withAlpha(22),
-                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                  ),
-                  child: Text(
-                    l10n.weatherTodayVerdict(days.first.verdict),
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: days.first.color,
+                if (days.isNotEmpty) ...[
+                  const SizedBox(width: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: days.first.color.withAlpha(22),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      l10n.weatherTodayVerdict(days.first.verdict),
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: days.first.color,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isLive
-                        ? AppColors.openGreen.withAlpha(18)
-                        : AppColors.warningAmber.withAlpha(16),
-                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                  ),
-                  child: Text(
-                    isLive ? l10n.weatherLiveBadge : l10n.weatherMockBadge,
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: isLive ? AppColors.openGreen : AppColors.warningAmber,
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.openGreen.withAlpha(18),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      l10n.weatherLiveBadge,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: AppColors.openGreen,
+                      ),
                     ),
                   ),
-                ),
+                ],
               ],
             ),
             const SizedBox(height: AppSpacing.xl),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: days
-                  .map((day) => _WeatherDayTile(day: day))
-                  .toList(),
-            ),
+            if (days.isEmpty)
+              Text(
+                l10n.weatherUnavailable,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.steel,
+                ),
+              )
+            else
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: days.map((day) => _WeatherDayTile(day: day)).toList(),
+              ),
             const SizedBox(height: 12),
             Text(
               l10n.weatherDataSourceAttribution,

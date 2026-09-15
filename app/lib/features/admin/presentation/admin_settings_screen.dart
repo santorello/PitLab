@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
+import '../../../shared/widgets/dialog_controller_scope.dart';
 import '../application/admin_providers.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../shops/application/shop_editor_providers.dart';
@@ -63,6 +64,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     final isAdmin = currentRole == 'admin';
     final overviewAsync = ref.watch(adminOverviewProvider);
     final trackCategoriesAsync = ref.watch(adminTrackCategoriesProvider);
+    final pendingDeletionsAsync = ref.watch(adminPendingDeletionsProvider);
     final approvalsAsync = ref.watch(adminApprovalQueueProvider);
     final approvals = approvalsAsync.asData?.value ?? const [];
     final allTracksAsync = ref.watch(adminAllTracksProvider);
@@ -125,17 +127,25 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                 Wrap(
                   spacing: 10,
                   runSpacing: 10,
+                  // Qui c'erano sei chip con i nomi delle sezioni
+                  // (Dashboard, Approvazioni, Utenti, Piste, Negozi, Eventi):
+                  // sembravano tab ma non erano cliccabili (difetto A-12), e
+                  // duplicavano l'elenco delle sezioni che sta subito sotto.
+                  // Restano i due contatori, che informano invece di fingere
+                  // di navigare.
                   children: [
-                    _AdminChip(label: 'Dashboard'),
-                    _AdminChip(label: 'Approvazioni'),
-                    _AdminChip(label: 'Utenti'),
-                    _AdminChip(label: 'Piste'),
-                    _AdminChip(label: 'Negozi'),
-                    _AdminChip(label: 'Eventi'),
                     if (approvals.isNotEmpty)
-                      _AdminChip(label: '${approvals.length} in coda'),
+                      _AdminChip(
+                        label: approvals.length == 1
+                            ? '1 in coda'
+                            : '${approvals.length} in coda',
+                      ),
                     if (feedback.isNotEmpty)
-                      _AdminChip(label: '${feedback.length} feedback'),
+                      _AdminChip(
+                        label: feedback.length == 1
+                            ? '1 feedback'
+                            : '${feedback.length} feedback',
+                      ),
                   ],
                 ),
               ],
@@ -308,7 +318,16 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             // ── Eventi ────────────────────────────────────────────────────
             _AdminSectionCard(
               title: 'Eventi',
-              body: 'Lista degli eventi pubblici. Modifica visibilità o elimina.',
+              // Il controllo di visibilita' esiste solo per gli eventi
+              // ufficiali (tabella `events`, che ha la colonna visibility).
+              // Gli eventi creati dagli utenti stanno in `community_events`,
+              // dove quella colonna non c'e': li' l'unica azione possibile e'
+              // eliminare. Il testo precedente prometteva a tutti una
+              // funzione disponibile solo per alcuni (difetto A-20).
+              body:
+                  'Eventi ufficiali e della community. La visibilità si può '
+                  'cambiare solo sugli eventi ufficiali; quelli creati dagli '
+                  'utenti si possono solo eliminare.',
               child: _AdminEventsSection(
                 eventsAsync: allEventsAsync,
                 onToggleVisibility: _toggleEventVisibility,
@@ -319,6 +338,19 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
 
             // FR-24: rimossa la card di note tecniche interne
             // (nomi tabelle Supabase, is_custom, owner_id, view, SharedPreferences).
+
+            // ── Richieste di cancellazione account ────────────────────────
+            _AdminSectionCard(
+              title: 'Cancellazioni account richieste',
+              body:
+                  'Richieste ex art. 17 GDPR. L\'informativa promette la '
+                  'cancellazione entro 30 giorni: la rimozione va eseguita a '
+                  'mano dalla dashboard Supabase.',
+              child: _AdminDeletionRequestsSection(
+                requestsAsync: pendingDeletionsAsync,
+              ),
+            ),
+            const SizedBox(height: 18),
 
             // ── Feedback utenti ───────────────────────────────────────────
             _AdminSectionCard(
@@ -479,25 +511,30 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     final controller = TextEditingController(text: user.displayName);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Modifica display name'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(labelText: 'Display name'),
-          autofocus: true,
+      builder: (ctx) => DialogControllerScope(
+        controllers: [controller],
+        child: AlertDialog(
+          title: const Text('Modifica display name'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(labelText: 'Display name'),
+            autofocus: true,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Annulla'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text('Salva'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Annulla'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Salva'),
-          ),
-        ],
       ),
     );
+    // Il controller resta valido fino allo smontaggio della route: la lettura
+    // di controller.text qui sotto avviene prima.
     if (confirmed != true) return;
     final newName = controller.text.trim();
     if (newName == user.displayName) return;
@@ -543,6 +580,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     try {
       await repository.deleteTrack(track.id);
       ref.invalidate(adminAllTracksProvider);
+      ref.invalidate(adminOverviewProvider);
       _showSnackBar('"${track.name}" eliminata');
     } catch (e) {
       _showSnackBar('Errore: $e');
@@ -557,6 +595,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     try {
       await repository.updateShopApproval(shop.id, status);
       ref.invalidate(adminAllShopsProvider);
+      ref.invalidate(adminOverviewProvider);
       _showSnackBar(
         '"${shop.name}" ${status == 'approved' ? 'approvato' : 'rifiutato'}',
       );
@@ -586,6 +625,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     try {
       await repository.deleteShop(shop.id);
       ref.invalidate(adminAllShopsProvider);
+      ref.invalidate(adminOverviewProvider);
       _showSnackBar('"${shop.name}" eliminato');
     } catch (e) {
       _showSnackBar('Errore: $e');
@@ -615,6 +655,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     try {
       await repository.deleteEvent(event);
       ref.invalidate(adminAllEventsProvider);
+      ref.invalidate(adminOverviewProvider);
       _showSnackBar('"${event.title}" eliminato');
     } catch (e) {
       _showSnackBar('Errore: $e');
@@ -633,6 +674,10 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       await repository.createTrackCategory(value);
       _trackLabelController.clear();
       ref.invalidate(adminTrackCategoriesProvider);
+      // La tile "Categorie pista" della dashboard legge adminOverviewProvider,
+      // non la lista: senza questa invalidazione il numero restava fermo finche'
+      // non si ricaricava la pagina (difetto A-18).
+      ref.invalidate(adminOverviewProvider);
       if (!mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.adminCategorySaved)));
     } catch (error) {
@@ -651,6 +696,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     try {
       await repository.deleteTrackCategory(categoryId);
       ref.invalidate(adminTrackCategoriesProvider);
+      ref.invalidate(adminOverviewProvider);
       if (!mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.adminCategoryDeleted)));
     } catch (error) {
@@ -748,7 +794,10 @@ class _AdminUsersPanelState extends ConsumerState<_AdminUsersPanel> {
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: Text(
-              '${state.countLabel} profili${state.roleFilter != null ? ' (${state.roleFilter})' : ''}',
+              // ponytail: accordo singolare/plurale inline. La schermata admin non
+              // e' localizzata (stringhe italiane hardcoded), quindi niente ICU.
+              '${state.countLabel} ${state.countLabel == '1' ? 'profilo' : 'profili'}'
+              '${state.roleFilter != null ? ' (${state.roleFilter})' : ''}',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: AppColors.steel,
               ),
@@ -981,7 +1030,7 @@ class _AdminTracksSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${tracks.length} piste nel database',
+              '${tracks.length} ${tracks.length == 1 ? 'pista' : 'piste'} nel database',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -1052,7 +1101,7 @@ class _AdminShopsSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${shops.length} negozi nel database',
+              '${shops.length} ${shops.length == 1 ? 'negozio' : 'negozi'} nel database',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -1131,7 +1180,7 @@ class _AdminEventsSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${events.length} eventi nel database',
+              '${events.length} ${events.length == 1 ? 'evento' : 'eventi'} nel database',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -1974,4 +2023,111 @@ class _OverviewItem {
 
   final String label;
   final String value;
+}
+
+
+/// Elenco delle richieste di cancellazione account ancora aperte.
+///
+/// Serve a rendere operabile l'art. 17: prima la richiesta finiva in
+/// `profiles.deletion_requested_at` e nessuno la vedeva mai.
+class _AdminDeletionRequestsSection extends StatelessWidget {
+  const _AdminDeletionRequestsSection({required this.requestsAsync});
+
+  final AsyncValue<List<AdminDeletionRequest>> requestsAsync;
+
+  @override
+  Widget build(BuildContext context) {
+    return requestsAsync.when(
+      data: (requests) {
+        if (requests.isEmpty) {
+          return Text(
+            'Nessuna richiesta in attesa.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.steel,
+            ),
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              requests.length == 1
+                  ? '1 richiesta in attesa'
+                  : '${requests.length} richieste in attesa',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            ...requests.map((request) {
+              final overdue = request.isOverdue;
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: overdue
+                      ? Colors.red.shade50
+                      : const Color(0xFFF8F7F3),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: overdue ? Colors.red.shade200 : AppColors.concrete,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      overdue
+                          ? Icons.warning_amber_rounded
+                          : Icons.schedule_outlined,
+                      size: 18,
+                      color: overdue ? Colors.red.shade700 : AppColors.steel,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            request.displayName,
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                          Text(
+                            'ID ${request.userId.substring(0, 8)}… · '
+                            'richiesta ${request.daysElapsed} '
+                            '${request.daysElapsed == 1 ? "giorno" : "giorni"} fa',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AppColors.steel),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (overdue)
+                      Text(
+                        'Scaduta',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Colors.red.shade700,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        );
+      },
+      loading: () => const Padding(
+        padding: EdgeInsets.symmetric(vertical: 12),
+        child: CircularProgressIndicator(),
+      ),
+      error: (error, _) => Text(
+        'Impossibile leggere le richieste: $error',
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: Colors.red.shade700,
+        ),
+      ),
+    );
+  }
 }

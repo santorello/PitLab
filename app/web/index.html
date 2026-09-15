@@ -55,9 +55,40 @@
       color-scheme: light;
       margin: 0;
     }
+    /* Presentazione statica: letta da Google (verifica branding OAuth) e da
+       chi non esegue JavaScript. Sparisce appena Flutter monta la sua vista. */
+    #pitlap-static {
+      max-width: 720px; margin: 0 auto; padding: 32px 20px;
+      font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #15181c;
+    }
+    #pitlap-static h1 { margin: 0 0 4px; font-size: 32px; }
+    #pitlap-static h1 span { color: #F97316; }
+    #pitlap-static a { color: #c2410c; }
+    body:has(flutter-view) #pitlap-static,
+    body:has(flt-glass-pane) #pitlap-static { display: none; }
   </style>
 </head>
 <body>
+  <main id="pitlap-static">
+    <h1>Pit<span>Lap</span></h1>
+    <p><strong>Dove il modellismo si incontra.</strong></p>
+    <p>PitLap è la piattaforma della community del modellismo radiocomandato (RC):
+      trovi piste, eventi, negozi e spot, vedi lo stato delle piste e chi sta
+      arrivando oggi, gestisci il tuo garage di modelli e segui altri piloti.
+      Gestori di piste e negozianti possono aggiornare le proprie schede.</p>
+    <p>L'accesso avviene con email (magic link) o con il tuo account Google, usato
+      solo per identificarti: PitLap riceve nome, indirizzo email e foto profilo.</p>
+    <nav>
+      <p>
+        <a href="/legal/privacy-policy">Privacy Policy</a> ·
+        <a href="/legal/termini-di-servizio">Termini di Servizio</a> ·
+        <a href="/legal/cookie-policy">Cookie Policy</a>
+      </p>
+    </nav>
+    <p>Contatti: <a href="mailto:beppe.apps@gmail.com">beppe.apps@gmail.com</a></p>
+    <noscript><p>Per usare l'applicazione abilita JavaScript nel browser.</p></noscript>
+  </main>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader

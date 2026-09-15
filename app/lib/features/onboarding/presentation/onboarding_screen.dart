@@ -26,6 +26,11 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final PageController _pageController = PageController();
   final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+
+  /// Il prefill del nome va fatto una volta sola: se lo rifacessimo a ogni
+  /// rebuild sovrascriveremmo quello che l'utente sta digitando.
+  bool _namePrefilled = false;
 
   int _currentStep = 0;
   String _selectedAccountType = 'modellista';
@@ -76,6 +81,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   void dispose() {
     _pageController.dispose();
     _cityController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -106,6 +112,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(currentUserProvider);
 
+    // Il profilo esiste gia' quando si arriva qui: handle_new_user ci ha messo
+    // il nome dell'account Google, oppure un "Pilota xxxx" neutro. Lo mostriamo
+    // come valore iniziale cosi' chi accede con Google trova gia' il suo nome.
+    final profile = ref
+        .watch(userProfileProvider)
+        .maybeWhen(data: (value) => value, orElse: () => null);
+    if (!_namePrefilled && profile != null) {
+      _nameController.text = profile.displayName;
+      _namePrefilled = true;
+    }
+
     return ContentScaffold(
       title: l10n.onboardingTitle,
       description: '',
@@ -121,6 +138,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 // Step 1 — Chi sei?
                 _StepPage(
                   child: _StepAccountType(
+                    nameController: _nameController,
                     selectedKey: _selectedAccountType,
                     options: _accountTypes,
                     onSelect: (key) => setState(() => _selectedAccountType = key),
@@ -196,6 +214,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
     try {
       final client = ref.read(authClientProvider);
+      final displayName = _nameController.text.trim();
       final city = _selectedLocation?.label ?? _cityController.text.trim();
       final location = _selectedLocation;
       // Mappa la scelta "Chi sei?" sul ruolo applicativo (D04).
@@ -208,6 +227,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         await client?.rpc(
           'complete_onboarding',
           params: {
+            'p_display_name': displayName,
             'p_preferred_city': city,
             'p_user_interests': _selectedInterests.toList(),
             'p_home_city': location?.city ?? location?.title ?? city,
@@ -222,6 +242,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         await client?.rpc(
           'complete_onboarding',
           params: {
+            'p_display_name': displayName,
             'p_preferred_city': city,
             'p_user_interests': _selectedInterests.toList(),
             'p_role': role,
@@ -262,11 +283,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
 class _StepAccountType extends StatelessWidget {
   const _StepAccountType({
+    required this.nameController,
     required this.selectedKey,
     required this.options,
     required this.onSelect,
   });
 
+  final TextEditingController nameController;
   final String selectedKey;
   final List<_AccountTypeOption> options;
   final ValueChanged<String> onSelect;
@@ -291,6 +314,19 @@ class _StepAccountType extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
+        TextField(
+          controller: nameController,
+          textInputAction: TextInputAction.next,
+          maxLength: 40,
+          decoration: const InputDecoration(
+            labelText: 'Nome o soprannome',
+            helperText:
+                'E\' il nome con cui ti vedono gli altri piloti. Puoi cambiarlo dal profilo.',
+            prefixIcon: Icon(Icons.badge_outlined),
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(height: 16),
         ...options.map(
           (option) => Padding(
             padding: const EdgeInsets.only(bottom: 12),

@@ -25,12 +25,17 @@ class SupabaseTracksRepository implements TracksRepository {
       operation: 'fetchPublicTracks',
       action: () => _client
           .from('tracks')
+          // image_url serve: TrackListItem.fromMap lo legge e le card mostrano
+          // la cover. Senza questa colonna imageUrl restava sempre null e la
+          // copertina caricata dal gestore non veniva mai richiesta in rete
+          // (difetto A-15), esattamente come per service_types.key in B-03.
           .select('''
             id,
             slug,
             name,
             city,
             short_description,
+            image_url,
             track_status_current(status, message),
             track_services(is_available, service_types(label_it, label_en)),
             track_category_links(track_categories(key))
@@ -82,6 +87,7 @@ class SupabaseTracksRepository implements TracksRepository {
               name,
               city,
               short_description,
+              image_url,
               track_status_current(status, message),
               track_services(is_available, service_types(label_it, label_en))
             )
@@ -99,6 +105,13 @@ class SupabaseTracksRepository implements TracksRepository {
   }
 
   @override
+  /// NOTA (difetto B-03, QA 2026-09-13): il select DEVE includere
+  /// `service_types(key, ...)`. TrackDetail.fromMap costruisce
+  /// `availableServiceKeys` leggendo `service_types.key`: senza quella colonna
+  /// l'elenco esce vuoto e l'editor gestore ripresenta tutti i servizi
+  /// deselezionati, azzerandoli al salvataggio successivo. Le categorie non
+  /// hanno mai avuto il problema perche' `track_categories(key)` era gia'
+  /// presente in tutti i select.
   Future<TrackDetail?> fetchPublicTrackBySlug(
     String slug, {
     String preferredLanguageCode = 'it',
@@ -123,7 +136,7 @@ class SupabaseTracksRepository implements TracksRepository {
             track_status_current(status, message),
             track_services(
               is_available,
-              service_types(label_it, label_en)
+              service_types(key, label_it, label_en)
             ),
             track_category_links(track_categories(key))
           ''')
@@ -169,7 +182,7 @@ class SupabaseTracksRepository implements TracksRepository {
             track_status_current(status, message),
             track_services(
               is_available,
-              service_types(label_it, label_en)
+              service_types(key, label_it, label_en)
             ),
             track_category_links(track_categories(key))
           ''')

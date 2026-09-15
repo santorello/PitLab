@@ -1,1 +1,5 @@
+# Le pagine legali statiche (app/web/legal/, generate da tools/build_legal_pages.py)
+# sono file reali: Cloudflare Pages serve gli asset esistenti prima di applicare
+# la catch-all qui sotto. Non aggiungere regole sopra /legal/* per non
+# intercettarle: devono restare raggiungibili senza login e senza Flutter.
 /*    /index.html   200

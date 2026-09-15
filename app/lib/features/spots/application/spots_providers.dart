@@ -123,17 +123,22 @@ class SpotEntriesController extends Notifier<List<SpotEntry>> {
       _loaded = true;
       Future.microtask(_fetchFromSupabase);
     }
-    return SpotCatalog.defaultSpots;
+    // Stato iniziale VUOTO. Prima qui c'erano tre spot dimostrativi cablati
+    // (Argine del Taro, Cava Roveri Trail, Campo Volo Nord): luoghi inventati
+    // con coordinate reali, visibili anche ai visitatori non autenticati.
+    // Difetto A-10 del giro QA 2026-09-13.
+    return const <SpotEntry>[];
   }
 
   Future<void> _fetchFromSupabase() async {
     final repository = ref.read(spotsRepositoryProvider);
     if (repository == null) return;
     try {
-      final spots = await repository.fetchAll();
-      if (spots.isNotEmpty) {
-        state = spots;
-      }
+      // Assegnazione INCONDIZIONATA: con la guardia `if (spots.isNotEmpty)`
+      // un database vuoto lasciava in piedi per sempre lo stato precedente,
+      // cioe' gli spot dimostrativi. Un elenco vuoto e' una risposta valida e
+      // deve produrre lo stato vuoto della pagina.
+      state = await repository.fetchAll();
     } catch (e) {
       debugPrint('[Spots] fetchAll error: $e');
     }

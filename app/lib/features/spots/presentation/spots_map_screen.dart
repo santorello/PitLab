@@ -354,12 +354,22 @@ class _UnifiedMapPanel extends StatelessWidget {
         children: [
           SizedBox(
             height: 540,
-            child: FlutterMap(
+            child: Stack(
+              children: [
+                FlutterMap(
               mapController: mapController,
               options: MapOptions(
                 initialCenter: initialCenter,
                 initialZoom: initialZoom,
                 onTap: (_, _) {},
+                // Zoom con la rotella disattivato di proposito: la mappa e'
+                // alta 540 px dentro una pagina scrollabile, quindi la rotella
+                // sopra la mappa zoomava invece di far scorrere la pagina e
+                // l'utente restava bloccato. Lo zoom resta disponibile con i
+                // pulsanti qui sotto, con il doppio tap e con la pinch.
+                interactionOptions: const InteractionOptions(
+                  flags: InteractiveFlag.all & ~InteractiveFlag.scrollWheelZoom,
+                ),
               ),
               children: [
                 TileLayer(
@@ -421,6 +431,13 @@ class _UnifiedMapPanel extends StatelessWidget {
                         ),
                       )
                       .toList(),
+                ),
+              ],
+                ),
+                Positioned(
+                  right: 12,
+                  bottom: 12,
+                  child: _MapZoomControls(controller: mapController),
                 ),
               ],
             ),
@@ -722,8 +739,11 @@ class _SelectedTrackPanel extends StatelessWidget {
   String get _statusLabel {
     return switch (track.status) {
       'open' => 'Aperta',
+      // 'wet' mancava: una pista bagnata finiva nel ramo di default e veniva
+      // mostrata come stato sconosciuto.
+      'wet' => 'Bagnata',
       'closed' => 'Chiusa',
-      _ => 'Stato sconosciuto',
+      _ => 'Stato non noto',
     };
   }
 
@@ -1146,4 +1166,46 @@ Future<void> _openShopMap(PublicShop shop) async {
     'https://www.google.com/maps/search/?api=1&query=$query',
   );
   await launchUrl(uri, mode: LaunchMode.platformDefault);
+}
+
+
+/// Pulsanti +/- per lo zoom della mappa.
+///
+/// Servono perche' lo zoom con la rotella e' disattivato (vedi
+/// `interactionOptions` sopra): senza questi, su desktop non resterebbe alcun
+/// modo di zoomare oltre al doppio click.
+class _MapZoomControls extends StatelessWidget {
+  const _MapZoomControls({required this.controller});
+
+  final MapController controller;
+
+  void _zoomBy(double delta) {
+    final camera = controller.camera;
+    controller.move(
+      camera.center,
+      (camera.zoom + delta).clamp(2.0, 19.0),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: 'Ingrandisci',
+            onPressed: () => _zoomBy(1),
+          ),
+          IconButton(
+            icon: const Icon(Icons.remove),
+            tooltip: 'Riduci',
+            onPressed: () => _zoomBy(-1),
+          ),
+        ],
+      ),
+    );
+  }
 }

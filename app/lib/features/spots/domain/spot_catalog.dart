@@ -103,51 +103,6 @@ class SpotEntry {
 }
 
 class SpotCatalog {
-  static final defaultSpots = <SpotEntry>[
-    SpotEntry(
-      slug: 'argine-del-taro',
-      title: 'Argine del Taro',
-      city: 'Parma',
-      category: 'Bashing',
-      bestFor: 'Buggy 1/8, monster, short course',
-      surface: 'Terra battuta e sterrato aperto',
-      note:
-          'Spazio largo, fondo variabile e buon margine per sessioni libere in compagnia. Da usare con rispetto e buon senso.',
-      imageAccent: Color(0xFFD97706),
-      photoCount: 3,
-      latitude: 44.8015,
-      longitude: 10.2402,
-    ),
-    SpotEntry(
-      slug: 'cava-roveri-trail',
-      title: 'Cava Roveri Trail',
-      city: 'Modena',
-      category: 'Scaler',
-      bestFor: 'Scaler, crawler, trail truck',
-      surface: 'Roccia leggera, ghiaia e salite tecniche',
-      note:
-          'Spot adatto a uscite lente e tecniche, con punti fotogenici e passaggi da affrontare in gruppo.',
-      imageAccent: Color(0xFF2563EB),
-      photoCount: 3,
-      latitude: 44.6459,
-      longitude: 10.9252,
-    ),
-    SpotEntry(
-      slug: 'campo-volo-nord',
-      title: 'Campo Volo Nord',
-      city: 'Reggio Emilia',
-      category: 'Droni',
-      bestFor: 'Freestyle, cinewhoop, micro FPV',
-      surface: 'Area aperta con prato e visuale ampia',
-      note:
-          'Buona visibilità e spazio per voli tranquilli. Da verificare sempre contesto, sicurezza e regole locali prima di usarlo.',
-      imageAccent: Color(0xFF059669),
-      photoCount: 3,
-      latitude: 44.7212,
-      longitude: 10.6314,
-    ),
-  ];
-
   static SpotEntry? bySlug(String slug, List<SpotEntry> spots) {
     for (final spot in spots) {
       if (spot.slug == slug) {

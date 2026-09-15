@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cookie Policy — PitLap</title>
+<meta name="description" content="Cookie Policy di PitLap, piattaforma per la community del modellismo radiocomandato.">
+<meta name="robots" content="index, follow">
+<style>
+:root { color-scheme: light dark; --fg:#15181c; --bg:#ffffff; --muted:#5b6472;
+        --rule:#d9dee5; --accent:#c8102e; --code:#f2f4f7; }
+@media (prefers-color-scheme: dark) {
+  :root { --fg:#e7eaee; --bg:#14171b; --muted:#9aa4b2; --rule:#2c323a;
+          --accent:#ff5c72; --code:#1e232a; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font:16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+       -webkit-text-size-adjust:100%; }
+.wrap { max-width:46rem; margin:0 auto; padding:2.5rem 1.25rem 4rem; }
+header.site { border-bottom:1px solid var(--rule); padding-bottom:1rem; margin-bottom:2rem; }
+header.site a { color:var(--accent); text-decoration:none; font-weight:700; letter-spacing:.02em; }
+h1 { font-size:1.75rem; line-height:1.25; margin:0 0 1rem; }
+h2 { font-size:1.25rem; margin:2.25rem 0 .75rem; }
+h3 { font-size:1.05rem; margin:1.75rem 0 .5rem; }
+p, li { overflow-wrap:break-word; }
+a { color:var(--accent); }
+hr { border:0; border-top:1px solid var(--rule); margin:2rem 0; }
+code { background:var(--code); padding:.1em .35em; border-radius:4px; font-size:.9em; }
+ul, ol { padding-left:1.35rem; }
+.table-scroll { overflow-x:auto; margin:1rem 0; }
+table { border-collapse:collapse; width:100%; font-size:.93rem; }
+th, td { border:1px solid var(--rule); padding:.5rem .65rem; text-align:left; vertical-align:top; }
+th { background:var(--code); }
+footer.site { border-top:1px solid var(--rule); margin-top:3rem; padding-top:1rem;
+              color:var(--muted); font-size:.875rem; }
+footer.site a { margin-right:1rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="site"><a href="/">PitLap</a></header>
+<main>
+<h1>Cookie Policy e utilizzo del local storage</h1>
+<p><strong>Versione: 1.2 — in vigore dal 2026-09-15</strong><br><strong>Ultimo aggiornamento: 2026-09-15</strong></p>
+<hr>
+<h2>1. Premessa</h2>
+<p>La presente Cookie Policy descrive l'utilizzo di cookie e tecnologie equivalenti nell'ambito di PitLap (pitlap.app).</p>
+<p>Per "tecnologie equivalenti" si intendono, in questa sede, anche strumenti come il <code>localStorage</code> del browser, utilizzati nelle applicazioni web per memorizzare o leggere informazioni sul dispositivo dell'utente.</p>
+<p>PitLap adotta un approccio <strong>minimalista</strong>: vengono utilizzati esclusivamente gli strumenti tecnici strettamente necessari al funzionamento del servizio. Non sono attivi cookie di analytics né di marketing o profilazione.</p>
+<p>Il pulsante "Offri un caffè allo sviluppatore" non installa alcun cookie: si limita ad aprire nel browser il sito del fornitore di pagamento (PayPal), dove si applicano esclusivamente l'informativa e i cookie di tale fornitore.</p>
+<hr>
+<h2>2. Inventario degli strumenti attivi</h2>
+<h3>2.1 Token di sessione Supabase (tecnico-necessario)</h3>
+<div class="table-scroll"><table><thead><tr>
+<th>Attributo</th><th>Valore</th>
+</tr></thead><tbody>
+<tr><td>Nome / chiave</td><td><code>sb-[project-ref]-auth-token</code> (localStorage)</td></tr>
+<tr><td>Fornitore</td><td>Supabase (gestito da PitLap)</td></tr>
+<tr><td>Tipo</td><td>Tecnico-necessario</td></tr>
+<tr><td>Finalità</td><td>Mantenimento della sessione autenticata dell'utente</td></tr>
+<tr><td>Dati memorizzati</td><td>Token di accesso e refresh token cifrati</td></tr>
+<tr><td>Durata</td><td>Durata della validità del token di sessione; viene rinnovato automaticamente fino al logout esplicito</td></tr>
+<tr><td>Lato</td><td>Client (web browser / WebView dell'app Android)</td></tr>
+<tr><td>Trasferimento a terzi</td><td>No — il token viene inviato esclusivamente al backend Supabase di PitLap</td></tr>
+</tbody></table></div>
+<p>Questo strumento è strettamente necessario per erogare il servizio autenticato richiesto dall'utente. Non è richiesto il consenso separato per questo elemento (art. 122 D.Lgs. 196/2003, recepimento della Direttiva ePrivacy).</p>
+<h3>2.2 MapTiler — mappe e geocoding (funzionale, lato client)</h3>
+<div class="table-scroll"><table><thead><tr>
+<th>Attributo</th><th>Valore</th>
+</tr></thead><tbody>
+<tr><td>Fornitore</td><td>MapTiler AG, Svizzera</td></tr>
+<tr><td>Tipo</td><td>Funzionale (necessario per le funzionalità di mappa e ricerca luoghi)</td></tr>
+<tr><td>Finalità</td><td>Rendering delle mappe interattive, ricerca di luoghi e geocoding</td></tr>
+<tr><td>Dati trasmessi al fornitore</td><td>Indirizzo IP del dispositivo, query geografica testuale o coordinate</td></tr>
+<tr><td>Durata</td><td>Richieste in tempo reale; MapTiler può impostare cookie tecnici propri</td></tr>
+<tr><td>Lato</td><td>Client (le richieste partono direttamente dal dispositivo dell'utente)</td></tr>
+<tr><td>Privacy policy fornitore</td><td><a href="https://www.maptiler.com/privacy-policy/">https://www.maptiler.com/privacy-policy/</a></td></tr>
+<tr><td>Termini di utilizzo</td><td><a href="https://www.maptiler.com/cloud/pricing/">https://www.maptiler.com/cloud/pricing/</a></td></tr>
+</tbody></table></div>
+<p>MapTiler è una società svizzera; la Svizzera beneficia di una decisione di adeguatezza della Commissione europea. L'uso del servizio implica che l'indirizzo IP dell'utente sia trasmesso ai server di MapTiler al momento dell'utilizzo delle funzionalità di mappa. Per maggiori dettagli, si rinvia alla privacy policy di MapTiler.</p>
+<hr>
+<h2>3. Strumenti non attivi</h2>
+<h3>3.1 Analytics</h3>
+<p>PitLap non utilizza al momento alcun strumento di analytics. Se in futuro verranno introdotti strumenti di analisi dell'utilizzo, questa policy verrà aggiornata indicando: fornitore, dati raccolti, finalità, durata, base giuridica e meccanismo di consenso.</p>
+<h3>3.2 Marketing e profilazione</h3>
+<p>PitLap non utilizza cookie o strumenti equivalenti per marketing, retargeting o profilazione. Tale categoria non verrà attivata senza: una valutazione preventiva del perimetro, un consenso valido separato e revocabile, un meccanismo di gestione delle preferenze adeguato e un aggiornamento della presente policy e dell'Informativa Privacy.</p>
+<h3>3.3 Sentry (crash reporting)</h3>
+<p>Sentry non è attualmente attivo. Qualora venisse attivato per la raccolta di segnalazioni di crash e log di errore, questa policy e l'Informativa Privacy verranno aggiornate con i relativi dettagli.</p>
+<hr>
+<h2>4. Banner cookie</h2>
+<p>Poiché PitLap utilizza esclusivamente strumenti tecnico-necessari e uno strumento funzionale direttamente collegato alla funzionalità di mappa richiesta dall'utente, <strong>non è attualmente presente un banner di consenso cookie</strong>. Questa scelta è conforme alle Linee Guida del Garante per la protezione dei dati personali del 10 giugno 2021 e alle indicazioni del Gruppo di Lavoro "Articolo 29".</p>
+<p>Qualora venissero introdotti strumenti che richiedono consenso preventivo (analytics, marketing), verrà implementato un layer informativo con centro preferenze.</p>
+<hr>
+<h2>5. Come gestire o disabilitare gli strumenti</h2>
+<p>L'utente può cancellare in qualsiasi momento i dati memorizzati nel localStorage tramite le impostazioni del proprio browser (sezione "Cancella dati di navigazione" o equivalente) o tramite gli strumenti di sviluppo del browser.</p>
+<p>La cancellazione del token di sessione comporta il logout automatico dall'applicazione.</p>
+<hr>
+<h2>6. Aggiornamenti</h2>
+<p>La presente policy verrà aggiornata in caso di modifiche ai fornitori, introduzione di nuovi strumenti di analytics o marketing, o cambiamenti rilevanti nel funzionamento dell'applicazione.</p>
+<hr>
+<p><em>PitLap — pitlap.app</em><br><em>Versione: 1.2 — in vigore dal 2026-09-15</em><br><em>Ultimo aggiornamento: 2026-09-15</em></p>
+</main>
+<footer class="site">
+<a href="/legal/privacy-policy.html">Privacy Policy</a>
+<a href="/legal/termini-di-servizio.html">Termini di Servizio</a>
+<a href="/legal/cookie-policy.html">Cookie Policy</a>
+<p>Titolare: Giuseppe Santoro — Rho (MI), Italia — beppe.apps@gmail.com</p>
+</footer>
+</div>
+</body>
+</html>

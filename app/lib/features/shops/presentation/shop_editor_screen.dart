@@ -205,7 +205,6 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
           .where((item) => item.isNotEmpty),
       ..._localGalleryImages,
     ].take(maxShopGalleryImages).toList();
-    final serviceLabels = _parseServiceLabels(_serviceLabelsController.text);
 
     return ContentScaffold(
       title: widget.isCreating ? 'Nuovo negozio' : l10n.shopDetailTitle,
@@ -650,13 +649,13 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                                       imageUrl: _localCoverImage.isNotEmpty
                                           ? _localCoverImage
                                           : _imageUrlController.text.trim(),
-                                      galleryImages: galleryImages,
+                                      galleryImages: _currentGalleryImages(),
                                       address: _addressController.text.trim(),
                                       city: _cityController.text.trim(),
                                       website: _websiteController.text.trim(),
                                       organizationName:
                                           _organizationController.text.trim(),
-                                      serviceLabels: serviceLabels,
+                                      serviceLabels: _currentServiceLabels(),
                                       approvalStatus: widget.isCreating
                                           ? 'draft'
                                           : ref.read(editableShopProvider(widget.slug))?.approvalStatus ?? 'draft',
@@ -721,13 +720,13 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                                         imageUrl: _localCoverImage.isNotEmpty
                                             ? _localCoverImage
                                             : _imageUrlController.text.trim(),
-                                        galleryImages: galleryImages,
+                                        galleryImages: _currentGalleryImages(),
                                         address: _addressController.text.trim(),
                                         city: _cityController.text.trim(),
                                         website: _websiteController.text.trim(),
                                         organizationName:
                                             _organizationController.text.trim(),
-                                        serviceLabels: serviceLabels,
+                                        serviceLabels: _currentServiceLabels(),
                                         approvalStatus: 'pending',
                                         submittedAt:
                                             DateTime.now().toIso8601String(),
@@ -846,6 +845,28 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
         .toLowerCase()
         .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
         .replaceAll(RegExp(r'^-+|-+$'), '');
+  }
+
+  /// Legge la galleria DAI CONTROLLER nell'istante della chiamata.
+  ///
+  /// Va usato nei gestori di salvataggio. Non riusare la variabile calcolata
+  /// dentro build(): un TextField con controller non ricostruisce il widget
+  /// padre mentre l'utente scrive, quindi quella variabile resta ferma
+  /// all'ultima ricostruzione — in pratica vuota — e il salvataggio azzera
+  /// silenziosamente il campo. E' il difetto B-02 del giro QA 2026-09-13.
+  List<String> _currentGalleryImages() {
+    return [
+      ..._galleryController.text
+          .split('\n')
+          .map((item) => item.trim())
+          .where((item) => item.isNotEmpty),
+      ..._localGalleryImages,
+    ].take(maxShopGalleryImages).toList();
+  }
+
+  /// Come _currentGalleryImages: lettura fresca al momento del salvataggio.
+  List<String> _currentServiceLabels() {
+    return _parseServiceLabels(_serviceLabelsController.text);
   }
 
   List<String> _parseServiceLabels(String raw) {

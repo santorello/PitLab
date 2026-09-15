@@ -176,7 +176,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusClosed => 'CLOSED';
 
   @override
-  String get statusUnknown => 'CHECK NEEDED';
+  String get statusUnknown => 'STATUS UNKNOWN';
 
   @override
   String get arrivalsSoonAvailable => 'Arrivals available soon';
@@ -275,6 +275,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weatherLiveBadge => 'Live weather';
+
+  @override
+  String get weatherUnavailable => 'Forecast not available right now.';
 
   @override
   String get weatherMockBadge => 'Local fallback';
@@ -505,7 +508,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legalPrivacySectionCollectedBody =>
-      'PitLap processes account data (email address and user identifier), profile data (display name, language), preferences, saved tracks, daily track attendance, garage or public profile content made visible at the user\'s discretion, and minimal technical data required for security, authentication and correct service operation.';
+      'PitLap processes account data (email and user identifier), profile data (display name, language, city), preferences, saved tracks, daily track check-ins, garage or public profile content the user chooses to make visible, and the minimum technical data needed for security, authentication and correct operation of the service. If the user sends a report through Contact the developer, the message text, any contact email and minimal technical device information are processed as well.';
 
   @override
   String get legalPrivacySectionPurposeTitle => 'Purposes of processing';
@@ -541,21 +544,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legalPrivacySectionProcessorsBody =>
-      'PitLap uses Supabase Inc. (USA) as provider for database, authentication and storage services, hosted on AWS infrastructure in the eu-west-2 region (Ireland). Data is physically stored within the European Union. Supabase acts as a data processor under Art. 28 GDPR; the Data Processing Agreement is available at supabase.com/privacy. No other third-party providers with access to users\' personal data are currently in use.';
+      'PitLap relies on Supabase (backend: authentication, database and storage) in the EU region of Frankfurt, Germany; Resend for service emails and for forwarding user reports, with the sending domain configured in Ireland; Open-Meteo for outdoor track forecasts; and MapTiler for maps and geocoding, which receives the device IP address when maps are displayed. All act as processors under Art. 28 GDPR. The donation button redirects to PayPal, which acts as an independent controller: PitLap receives no payment data.';
 
   @override
   String get legalPrivacySectionTransfersTitle => 'International transfers';
 
   @override
   String get legalPrivacySectionTransfersBody =>
-      'Data is stored on servers located in the EU (AWS eu-west-2, Ireland). Supabase Inc. is a US company: any transfer to the USA takes place under the safeguards required by the GDPR (Standard Contractual Clauses adopted by Supabase). No transfers to countries without an adequate level of data protection take place without the guarantees required by applicable law.';
+      'Data on Supabase is stored in Frankfurt, Germany, and does not leave the European Economic Area. Open-Meteo operates in Austria, an EU country. Service emails are hosted by Resend in Ireland; Resend is however a US-based company and access from the parent company cannot be excluded: for that case the Standard Contractual Clauses adopted by the European Commission apply. MapTiler is a Swiss company, and Switzerland benefits from an adequacy decision of the Commission.';
 
   @override
   String get legalPrivacySectionRetentionTitle => 'Retention periods';
 
   @override
   String get legalPrivacySectionRetentionBody =>
-      'Account data is retained for the duration of the service relationship. Upon account deletion, personal data is erased within 30 days, unless retention is required by law. Track attendance records are automatically deleted after 1 day. Technical security logs are retained for a maximum of 90 days.';
+      'Account data is kept for as long as the relationship with the service lasts. If deletion is requested, personal data is removed by the controller within 30 days, subject to legal retention obligations. Track check-ins are deleted automatically the day after the one they refer to. PitLap keeps no application logs of its own: platform technical logs are retained by the infrastructure provider for the periods set by its plan.';
 
   @override
   String get legalPrivacySectionSecurityTitle => 'Security';
@@ -630,6 +633,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'These terms are governed by Italian law. For any dispute relating to the use of the service, and where permitted by applicable law, the exclusive jurisdiction shall be that of the court of the user-consumer\'s place of residence or domicile. For professional users, the exclusive forum will be specified in dedicated service conditions.';
 
   @override
+  String get legalFullTextAction => 'Read the full text';
+
+  @override
+  String get legalFullTextHint =>
+      'This is a summary. The full, binding text is published on pitlap.app.';
+
+  @override
+  String legalVersionLabel(String version) {
+    return 'Version $version';
+  }
+
+  @override
   String get legalCookiesTitle => 'Cookie Policy';
 
   @override
@@ -678,7 +693,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nearbyDescription =>
-      'Discover open tracks, useful shops and nearby events with a quick, grounded read of what is happening around you.';
+      'Discover open tracks and useful shops near you, with a quick, grounded read of what is around.';
 
   @override
   String get nearbyPlaceholderTitle => 'Mixed discovery';
@@ -1021,7 +1036,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminOverviewBody =>
-      'Compact view of the key entities the real admin dashboard will need to monitor.';
+      'Compact view of the entities managed by PitLap: users, tracks, shops and events.';
 
   @override
   String get adminUsersMetric => 'Users';
@@ -1366,7 +1381,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSettingsBody =>
-      'Sensitive account operations should live here, separate from the public-facing profile data.';
+      'Sensitive account operations, separate from the public-facing profile data.';
 
   @override
   String get profileChangeEmail => 'Change email';
@@ -1424,7 +1439,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileOnboardingActionHint =>
-      'Draft of the guided first access flow to decide what should be asked immediately.';
+      'Review or complete the information collected at first access.';
 
   @override
   String get profileFavoritesTitle => 'Favorites';

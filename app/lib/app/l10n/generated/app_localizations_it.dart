@@ -176,7 +176,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get statusClosed => 'CHIUSA';
 
   @override
-  String get statusUnknown => 'DA VERIFICARE';
+  String get statusUnknown => 'STATO NON NOTO';
 
   @override
   String get arrivalsSoonAvailable => 'Presenze presto disponibili';
@@ -271,10 +271,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get weatherIndoorRegularNote => 'Sessione regolare';
 
   @override
-  String get weatherIndoorWarningNote => 'Traffico e umidita\'';
+  String get weatherIndoorWarningNote => 'Traffico e umidità';
 
   @override
   String get weatherLiveBadge => 'Meteo live';
+
+  @override
+  String get weatherUnavailable => 'Previsioni non disponibili al momento.';
 
   @override
   String get weatherMockBadge => 'Fallback locale';
@@ -505,7 +508,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get legalPrivacySectionCollectedBody =>
-      'PitLap tratta dati account (email e identificativo utente), dati profilo (nome visibile, lingua), preferenze, piste salvate, presenze giornaliere in pista, contenuti di garage o profilo pubblico resi visibili su scelta dell\'utente, e dati tecnici minimi necessari per sicurezza, autenticazione e corretto funzionamento del servizio.';
+      'PitLap tratta dati account (email e identificativo utente), dati profilo (nome visibile, lingua, città), preferenze, piste salvate, presenze giornaliere in pista, contenuti di garage o profilo pubblico resi visibili su scelta dell\'utente, e dati tecnici minimi necessari per sicurezza, autenticazione e corretto funzionamento del servizio. Se l\'utente invia una segnalazione con Contatta lo sviluppatore, vengono trattati anche il testo del messaggio, l\'eventuale email di contatto e informazioni tecniche minime sul dispositivo.';
 
   @override
   String get legalPrivacySectionPurposeTitle => 'Finalità del trattamento';
@@ -526,7 +529,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get legalPrivacySectionRightsBody =>
-      'Ai sensi degli artt. 15-22 GDPR, l\'utente ha diritto di: accedere ai propri dati; ottenerne la rettifica o la cancellazione; richiedere la limitazione del trattamento; opporsi al trattamento basato su legittimo interesse; ricevere i dati in formato strutturato (portabilita\'); revocare il consenso in qualsiasi momento senza pregiudizio per la liceità del trattamento anteriore. Per esercitare questi diritti: beppe.apps@gmail.com. In caso di violazione, è possibile proporre reclamo all\'autorità di controllo competente (Garante per la protezione dei dati personali, www.garanteprivacy.it).';
+      'Ai sensi degli artt. 15-22 GDPR, l\'utente ha diritto di: accedere ai propri dati; ottenerne la rettifica o la cancellazione; richiedere la limitazione del trattamento; opporsi al trattamento basato su legittimo interesse; ricevere i dati in formato strutturato (portabilità); revocare il consenso in qualsiasi momento senza pregiudizio per la liceità del trattamento anteriore. Per esercitare questi diritti: beppe.apps@gmail.com. In caso di violazione, è possibile proporre reclamo all\'autorità di controllo competente (Garante per la protezione dei dati personali, www.garanteprivacy.it).';
 
   @override
   String get legalPrivacySectionControllerTitle => 'Titolare del trattamento';
@@ -540,21 +543,21 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get legalPrivacySectionProcessorsBody =>
-      'PitLap si avvale di Supabase Inc. (USA) come fornitore di database, autenticazione e storage, su infrastruttura AWS nella regione eu-west-2 (Irlanda). I dati restano fisicamente all\'interno dell\'Unione Europea. Supabase opera come responsabile del trattamento ai sensi dell\'art. 28 GDPR; il Data Processing Agreement è disponibile su supabase.com/privacy. Non sono utilizzati altri fornitori terzi con accesso ai dati personali degli utenti.';
+      'PitLap si avvale di Supabase (backend: autenticazione, database e storage) nella regione UE di Francoforte, in Germania; Resend per l\'invio delle email di servizio e l\'inoltro delle segnalazioni, con dominio configurato in Irlanda; Open-Meteo per le previsioni meteo delle piste outdoor; MapTiler per mappe e geocoding, che riceve l\'indirizzo IP del dispositivo al momento della visualizzazione. Tutti operano come responsabili del trattamento ai sensi dell\'art. 28 GDPR. Il pulsante di donazione rinvia a PayPal, che opera come titolare autonomo: PitLap non riceve alcun dato di pagamento.';
 
   @override
   String get legalPrivacySectionTransfersTitle => 'Trasferimento dati extra-UE';
 
   @override
   String get legalPrivacySectionTransfersBody =>
-      'I dati sono conservati in server localizzati nell\'UE (AWS eu-west-2, Irlanda). Supabase Inc. è una società statunitense: il trasferimento verso gli USA avviene nel rispetto delle garanzie previste dal GDPR (Standard Contractual Clauses adottate da Supabase). Non vengono effettuati trasferimenti verso Paesi privi di adeguato livello di protezione senza le garanzie richieste dalla normativa.';
+      'I dati su Supabase risiedono a Francoforte (Germania) e non escono dallo Spazio Economico Europeo. Open-Meteo opera in Austria, Paese UE. Le email di servizio sono ospitate da Resend in Irlanda; Resend ha però sede negli Stati Uniti e un accesso dalla casa madre non è escluso: per questa eventualità valgono le Clausole Contrattuali Standard adottate dalla Commissione europea. MapTiler è una società svizzera e la Svizzera beneficia di una decisione di adeguatezza della Commissione.';
 
   @override
   String get legalPrivacySectionRetentionTitle => 'Conservazione dei dati';
 
   @override
   String get legalPrivacySectionRetentionBody =>
-      'I dati dell\'account sono conservati per tutta la durata del rapporto con il servizio. In caso di cancellazione account, i dati personali vengono eliminati entro 30 giorni, salvo obblighi di conservazione previsti dalla legge. Le presenze in pista vengono rimosse automaticamente dopo 1 giorno dall\'inserimento. I log tecnici di sicurezza sono conservati per un massimo di 90 giorni.';
+      'I dati dell\'account sono conservati per tutta la durata del rapporto con il servizio. In caso di richiesta di cancellazione, i dati personali vengono rimossi a cura del titolare entro 30 giorni, salvo obblighi di conservazione previsti dalla legge. I check-in in pista vengono cancellati automaticamente il giorno successivo a quello cui si riferiscono. PitLap non conserva log applicativi propri: i log tecnici di piattaforma sono conservati dal fornitore dell\'infrastruttura secondo i periodi previsti dal suo piano.';
 
   @override
   String get legalPrivacySectionSecurityTitle => 'Sicurezza';
@@ -629,6 +632,18 @@ class AppLocalizationsIt extends AppLocalizations {
       'I presenti termini sono regolati dalla legge italiana. Per qualsiasi controversia relativa all\'uso del servizio, ove consentito dalla normativa applicabile, sarà competente in via esclusiva il foro del luogo di residenza o domicilio dell\'utente consumatore. Per gli utenti professionali il foro esclusivo sarà indicato nelle condizioni specifiche di utilizzo.';
 
   @override
+  String get legalFullTextAction => 'Leggi il testo completo';
+
+  @override
+  String get legalFullTextHint =>
+      'Questa è una sintesi. Il testo integrale e vincolante è pubblicato su pitlap.app.';
+
+  @override
+  String legalVersionLabel(String version) {
+    return 'Versione $version';
+  }
+
+  @override
   String get legalCookiesTitle => 'Cookie Policy';
 
   @override
@@ -677,7 +692,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get nearbyDescription =>
-      'Scopri piste aperte, negozi utili ed eventi vicini a te con una lettura rapida e concreta del territorio.';
+      'Scopri piste aperte e negozi utili vicini a te, con una lettura rapida e concreta del territorio.';
 
   @override
   String get nearbyPlaceholderTitle => 'Discovery mista';
@@ -1020,7 +1035,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get adminOverviewBody =>
-      'Quadro sintetico delle entità chiave che l\'admin dovrà controllare nella dashboard reale.';
+      'Quadro sintetico delle entità gestite: utenti, piste, negozi ed eventi.';
 
   @override
   String get adminUsersMetric => 'Utenti';
@@ -1096,7 +1111,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get adminEntitiesTitle => 'Entita\' gestite';
+  String get adminEntitiesTitle => 'Entità gestite';
 
   @override
   String get adminEntitiesBody =>
@@ -1366,7 +1381,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get profileSettingsBody =>
-      'Qui vivranno le operazioni sensibili dell\'account, separate dai dati pubblici del profilo.';
+      'Operazioni sensibili dell\'account, separate dai dati pubblici del profilo.';
 
   @override
   String get profileChangeEmail => 'Cambio email';
@@ -1409,7 +1424,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get profileCloseAccountInfo =>
-      'La chiusura account richiedera\' un passaggio dedicato con riepilogo dati, export e conferma finale.';
+      'La chiusura account richiederà un passaggio dedicato con riepilogo dati, export e conferma finale.';
 
   @override
   String get profileSummaryTitle => 'Proposta iniziale';
@@ -1423,7 +1438,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get profileOnboardingActionHint =>
-      'Bozza del primo accesso guidato per capire cosa chiedere subito.';
+      'Rivedi o completa le informazioni raccolte al primo accesso.';
 
   @override
   String get profileFavoritesTitle => 'Preferiti';
@@ -1488,7 +1503,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get publicProfilePlaceholderBody =>
-      'Il profilo pubblico restera\' sempre opzionale e separato dai dati account privati.';
+      'Il profilo pubblico resterà sempre opzionale e separato dai dati account privati.';
 
   @override
   String get shopDetailTitle => 'Dettaglio negozio';

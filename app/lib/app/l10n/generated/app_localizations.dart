@@ -419,7 +419,7 @@ abstract class AppLocalizations {
   /// No description provided for @statusUnknown.
   ///
   /// In en, this message translates to:
-  /// **'CHECK NEEDED'**
+  /// **'STATUS UNKNOWN'**
   String get statusUnknown;
 
   /// No description provided for @arrivalsSoonAvailable.
@@ -595,6 +595,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Live weather'**
   String get weatherLiveBadge;
+
+  /// No description provided for @weatherUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Forecast not available right now.'**
+  String get weatherUnavailable;
 
   /// No description provided for @weatherMockBadge.
   ///
@@ -971,7 +977,7 @@ abstract class AppLocalizations {
   /// No description provided for @legalPrivacySectionCollectedBody.
   ///
   /// In en, this message translates to:
-  /// **'PitLap processes account data (email address and user identifier), profile data (display name, language), preferences, saved tracks, daily track attendance, garage or public profile content made visible at the user\'s discretion, and minimal technical data required for security, authentication and correct service operation.'**
+  /// **'PitLap processes account data (email and user identifier), profile data (display name, language, city), preferences, saved tracks, daily track check-ins, garage or public profile content the user chooses to make visible, and the minimum technical data needed for security, authentication and correct operation of the service. If the user sends a report through Contact the developer, the message text, any contact email and minimal technical device information are processed as well.'**
   String get legalPrivacySectionCollectedBody;
 
   /// No description provided for @legalPrivacySectionPurposeTitle.
@@ -1031,7 +1037,7 @@ abstract class AppLocalizations {
   /// No description provided for @legalPrivacySectionProcessorsBody.
   ///
   /// In en, this message translates to:
-  /// **'PitLap uses Supabase Inc. (USA) as provider for database, authentication and storage services, hosted on AWS infrastructure in the eu-west-2 region (Ireland). Data is physically stored within the European Union. Supabase acts as a data processor under Art. 28 GDPR; the Data Processing Agreement is available at supabase.com/privacy. No other third-party providers with access to users\' personal data are currently in use.'**
+  /// **'PitLap relies on Supabase (backend: authentication, database and storage) in the EU region of Frankfurt, Germany; Resend for service emails and for forwarding user reports, with the sending domain configured in Ireland; Open-Meteo for outdoor track forecasts; and MapTiler for maps and geocoding, which receives the device IP address when maps are displayed. All act as processors under Art. 28 GDPR. The donation button redirects to PayPal, which acts as an independent controller: PitLap receives no payment data.'**
   String get legalPrivacySectionProcessorsBody;
 
   /// No description provided for @legalPrivacySectionTransfersTitle.
@@ -1043,7 +1049,7 @@ abstract class AppLocalizations {
   /// No description provided for @legalPrivacySectionTransfersBody.
   ///
   /// In en, this message translates to:
-  /// **'Data is stored on servers located in the EU (AWS eu-west-2, Ireland). Supabase Inc. is a US company: any transfer to the USA takes place under the safeguards required by the GDPR (Standard Contractual Clauses adopted by Supabase). No transfers to countries without an adequate level of data protection take place without the guarantees required by applicable law.'**
+  /// **'Data on Supabase is stored in Frankfurt, Germany, and does not leave the European Economic Area. Open-Meteo operates in Austria, an EU country. Service emails are hosted by Resend in Ireland; Resend is however a US-based company and access from the parent company cannot be excluded: for that case the Standard Contractual Clauses adopted by the European Commission apply. MapTiler is a Swiss company, and Switzerland benefits from an adequacy decision of the Commission.'**
   String get legalPrivacySectionTransfersBody;
 
   /// No description provided for @legalPrivacySectionRetentionTitle.
@@ -1055,7 +1061,7 @@ abstract class AppLocalizations {
   /// No description provided for @legalPrivacySectionRetentionBody.
   ///
   /// In en, this message translates to:
-  /// **'Account data is retained for the duration of the service relationship. Upon account deletion, personal data is erased within 30 days, unless retention is required by law. Track attendance records are automatically deleted after 1 day. Technical security logs are retained for a maximum of 90 days.'**
+  /// **'Account data is kept for as long as the relationship with the service lasts. If deletion is requested, personal data is removed by the controller within 30 days, subject to legal retention obligations. Track check-ins are deleted automatically the day after the one they refer to. PitLap keeps no application logs of its own: platform technical logs are retained by the infrastructure provider for the periods set by its plan.'**
   String get legalPrivacySectionRetentionBody;
 
   /// No description provided for @legalPrivacySectionSecurityTitle.
@@ -1178,6 +1184,24 @@ abstract class AppLocalizations {
   /// **'These terms are governed by Italian law. For any dispute relating to the use of the service, and where permitted by applicable law, the exclusive jurisdiction shall be that of the court of the user-consumer\'s place of residence or domicile. For professional users, the exclusive forum will be specified in dedicated service conditions.'**
   String get legalTermsSectionGoverningBody;
 
+  /// No description provided for @legalFullTextAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the full text'**
+  String get legalFullTextAction;
+
+  /// No description provided for @legalFullTextHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a summary. The full, binding text is published on pitlap.app.'**
+  String get legalFullTextHint;
+
+  /// No description provided for @legalVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String legalVersionLabel(String version);
+
   /// No description provided for @legalCookiesTitle.
   ///
   /// In en, this message translates to:
@@ -1259,7 +1283,7 @@ abstract class AppLocalizations {
   /// No description provided for @nearbyDescription.
   ///
   /// In en, this message translates to:
-  /// **'Discover open tracks, useful shops and nearby events with a quick, grounded read of what is happening around you.'**
+  /// **'Discover open tracks and useful shops near you, with a quick, grounded read of what is around.'**
   String get nearbyDescription;
 
   /// No description provided for @nearbyPlaceholderTitle.
@@ -1865,7 +1889,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'Compact view of the key entities the real admin dashboard will need to monitor.'**
+  /// **'Compact view of the entities managed by PitLap: users, tracks, shops and events.'**
   String get adminOverviewBody;
 
   /// No description provided for @adminUsersMetric.
@@ -2477,7 +2501,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileSettingsBody.
   ///
   /// In en, this message translates to:
-  /// **'Sensitive account operations should live here, separate from the public-facing profile data.'**
+  /// **'Sensitive account operations, separate from the public-facing profile data.'**
   String get profileSettingsBody;
 
   /// No description provided for @profileChangeEmail.
@@ -2573,7 +2597,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileOnboardingActionHint.
   ///
   /// In en, this message translates to:
-  /// **'Draft of the guided first access flow to decide what should be asked immediately.'**
+  /// **'Review or complete the information collected at first access.'**
   String get profileOnboardingActionHint;
 
   /// No description provided for @profileFavoritesTitle.

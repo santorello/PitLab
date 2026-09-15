@@ -858,3 +858,47 @@ final adminFeedbackProvider =
           ))
       .toList();
 });
+
+/// Richiesta di cancellazione account ancora da evadere (art. 17 GDPR).
+class AdminDeletionRequest {
+  const AdminDeletionRequest({
+    required this.userId,
+    required this.displayName,
+    required this.requestedAt,
+    required this.daysElapsed,
+  });
+
+  final String userId;
+  final String displayName;
+  final DateTime requestedAt;
+  final int daysElapsed;
+
+  /// L'informativa promette la cancellazione entro 30 giorni.
+  bool get isOverdue => daysElapsed >= 30;
+}
+
+/// Richieste di cancellazione account in attesa.
+///
+/// Senza questo elenco una richiesta ex art. 17 restava un campo
+/// (`profiles.deletion_requested_at`) che nessuno guardava: l'utente chiedeva
+/// la cancellazione e non se ne accorgeva nessuno.
+final adminPendingDeletionsProvider =
+    FutureProvider<List<AdminDeletionRequest>>((ref) async {
+  final client = ref.watch(authClientProvider);
+  final role = ref.watch(effectiveUserRoleProvider);
+  if (client == null || role != 'admin') return const [];
+
+  final rows = await client.rpc('admin_pending_account_deletions');
+
+  return (rows as List<dynamic>)
+      .whereType<Map<String, dynamic>>()
+      .map((r) => AdminDeletionRequest(
+            userId: r['user_id'] as String? ?? '',
+            displayName: r['display_name'] as String? ?? '',
+            requestedAt:
+                DateTime.tryParse(r['requested_at'] as String? ?? '') ??
+                    DateTime.now(),
+            daysElapsed: (r['giorni_trascorsi'] as num?)?.toInt() ?? 0,
+          ))
+      .toList();
+});

@@ -121,8 +121,8 @@ class _ProfilesSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = total == visible
-        ? '$total profili pubblici'
-        : '$visible di $total profili pubblici';
+        ? '$total ${total == 1 ? 'profilo pubblico' : 'profili pubblici'}'
+        : '$visible di $total ${total == 1 ? 'profilo pubblico' : 'profili pubblici'}';
     return Row(
       children: [
         const Icon(Icons.people_alt_outlined, color: AppColors.signalOrange),

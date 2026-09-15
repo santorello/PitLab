@@ -7,6 +7,7 @@ import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_radius.dart';
 import '../../app/theme/app_spacing.dart';
 import '../../features/auth/application/auth_providers.dart';
+import 'language_toggle.dart';
 
 class ContentScaffoldHeader extends ConsumerWidget {
   const ContentScaffoldHeader({
@@ -78,7 +79,7 @@ class ContentScaffoldHeader extends ConsumerWidget {
                 ),
               ],
             );
-            final actions = _HeaderActions(
+            final actions = HeaderAccountActions(
               currentUserEmail: currentUser?.email,
               trailingActions: trailingActions,
             );
@@ -89,7 +90,7 @@ class ContentScaffoldHeader extends ConsumerWidget {
                 children: [
                   brand,
                   SizedBox(height: AppSpacing.sm),
-                  actions,
+                  SizedBox(width: double.infinity, child: actions),
                 ],
               );
             }
@@ -99,7 +100,13 @@ class ContentScaffoldHeader extends ConsumerWidget {
               children: [
                 Expanded(child: brand),
                 SizedBox(width: AppSpacing.md),
-                Flexible(child: actions),
+                // Allineate al bordo destro come nella Home.
+                Flexible(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: actions,
+                  ),
+                ),
               ],
             );
           },
@@ -195,10 +202,12 @@ class ContentScaffoldHeader extends ConsumerWidget {
   }
 }
 
-class _HeaderActions extends StatelessWidget {
-  const _HeaderActions({
+/// Lingua + Accedi/Profilo: identico in Home e in tutte le altre pagine.
+class HeaderAccountActions extends StatelessWidget {
+  const HeaderAccountActions({
     required this.currentUserEmail,
-    required this.trailingActions,
+    this.trailingActions,
+    super.key,
   });
 
   final String? currentUserEmail;
@@ -210,6 +219,7 @@ class _HeaderActions extends StatelessWidget {
     final currentUserEmail = this.currentUserEmail;
 
     return Wrap(
+      alignment: WrapAlignment.end,
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.xs,
       crossAxisAlignment: WrapCrossAlignment.center,
@@ -221,6 +231,7 @@ class _HeaderActions extends StatelessWidget {
               child: action,
             ),
           ),
+        const LanguageToggle(),
         if (currentUserEmail == null)
           OutlinedButton.icon(
             onPressed: () => context.go('/login'),

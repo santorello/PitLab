@@ -131,11 +131,22 @@ class _AuthRedirectHandlerState extends ConsumerState<_AuthRedirectHandler> {
       '[AuthFlow] Handle callback uri=${Uri.base} codePresent=${code != null && code.isNotEmpty} redirect=$redirectPath error=$callbackErrorCode',
     );
     if (callbackErrorCode != null && callbackErrorCode.isNotEmpty) {
-      _redirectToLoginWithError(
-        redirectPath: redirectPath,
-        errorCode: callbackErrorCode,
-      );
-      return;
+      // Con una sessione gia' valida l'errore nel link non conta: e' il caso
+      // del magic link riaperto o ricaricato dopo essere entrati. Prima si
+      // finiva comunque su /login con "link scaduto" pur essendo autenticati
+      // (difetto A-24). Su web il fragment sopravvive alle navigazioni interne,
+      // quindi l'errore poteva ripresentarsi a ogni ricaricamento.
+      if (currentUser != null) {
+        debugPrint(
+          '[AuthFlow] Ignoro $callbackErrorCode: sessione gia\' valida per ${currentUser.id}',
+        );
+      } else {
+        _redirectToLoginWithError(
+          redirectPath: redirectPath,
+          errorCode: callbackErrorCode,
+        );
+        return;
+      }
     }
 
     if (code == null || code.isEmpty) {
@@ -209,7 +220,11 @@ class _AuthRedirectHandlerState extends ConsumerState<_AuthRedirectHandler> {
     debugPrint(
       '[AuthFlow] Handle pending redirect user=${user?.id} redirect=$redirectPath handled=$_handledRedirect',
     );
-    if (callbackErrorCode != null && callbackErrorCode.isNotEmpty) {
+    // Un errore nel link blocca il redirect solo se non siamo autenticati:
+    // con la sessione valida la destinazione richiesta va comunque aperta.
+    if (callbackErrorCode != null &&
+        callbackErrorCode.isNotEmpty &&
+        user == null) {
       return;
     }
     if (user == null || redirectPath == null || redirectPath.isEmpty) {

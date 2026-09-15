@@ -12,6 +12,7 @@ import '../../../shared/models/user_build.dart';
 import '../../../shared/media/media_upload_service.dart';
 import '../../../shared/utils/local_image_data_url.dart';
 import '../../../shared/widgets/adaptive_image.dart';
+import '../../../shared/widgets/dialog_controller_scope.dart';
 import '../../../shared/widgets/empty_state_panel.dart';
 import '../../../shared/widgets/pill.dart';
 import '../../../shared/widgets/processing_status_badge.dart';
@@ -239,7 +240,9 @@ class _GarageBody extends ConsumerWidget {
 
     final result = await showDialog<UserBuild>(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
+      builder: (dialogContext) => DialogControllerScope(
+        controllers: [titleCtrl, metaCtrl, imageUrlCtrl, specsCtrl],
+        child: StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
           title: Text(existing == null
               ? l10n.garageAddBuildAction
@@ -481,14 +484,14 @@ class _GarageBody extends ConsumerWidget {
               child: Text(l10n.garageBuildSaveAction),
             ),
           ],
+          ),
         ),
       ),
     );
 
-    titleCtrl.dispose();
-    metaCtrl.dispose();
-    imageUrlCtrl.dispose();
-    specsCtrl.dispose();
+    // I controller vengono liberati da DialogControllerScope quando la route
+    // del dialog viene smontata: farlo qui, appena l'await ritorna, li
+    // distruggeva mentre l'animazione di uscita ricostruiva ancora i TextField.
 
     if (result == null) return;
 

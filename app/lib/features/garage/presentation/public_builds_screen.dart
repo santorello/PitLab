@@ -117,8 +117,8 @@ class _BuildsSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = total == visible
-        ? '$total build pubbliche'
-        : '$visible di $total build pubbliche';
+        ? '$total ${total == 1 ? 'build pubblica' : 'build pubbliche'}'
+        : '$visible di $total ${total == 1 ? 'build pubblica' : 'build pubbliche'}';
     return Row(
       children: [
         const Icon(Icons.view_module_outlined, color: AppColors.signalOrange),

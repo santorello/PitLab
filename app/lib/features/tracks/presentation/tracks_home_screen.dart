@@ -4,8 +4,7 @@
 //  TracksHomeScreen – layout proposto (review aprile 2026)
 //
 //  Miglioramenti rispetto alla V1:
-//   • Selettore lingua spostato nell'header (trailingActions di ContentScaffold),
-//     fuori dalla search bar.
+//   • Selettore lingua nell'header condiviso (LanguageToggle in HeaderAccountActions).
 //   • TrackCard ridisegnata:
 //       - Un solo CTA primario ("Sto arrivando") → gerarchia chiara.
 //       - "Vedi pista" come link testuale secondario (senza button stack).
@@ -18,15 +17,12 @@
 //   • filtri _matchesFilters identici a V1 (parità funzionale).
 // ─────────────────────────────────────────────────────────────────────────────
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
-import '../../../app/l10n/locale_controller.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
@@ -61,54 +57,6 @@ class _TracksHomeScreenState extends ConsumerState<TracksHomeScreen> {
     super.dispose();
   }
 
-  // ── language toggle widget ──────────────────────────────────────────────
-
-  Widget _buildLangButton(BuildContext context) {
-    final locale = Localizations.localeOf(context);
-    return Tooltip(
-      message: locale.languageCode == 'it' ? 'Switch to English' : 'Passa a Italiano',
-      child: OutlinedButton(
-        onPressed: () {
-          final nextLocale = locale.languageCode == 'it'
-              ? const Locale('en')
-              : const Locale('it');
-          ref.read(localeProvider.notifier).setLocale(nextLocale);
-          final repository = ref.read(authProfileRepositoryProvider);
-          final user = ref.read(currentUserProvider);
-          if (repository != null && user != null) {
-            unawaited(
-              repository.upsertPreferredLanguage(
-                userId: user.id,
-                languageCode: nextLocale.languageCode,
-              ),
-            );
-          }
-        },
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          minimumSize: Size.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          side: BorderSide(color: AppColors.concrete.withAlpha(200)),
-          foregroundColor: AppColors.graphite,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(999),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.language, size: 16),
-            const SizedBox(width: 6),
-            Text(
-              locale.languageCode.toUpperCase(),
-              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   // ── build ────────────────────────────────────────────────────────────────
 
   @override
@@ -123,7 +71,6 @@ class _TracksHomeScreenState extends ConsumerState<TracksHomeScreen> {
     return ContentScaffold(
       title: l10n.tracksTitle,
       description: l10n.homeSubheadline,
-      trailingActions: [_buildLangButton(context)],
       child: ListView(
         children: [
           // ── Spotlight banner ──────────────────────────────────────────
@@ -409,30 +356,44 @@ class _SpotlightBanner extends StatelessWidget {
                       ),
                     )
                   else if (isCompact)
-                    SizedBox(
-                      height: 76,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: spotlightTracks.length,
-                        separatorBuilder: (_, _) => const SizedBox(width: 10),
-                        itemBuilder: (context, index) {
-                          final t = spotlightTracks[index];
-                          return SizedBox(
-                            width: (constraints.maxWidth * 0.72).clamp(
-                              220.0,
-                              300.0,
-                            ),
-                            child: _SpotlightCard(
-                              title: t.name,
-                              body: t.statusMessage.isNotEmpty
-                                  ? t.statusMessage
-                                  : t.shortDescription,
-                              statusColor: _spotlightStatusColor(t.status),
-                              compact: true,
-                              onTap: () => context.go('/track/${t.slug}'),
-                            ),
-                          );
-                        },
+                    // Niente altezza fissa: una SizedBox(height: 76) andava in
+                    // overflow di 2 px gia' con il font di default, e qualsiasi
+                    // valore scelto a mano si rompe di nuovo al primo aumento
+                    // della dimensione testo di sistema. La riga si dimensiona
+                    // sulla card piu' alta.
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            for (var i = 0; i < spotlightTracks.length; i++)
+                              ...[
+                              if (i > 0) const SizedBox(width: 10),
+                              SizedBox(
+                                width: (constraints.maxWidth * 0.72).clamp(
+                                  220.0,
+                                  300.0,
+                                ),
+                                child: _SpotlightCard(
+                                  title: spotlightTracks[i].name,
+                                  body: spotlightTracks[i]
+                                          .statusMessage
+                                          .isNotEmpty
+                                      ? spotlightTracks[i].statusMessage
+                                      : spotlightTracks[i].shortDescription,
+                                  statusColor: _spotlightStatusColor(
+                                    spotlightTracks[i].status,
+                                  ),
+                                  compact: true,
+                                  onTap: () => context.go(
+                                    '/track/${spotlightTracks[i].slug}',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
                       ),
                     )
                   else

@@ -6,6 +6,7 @@ import '../../../app/theme/app_breakpoints.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
+import '../../../core/widgets/content_scaffold_header.dart';
 import '../../../features/auth/application/auth_providers.dart';
 import '../../../features/comments/application/comments_providers.dart';
 import '../../../features/location/application/user_location_context_provider.dart';
@@ -31,7 +32,11 @@ class CommunityHomeScreen extends ConsumerWidget {
     final trendingAsync = ref.watch(homeTrendingTracksProvider);
     final leaderboardAsync = ref.watch(pitcoinPublicLeaderboardProvider);
     final feedAsync = ref.watch(activityFeedProvider);
-    final profileAsync = ref.watch(userProfileProvider);
+    // effectiveUserProfileProvider, non userProfileProvider: in impersonazione
+    // la Home continuava a salutare l'admin invece dell'utente osservato
+    // (difetto A-17). Le card PitCoin qui sotto usavano gia' i provider
+    // "effective".
+    final profileAsync = ref.watch(effectiveUserProfileProvider);
     final weatherAsync = ref.watch(homeTrackWeatherProvider);
     final buildOfWeekAsync = ref.watch(homeBuildOfWeekProvider);
     final locationAsync = ref.watch(userLocationContextProvider);
@@ -45,10 +50,7 @@ class CommunityHomeScreen extends ConsumerWidget {
       data: (value) => value,
       orElse: () => null,
     );
-    final displayName = _homeDisplayName(
-      profileName: profile?.displayName,
-      email: user?.email,
-    );
+    final displayName = _homeDisplayName(profile?.displayName);
     final location = locationAsync.maybeWhen(
       data: (value) => value,
       orElse: () => UserLocationContext.none,
@@ -232,11 +234,12 @@ class _TopBar extends StatelessWidget {
             ],
           ),
         ),
-        const Spacer(),
-        IconButton.filledTonal(
-          onPressed: () => context.push(userLabel == null ? '/login' : '/profile'),
-          icon: Icon(userLabel == null ? Icons.login : Icons.person_outline),
-          tooltip: userLabel == null ? 'Accedi' : 'Profilo',
+        const SizedBox(width: AppSpacing.md),
+        Expanded(
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: HeaderAccountActions(currentUserEmail: userLabel),
+          ),
         ),
       ],
     );
@@ -310,7 +313,9 @@ class _GreetingCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(
             openTracks > 0
-                ? 'Oggi risultano $openTracks piste aperte su PitLap.'
+                ? (openTracks == 1
+                      ? 'Oggi risulta 1 pista aperta su PitLap.'
+                      : 'Oggi risultano $openTracks piste aperte su PitLap.')
                 : 'Dove il modellismo si incontra.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.white70,
@@ -597,9 +602,9 @@ class _NearbyMapPreview extends StatelessWidget {
     final mappedTotal = trackCount + spotCount + shopCount;
     final subtitleParts = [
       if (openTrackCount > 0) '$openTrackCount aperte',
-      if (trackCount > 0) '$trackCount piste',
+      if (trackCount > 0) '$trackCount ${trackCount == 1 ? 'pista' : 'piste'}',
       if (spotCount > 0) '$spotCount spot',
-      if (shopCount > 0) '$shopCount negozi',
+      if (shopCount > 0) '$shopCount ${shopCount == 1 ? 'negozio' : 'negozi'}',
     ];
 
     return Column(
@@ -2296,19 +2301,11 @@ String _timeGreeting(DateTime now) {
   return 'Buona sera';
 }
 
-String _homeDisplayName({
-  required String? profileName,
-  required String? email,
-}) {
+String _homeDisplayName(String? profileName) {
   final cleanName = profileName?.trim();
   if (cleanName != null && cleanName.isNotEmpty) return cleanName;
-
-  final cleanEmail = email?.trim();
-  if (cleanEmail != null && cleanEmail.isNotEmpty) {
-    final localPart = cleanEmail.split('@').first.trim();
-    if (localPart.isNotEmpty) return localPart;
-  }
-
+  // Il ripiego sulla parte locale dell'email non serve piu': dal delta
+  // 2026-09-14 handle_new_user assegna sempre un nome al profilo.
   return 'Pilota';
 }
 

@@ -8,6 +8,7 @@ import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
+import '../../../shared/widgets/dialog_controller_scope.dart';
 import '../../../shared/media/media_upload_controller.dart';
 import '../../../shared/media/media_upload_labels.dart';
 import '../../../shared/media/media_upload_service.dart';
@@ -302,7 +303,6 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     // Usa effectiveUserId/Profile per supportare correttamente l'impersonazione:
     // quando l'admin osserva Claudia Ferri, l'evento risulta di Claudia.
     final effectiveUserId = ref.read(effectiveUserIdProvider);
-    final effectiveUser = ref.read(currentUserProvider); // per email fallback
     final profile = ref
         .read(effectiveUserProfileProvider)
         .maybeWhen(data: (value) => value, orElse: () => null);
@@ -320,7 +320,14 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     final created = await showDialog<CreatedEventRecord>(
       context: context,
       builder: (dialogContext) {
-        return AlertDialog(
+        return DialogControllerScope(
+          controllers: [
+            titleController,
+            locationController,
+            venueController,
+            noteController,
+          ],
+          child: AlertDialog(
           title: Text(l10n.eventsCreateDialogTitle),
           content: StatefulBuilder(
             builder: (context, setDialogState) {
@@ -703,11 +710,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                         ? l10n.eventsCreateDefaultNote
                         : noteController.text.trim(),
                     badge: l10n.eventsBadgeCommunity,
-                    creatorLabel: _resolveCreatorLabel(
-                      currentUserEmail: effectiveUser?.email,
-                      displayName: profile?.displayName,
-                      role: profile?.role ?? 'user',
-                    ),
+                    creatorLabel: _resolveCreatorLabel(profile?.displayName),
                     creatorRole: profile?.role ?? 'user',
                     authorUserId: effectiveUserId,
                     venue: venueController.text.trim(),
@@ -720,16 +723,13 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
               child: Text(l10n.eventsCreateSave),
             ),
           ],
+          ),
         );
       },
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      titleController.dispose();
-      locationController.dispose();
-      venueController.dispose();
-      noteController.dispose();
-    });
+    // dispose affidato a DialogControllerScope: un solo postFrameCallback non
+    // basta, la route resta montata per tutta l'animazione di uscita.
 
     if (created == null || !mounted) {
       return;
@@ -760,7 +760,14 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     final updated = await showDialog<CreatedEventRecord>(
       context: context,
       builder: (dialogContext) {
-        return AlertDialog(
+        return DialogControllerScope(
+          controllers: [
+            titleController,
+            locationController,
+            venueController,
+            noteController,
+          ],
+          child: AlertDialog(
           title: const Text('Modifica evento'),
           content: StatefulBuilder(
             builder: (context, setDialogState) {
@@ -911,16 +918,13 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
               child: Text(l10n.eventsCreateSave),
             ),
           ],
+          ),
         );
       },
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      titleController.dispose();
-      locationController.dispose();
-      venueController.dispose();
-      noteController.dispose();
-    });
+    // dispose affidato a DialogControllerScope: un solo postFrameCallback non
+    // basta, la route resta montata per tutta l'animazione di uscita.
 
     if (updated == null || !mounted) return;
 
@@ -930,19 +934,17 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     );
   }
 
-  static String _resolveCreatorLabel({
-    required String? currentUserEmail,
-    required String? displayName,
-    required String role,
-  }) {
+  static String _resolveCreatorLabel(String? displayName) {
     final resolvedDisplay = displayName?.trim();
     if (resolvedDisplay != null && resolvedDisplay.isNotEmpty) {
       return resolvedDisplay;
     }
-    if (currentUserEmail != null && currentUserEmail.contains('@')) {
-      return currentUserEmail.split('@').first;
-    }
-    return role;
+    // NIENTE fallback sulla parte locale dell'email: creatorLabel finisce sulla
+    // card pubblica dell'evento, quindi "beppe.apps" rivelava a chiunque
+    // l'indirizzo di chi ha creato l'evento (difetto A-16). Dal delta
+    // 2026-09-14 il profilo ha sempre un display_name, quindi questo ramo e'
+    // solo una rete di sicurezza.
+    return 'Pilota PitLap';
   }
 
   Future<void> _shareEvent(BuildContext context, String eventId) async {

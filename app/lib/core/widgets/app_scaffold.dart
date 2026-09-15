@@ -93,6 +93,10 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
     final currentUser = ref.watch(currentUserProvider);
     final isAdmin = ref.watch(isAdminProvider);
     final canManageTracks = ref.watch(canManageTracksProvider);
+    // La voce "Gestione" serve anche a chi gestisce un negozio: prima era
+    // condizionata alle sole piste, quindi uno shop_owner non la vedeva pur
+    // avendo accesso alla pagina raggiungendola da altre strade.
+    final canManageShops = ref.watch(canManageShopsProvider);
     final impersonation = ref.watch(impersonationProvider);
     final baseDestinations = currentUser == null
         ? AppScaffold._destinations
@@ -104,7 +108,12 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
               )
               .toList()
         : AppScaffold._destinations
-              .where((item) => item.location != '/manager' || canManageTracks)
+              .where(
+                (item) =>
+                    item.location != '/manager' ||
+                    canManageTracks ||
+                    canManageShops,
+              )
               .toList();
     final visibleDestinations = [
       ...baseDestinations,
@@ -230,18 +239,112 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
         impersonation: impersonation,
         child: widget.child,
       ),
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: _MobileNavigationBar(
+        destinations: visibleDestinations,
+        selectedIndex: selectedIndex,
+        label: (item) => widget._label(context, item),
+      ),
+    );
+  }
+}
+
+/// Barra inferiore con un numero di voci limitato.
+///
+/// Le destinazioni sono fino a dieci (utente admin che gestisce anche pista e
+/// negozio): messe tutte in una NavigationBar a 400 px diventano colonne da
+/// 40 px con le etichette spezzate a meta' parola. Qui ne restano
+/// [_kPrimaryCount] in barra e le altre finiscono dietro "Altro", che apre un
+/// foglio inferiore. Nessuna destinazione viene persa.
+class _MobileNavigationBar extends StatelessWidget {
+  const _MobileNavigationBar({
+    required this.destinations,
+    required this.selectedIndex,
+    required this.label,
+  });
+
+  static const int _kPrimaryCount = 4;
+
+  final List<_Destination> destinations;
+
+  /// Indice nella lista completa, oppure -1 se la rotta corrente non
+  /// corrisponde a nessuna voce (es. /notifications, /legal/*).
+  final int selectedIndex;
+  final String Function(_Destination) label;
+
+  @override
+  Widget build(BuildContext context) {
+    if (destinations.length <= _kPrimaryCount + 1) {
+      return NavigationBar(
         selectedIndex: selectedIndex < 0 ? 0 : selectedIndex,
         onDestinationSelected: (index) =>
-            context.go(visibleDestinations[index].location),
-        destinations: visibleDestinations
+            context.go(destinations[index].location),
+        destinations: destinations
             .map(
               (item) => NavigationDestination(
                 icon: Icon(item.icon),
-                label: widget._label(context, item),
+                label: label(item),
               ),
             )
             .toList(),
+      );
+    }
+
+    final primary = destinations.take(_kPrimaryCount).toList();
+    final overflow = destinations.skip(_kPrimaryCount).toList();
+    final isOverflowSelected = selectedIndex >= _kPrimaryCount;
+
+    return NavigationBar(
+      selectedIndex: isOverflowSelected
+          ? _kPrimaryCount
+          : (selectedIndex < 0 ? 0 : selectedIndex),
+      onDestinationSelected: (index) {
+        if (index == _kPrimaryCount) {
+          _showOverflowSheet(context, overflow);
+          return;
+        }
+        context.go(primary[index].location);
+      },
+      destinations: [
+        ...primary.map(
+          (item) => NavigationDestination(
+            icon: Icon(item.icon),
+            label: label(item),
+          ),
+        ),
+        NavigationDestination(
+          icon: Icon(
+            isOverflowSelected
+                ? destinations[selectedIndex].icon
+                : Icons.more_horiz,
+          ),
+          label: isOverflowSelected
+              ? label(destinations[selectedIndex])
+              : 'Altro',
+        ),
+      ],
+    );
+  }
+
+  void _showOverflowSheet(BuildContext context, List<_Destination> items) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: items
+              .map(
+                (item) => ListTile(
+                  leading: Icon(item.icon),
+                  title: Text(label(item)),
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    context.go(item.location);
+                  },
+                ),
+              )
+              .toList(),
+        ),
       ),
     );
   }

@@ -8,7 +8,7 @@ import '../../../app/bootstrap/app_config.dart';
 /// cookie): viene registrata in `user_consents.document_version` per poter
 /// dimostrare QUALE testo l'utente ha accettato (accountability, art. 5 §2
 /// GDPR). Va aggiornata a ogni revisione dei documenti in `docs/legal/`.
-const String legalDocumentVersion = '1.1';
+const String legalDocumentVersion = '1.2';
 
 class UserConsentRecord {
   const UserConsentRecord({

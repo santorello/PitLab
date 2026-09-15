@@ -1,7 +1,7 @@
 # Cookie Policy e utilizzo del local storage
 
-**Versione: 1.1 — in vigore dal 2026-09-12**
-**Ultimo aggiornamento: 2026-09-12**
+**Versione: 1.2 — in vigore dal 2026-09-15**
+**Ultimo aggiornamento: 2026-09-15**
 
 ---
 
@@ -90,5 +90,5 @@ La presente policy verrà aggiornata in caso di modifiche ai fornitori, introduz
 ---
 
 *PitLap — pitlap.app*
-*Versione: 1.0 — in vigore dal 2026-06-03*
-*Ultimo aggiornamento: 2026-06-03*
+*Versione: 1.2 — in vigore dal 2026-09-15*
+*Ultimo aggiornamento: 2026-09-15*

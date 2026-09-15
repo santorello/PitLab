@@ -30,47 +30,43 @@ class ContentScaffold extends ConsumerWidget {
     return ColoredBox(
       color: AppColors.warmWhite,
       child: SafeArea(
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-              maxWidth: AppBreakpoints.contentMaxWidth),
-          child: Padding(
-            padding:
-                const EdgeInsets.fromLTRB(24, 24, 24, 0),
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const EnvironmentBanner(),
-                        ContentScaffoldHeader(
-                          title: title,
-                          description: description,
-                          trailingActions: trailingActions,
-                        ),
-                        const SizedBox(height: 24),
-                      ],
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+                maxWidth: AppBreakpoints.contentMaxWidth),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+              // Intestazione fissa + area contenuto che occupa il resto.
+              //
+              // NON rimettere qui un CustomScrollView con
+              // SliverFillRemaining(hasScrollBody: true): quasi tutte le
+              // schermate passano una ListView come [child], quindi si
+              // creavano DUE scrollabili sovrapposti. La rotella andava a
+              // quello sotto il puntatore e lo scroll esterno aveva una
+              // corsa pari all'altezza dell'intestazione: il risultato era
+              // la pagina che "saltava" e sembrava non scorrere.
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const EnvironmentBanner(),
+                  ContentScaffoldHeader(
+                    title: title,
+                    description: description,
+                    trailingActions: trailingActions,
+                  ),
+                  const SizedBox(height: 24),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: child,
                     ),
                   ),
-                ),
-                SliverFillRemaining(
-                  hasScrollBody: true,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    child: child,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-      ),
       ),
     );
   }

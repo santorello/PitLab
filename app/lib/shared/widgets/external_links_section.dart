@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../app/l10n/generated/app_localizations.dart';
 import '../../app/theme/app_colors.dart';
 import '../application/external_links_providers.dart';
+import 'dialog_controller_scope.dart';
 
 class ExternalLinksSection extends ConsumerWidget {
   const ExternalLinksSection({
@@ -119,7 +120,9 @@ class ExternalLinksSection extends ConsumerWidget {
     final link = await showDialog<ExternalLinkRecord>(
       context: context,
       builder: (dialogContext) {
-        return StatefulBuilder(
+        return DialogControllerScope(
+          controllers: [labelController, urlController],
+          child: StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
               title: Text(l10n.externalLinksAddTitle),
@@ -222,12 +225,12 @@ class ExternalLinksSection extends ConsumerWidget {
               ],
             );
           },
+          ),
         );
       },
     );
 
-    labelController.dispose();
-    urlController.dispose();
+    // dispose gestito da DialogControllerScope quando la route si smonta.
 
     if (link == null) {
       return;

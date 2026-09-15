@@ -277,11 +277,22 @@ Future<HomeOverviewStats> _fetchHomeOverviewStatsFallback(SupabaseClient client)
           .select('id')
           .eq('is_public', true),
     ),
+    // Gli eventi creati dagli utenti stanno in `community_events`, non in
+    // `events`: contando solo la prima tabella la tile diceva "0 eventi" anche
+    // con eventi futuri in elenco (difetto A-08). La lista eventi gia' univa
+    // le due tabelle, il contatore no.
+    safeLength(
+      client
+          .from('community_events')
+          .select('id')
+          .gte('starts_at', now.toIso8601String())
+          .lte('starts_at', next30.toIso8601String()),
+    ),
   ]);
 
   return HomeOverviewStats(
     openTracks: counts[0],
-    eventsNext30Days: counts[1],
+    eventsNext30Days: counts[1] + counts[6],
     newSpots30Days: counts[2],
     publicShops: counts[3],
     geocodedShops: counts[4],

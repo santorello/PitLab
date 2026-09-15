@@ -85,9 +85,12 @@
 
 ## G. Dashboard e sicurezza
 
-- [ ] Attivare **Leaked Password Protection** (ancora OFF su dev, da attivare anche su prod)
-- [ ] Imposare lunghezza minima password ≥ 8
-- [ ] Attivare MFA sull'account admin
+- [~] **Leaked Password Protection: NON disponibile sul piano free.** Verificato il 2026-09-13: la voce esiste in Authentication > Attack Protection ma il toggle e' gated su **Pro plan e superiori**. Non e' una dimenticanza, e' un limite di piano. Da riprendere se/quando si passa a Pro ($25/mese), insieme a backup e PITR.
+- [x] Lunghezza minima password portata da 6 a 8 (Authentication > Sign In / Providers > Email) su prod e dev
+- [x] MFA sull'account Supabase (avatar > Account Preferences > Security)
+- [ ] NON attivare **Enable Captcha protection**: obbligherebbe il client a inviare un token captcha a ogni richiesta di auth, e l'app Flutter non lo fa. Si valuta insieme a una modifica lato client (Turnstile di Cloudflare, visto che il dominio e' gia' li')
+- [ ] Da valutare quando si tocca il codice auth: *Secure password change* e *Require current password when updating*, oggi spente. Attivarle senza supporto client rompe il flusso di cambio password
+- [ ] Nota: l'accesso e' via **magic link + Google OAuth**, quindi le impostazioni password hanno impatto limitato. `Email OTP expiration` e' a 3600s (1 ora): valutare di abbassarlo a 900s per i magic link
 - [ ] Creare l'admin di produzione: registrarsi su prod, poi promuovere a `role='admin'`
 
 ## H-bis. Debito tecnico emerso (non bloccante)

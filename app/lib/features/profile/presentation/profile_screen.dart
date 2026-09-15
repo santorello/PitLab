@@ -8,6 +8,7 @@ import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/l10n/locale_controller.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
+import '../../../shared/widgets/dialog_controller_scope.dart';
 import '../../../shared/media/media_upload_controller.dart';
 import '../../../shared/media/media_upload_labels.dart';
 import '../../../shared/media/media_upload_service.dart';
@@ -530,7 +531,9 @@ class ProfileScreen extends ConsumerWidget {
 
     await showDialog<void>(
       context: context,
-      builder: (ctx) => StatefulBuilder(
+      builder: (ctx) => DialogControllerScope(
+        controllers: [controller],
+        child: StatefulBuilder(
         builder: (ctx, setState) => AlertDialog(
           title: Text(l10n.profileChangeEmail),
           content: Column(
@@ -607,9 +610,10 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ],
         ),
+        ),
       ),
     );
-    controller.dispose();
+    // dispose gestito da DialogControllerScope quando la route si smonta.
   }
 
   // ── Reset accesso via magic link ──────────────────────────────────────────

@@ -1,7 +1,7 @@
 # Termini di Servizio
 
-**Versione: 1.1 — in vigore dal 2026-09-12**
-**Ultimo aggiornamento: 2026-09-12**
+**Versione: 1.2 — in vigore dal 2026-09-15**
+**Ultimo aggiornamento: 2026-09-15**
 
 ---
 
@@ -206,5 +206,5 @@ Sito: pitlap.app
 ---
 
 *PitLap — pitlap.app*
-*Versione: 1.0 — in vigore dal 2026-06-03*
-*Ultimo aggiornamento: 2026-07-30*
+*Versione: 1.2 — in vigore dal 2026-09-15*
+*Ultimo aggiornamento: 2026-09-15*
