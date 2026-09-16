@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
+import '../../../shared/places/place_search_provider.dart';
+import '../../../shared/places/place_search_service.dart';
 import '../../../shared/places/place_selection.dart';
 import '../../../shared/widgets/place_map_preview_card.dart';
 import '../../../shared/widgets/place_picker_field.dart';
@@ -215,8 +217,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     try {
       final client = ref.read(authClientProvider);
       final displayName = _nameController.text.trim();
-      final city = _selectedLocation?.label ?? _cityController.text.trim();
-      final location = _selectedLocation;
+      var location = _selectedLocation;
+      final typedCity = _cityController.text.trim();
+      // Città scritta senza toccare un suggerimento: prima si salvava il testo
+      // senza coordinate e il DB teneva quelle vecchie. Ora si prende il primo risultato.
+      if (location == null && typedCity.length >= 2) {
+        try {
+          final found = await ref.read(placeSearchProvider).search(
+                PlaceSearchRequest(query: typedCity),
+              );
+          if (found.isNotEmpty) location = found.first;
+        } catch (error) {
+          debugPrint('[Onboarding] auto-geocode failed: $error');
+        }
+      }
+      final city = location?.label ?? typedCity;
       // Mappa la scelta "Chi sei?" sul ruolo applicativo (D04).
       final role = switch (_selectedAccountType) {
         'gestore_pista' => 'track_organizer',
