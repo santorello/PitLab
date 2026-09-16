@@ -26,6 +26,7 @@ import '../../../shared/models/submitted_track.dart';
 import '../../spots/application/spots_providers.dart';
 import '../../tracks/application/tracks_providers.dart';
 import '../../spots/domain/spot_catalog.dart';
+import '../../spots/domain/spot_tags.dart';
 
 class SubmitPlaceScreen extends ConsumerStatefulWidget {
   const SubmitPlaceScreen({
@@ -56,6 +57,10 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
   double? _longitude;
   PlaceSelection? _selectedSpotPlace;
   bool _spotDraftLoaded = false;
+  Set<String> _bestForTags = {};
+  Set<String> _surfaceTags = {};
+  Set<String> _accessType = {};
+  Set<String> _bestSeason = {};
 
   @override
   void initState() {
@@ -100,6 +105,10 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
       _videoUrlController.text = existingSpot.videoUrl ?? '';
       _addressController.text = existingSpot.address ?? '';
       _pickedImages = List<String>.from(existingSpot.imageUrls);
+      _bestForTags = existingSpot.bestForTags.toSet();
+      _surfaceTags = existingSpot.surfaceTags.toSet();
+      _accessType = {?existingSpot.accessType};
+      _bestSeason = {?existingSpot.bestSeason};
       _latitude = existingSpot.latitude;
       _longitude = existingSpot.longitude;
       if (existingSpot.latitude != null && existingSpot.longitude != null) {
@@ -331,6 +340,49 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
               const SizedBox(height: 12),
               PlaceMapPreviewCard(selection: _selectedSpotPlace!, height: 190),
             ],
+            const SizedBox(height: 16),
+          ],
+          if (_submissionType == 'spot') ...[
+            SpotTagPicker(
+              title: _localeText(context, it: 'Ideale per', en: 'Best for'),
+              tags: spotBestForTags,
+              selected: _bestForTags,
+              onChanged: (v) => setState(() => _bestForTags = v),
+            ),
+            if (_bestForTags.any(spotFlyingKeys.contains)) ...[
+              const SizedBox(height: 8),
+              Text(
+                _localeText(
+                  context,
+                  it: 'Per droni e aerei valgono le regole ENAC: verifica la zona su d-flight prima di indicarla.',
+                  en: 'Drones and planes follow ENAC rules: check the area on d-flight before listing it.',
+                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.steel),
+              ),
+            ],
+            const SizedBox(height: 16),
+            SpotTagPicker(
+              title: _localeText(context, it: 'Terreno', en: 'Surface'),
+              tags: spotSurfaceTags,
+              selected: _surfaceTags,
+              onChanged: (v) => setState(() => _surfaceTags = v),
+            ),
+            const SizedBox(height: 16),
+            SpotTagPicker(
+              title: _localeText(context, it: 'Accesso', en: 'Access'),
+              tags: spotAccessTags,
+              selected: _accessType,
+              multi: false,
+              onChanged: (v) => setState(() => _accessType = v),
+            ),
+            const SizedBox(height: 16),
+            SpotTagPicker(
+              title: _localeText(context, it: 'Periodo migliore', en: 'Best period'),
+              tags: spotSeasonTags,
+              selected: _bestSeason,
+              multi: false,
+              onChanged: (v) => setState(() => _bestSeason = v),
+            ),
             const SizedBox(height: 16),
           ],
           TextField(
@@ -577,18 +629,13 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
               it: 'Community',
               en: 'Community',
             ),
-        bestFor: existingSpot?.bestFor ??
-            _localeText(
-              context,
-              it: 'Spot condiviso dagli utenti',
-              en: 'Community-submitted spot',
-            ),
-        surface: existingSpot?.surface ??
-            _localeText(
-              context,
-              it: 'Dettagli da confermare',
-              en: 'Details to be confirmed',
-            ),
+        // Vecchi testi liberi: conservati se presenti, niente più segnaposto.
+        bestFor: existingSpot?.bestFor ?? '',
+        surface: existingSpot?.surface ?? '',
+        bestForTags: _bestForTags.toList(),
+        surfaceTags: _surfaceTags.toList(),
+        accessType: _accessType.firstOrNull,
+        bestSeason: _bestSeason.firstOrNull,
         note: description.isEmpty
             ? _localeText(
                 context,

@@ -11,14 +11,26 @@ import '../../../shared/widgets/card_stat_row.dart';
 import '../../../shared/widgets/place_card.dart';
 import '../application/spots_providers.dart';
 import '../domain/spot_catalog.dart';
+import '../domain/spot_tags.dart';
 
-class SpotsScreen extends ConsumerWidget {
+class SpotsScreen extends ConsumerStatefulWidget {
   const SpotsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SpotsScreen> createState() => _SpotsScreenState();
+}
+
+class _SpotsScreenState extends ConsumerState<SpotsScreen> {
+  // ponytail: filtro solo su "Ideale per", singola scelta; terreno se servirà.
+  Set<String> _filter = {};
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final spots = ref.watch(spotEntriesProvider);
+    final spots = ref
+        .watch(spotEntriesProvider)
+        .where((s) => _filter.isEmpty || s.bestForTags.contains(_filter.first))
+        .toList();
 
     return ContentScaffold(
       title: l10n.spotsTitle,
@@ -56,6 +68,14 @@ class SpotsScreen extends ConsumerWidget {
             },
           ),
           const SizedBox(height: 18),
+          SpotTagPicker(
+            title: _localeText(context, it: 'Filtra per', en: 'Filter by'),
+            tags: spotBestForTags,
+            selected: _filter,
+            multi: false,
+            onChanged: (v) => setState(() => _filter = v),
+          ),
+          const SizedBox(height: 18),
           ...spots.map(
             (spot) => Padding(
               padding: const EdgeInsets.only(bottom: 16),
@@ -88,17 +108,21 @@ class _SpotCard extends StatelessWidget {
 
     // Riga statistiche: adatto a + fondo + foto.
     final stats = <CardStat>[];
-    if (spot.bestFor.isNotEmpty) {
+    for (final tag in [
+      ...spotTagsFor(spotBestForTags, spot.bestForTags).take(2),
+      ...spotTagsFor(spotSurfaceTags, spot.surfaceTags).take(1),
+    ]) {
+      stats.add(CardStat(icon: tag.icon, text: tag.label(context)));
+    }
+    if (spot.bestForTags.isEmpty && spot.bestFor.isNotEmpty) {
       stats.add(CardStat(
           icon: Icons.sports_motorsports_outlined, text: spot.bestFor));
     }
-    if (spot.surface.isNotEmpty &&
-        !spot.surface.toLowerCase().contains('confermare')) {
-      stats.add(CardStat(icon: Icons.terrain_outlined, text: spot.surface));
+    if (spot.photoCount > 0) {
+      stats.add(CardStat(
+          icon: Icons.photo_library_outlined,
+          text: l10n.spotsPhotosCount(spot.photoCount)));
     }
-    stats.add(CardStat(
-        icon: Icons.photo_library_outlined,
-        text: l10n.spotsPhotosCount(spot.photoCount)));
     final signals = <Widget>[CardStatRow(stats: stats)];
 
     // Build footer leading CTA

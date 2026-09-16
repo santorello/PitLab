@@ -14,6 +14,7 @@ import '../../auth/application/auth_providers.dart';
 import '../../comments/presentation/comments_section.dart';
 import '../application/spots_providers.dart';
 import '../domain/spot_catalog.dart';
+import '../domain/spot_tags.dart';
 
 class SpotDetailScreen extends ConsumerWidget {
   const SpotDetailScreen({required this.slug, super.key});
@@ -129,18 +130,25 @@ class SpotDetailScreen extends ConsumerWidget {
                     spacing: 10,
                     runSpacing: 10,
                     children: [
-                      _DetailChip(
-                        icon: Icons.sports_motorsports_outlined,
-                        label: '${l10n.spotsBestForLabel}: ${spot.bestFor}',
-                      ),
-                      _DetailChip(
-                        icon: Icons.terrain_outlined,
-                        label: '${l10n.spotsSurfaceLabel}: ${spot.surface}',
-                      ),
-                      _DetailChip(
-                        icon: Icons.photo_library_outlined,
-                        label: l10n.spotsPhotosCount(spot.photoCount),
-                      ),
+                      for (final tag in spotTagsFor(spotBestForTags, spot.bestForTags))
+                        _DetailChip(icon: tag.icon, label: tag.label(context)),
+                      if (spot.bestForTags.isEmpty && spot.bestFor.trim().isNotEmpty)
+                        _DetailChip(
+                          icon: Icons.sports_motorsports_outlined,
+                          label: '${l10n.spotsBestForLabel}: ${spot.bestFor}',
+                        ),
+                      for (final tag in spotTagsFor(spotSurfaceTags, spot.surfaceTags))
+                        _DetailChip(icon: tag.icon, label: tag.label(context)),
+                      if (spot.surfaceTags.isEmpty && spot.surface.trim().isNotEmpty)
+                        _DetailChip(
+                          icon: Icons.terrain_outlined,
+                          label: '${l10n.spotsSurfaceLabel}: ${spot.surface}',
+                        ),
+                      if (spot.photoCount > 0)
+                        _DetailChip(
+                          icon: Icons.photo_library_outlined,
+                          label: l10n.spotsPhotosCount(spot.photoCount),
+                        ),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.xl),
@@ -369,20 +377,26 @@ class SpotDetailScreen extends ConsumerWidget {
                     spacing: 10,
                     runSpacing: 10,
                     children: [
+                      for (final tag in [
+                        ?spotTagFor(spotAccessTags, spot.accessType),
+                        ?spotTagFor(spotSeasonTags, spot.bestSeason),
+                      ])
+                        _DetailChip(icon: tag.icon, label: tag.label(context)),
+                      if (spot.bestForTags.any(spotFlyingKeys.contains))
+                        _DetailChip(
+                          icon: Icons.warning_amber_outlined,
+                          label: _localeText(
+                            context,
+                            it: 'Volo: rispetta le regole ENAC, verifica la zona su d-flight',
+                            en: 'Flying: follow ENAC rules, check the area on d-flight',
+                          ),
+                        ),
                       _DetailChip(
                         icon: Icons.groups_outlined,
                         label: _localeText(
                           context,
                           it: 'Usa lo spot con buon senso',
                           en: 'Use the spot responsibly',
-                        ),
-                      ),
-                      _DetailChip(
-                        icon: Icons.map_outlined,
-                        label: _localeText(
-                          context,
-                          it: 'Apri mappa o link video quando disponibile',
-                          en: 'Open map or video link when available',
                         ),
                       ),
                       if ((spot.videoUrl ?? '').trim().isNotEmpty)

@@ -24,7 +24,8 @@ class PublicBuildAuthor {
     return PublicBuildAuthor(
       id: map['id'] as String? ?? '',
       displayName: map['display_name'] as String? ?? 'Pilota PitLap',
-      publicSlug: map['public_slug'] as String? ?? '',
+      // Link al profilo solo se pubblico; il nome si mostra comunque (build pubblica = firmata).
+      publicSlug: map['is_public'] == true ? (map['public_slug'] as String? ?? '') : '',
       avatarUrl: map['avatar_url'] as String?,
     );
   }
@@ -106,8 +107,8 @@ class PublicBuildsRepository {
       if (ownerIds.isNotEmpty) {
         final profileRows = await _client
             .from('profiles')
-            .select('id, display_name, public_slug, avatar_url')
-            .eq('is_public', true)
+            // ponytail: gli ospiti vedono solo profili pubblici (RLS anon); per loro resta "Pilota PitLap".
+            .select('id, display_name, public_slug, avatar_url, is_public')
             .inFilter('id', ownerIds);
 
         for (final row in (profileRows as List<dynamic>)

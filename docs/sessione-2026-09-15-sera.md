@@ -156,3 +156,9 @@ Prossime fasi: 2 (mappa a pieno spazio), 3 (Profilo a schede, Garage compatto), 
   **Prod, in quest'ordine:** A subito → build + deploy web → B.
 - Resta aperto: profili non pubblici ancora visibili (solo colonne pubbliche) agli utenti loggati, serve agli autori dei commenti.
 - `run_dev.bat prod` / `mobile-prod`: app locale collegata a pitlap-prod, con conferma.
+
+## Spot a scelte guidate + fix home/build (16/09 sera)
+- Delta `2026-09-16-spot-tags.sql`: `best_for_tags`, `surface_tags` (liste), `access_type`, `best_season` con CHECK sulle chiavi, grant PER COLONNA, vista `public_spots` estesa, pulizia testi segnaposto. **Applicato su dev** (4/4 prove OK). Prod: eseguibile anche prima del deploy.
+- App: `spots/domain/spot_tags.dart` (chiavi + IT/EN + `SpotTagPicker`), modulo, scheda, mappa, lista con filtro "Ideale per". Avviso ENAC/d-flight per Drone FPV e Aerei RC.
+- Home: il feed `new_spot` apriva /track (payload usa `slug`, non `spot_slug`) → corretto.
+- Build pubbliche: nome autore sempre visibile ai loggati, link solo se profilo pubblico.

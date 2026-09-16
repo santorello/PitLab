@@ -33,6 +33,10 @@ class SpotEntry {
     this.videoUrl,
     this.isCustom = false,
     this.isOwnedByCurrentUser = false,
+    this.bestForTags = const [],
+    this.surfaceTags = const [],
+    this.accessType,
+    this.bestSeason,
   });
 
   /// UUID Supabase (null per spot default non ancora caricati da DB).
@@ -53,6 +57,10 @@ class SpotEntry {
   final String? videoUrl;
   final bool isCustom;
   final bool isOwnedByCurrentUser;
+  final List<String> bestForTags;
+  final List<String> surfaceTags;
+  final String? accessType;
+  final String? bestSeason;
 
   Map<String, dynamic> toMap() {
     return {
@@ -73,6 +81,10 @@ class SpotEntry {
       'video_url': videoUrl,
       'is_custom': isCustom,
       'is_owned_by_current_user': isOwnedByCurrentUser,
+      'best_for_tags': bestForTags,
+      'surface_tags': surfaceTags,
+      'access_type': accessType,
+      'best_season': bestSeason,
     };
   }
 
@@ -98,6 +110,14 @@ class SpotEntry {
       isCustom: map['is_custom'] as bool? ?? true,
       isOwnedByCurrentUser:
           map['is_owned_by_current_user'] as bool? ?? false,
+      bestForTags: (map['best_for_tags'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(),
+      surfaceTags: (map['surface_tags'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(),
+      accessType: map['access_type'] as String?,
+      bestSeason: map['best_season'] as String?,
     );
   }
 }

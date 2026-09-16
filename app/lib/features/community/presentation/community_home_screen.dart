@@ -2437,7 +2437,11 @@ String _authorLabel(HomeBuildOfWeek build) {
 void _openActivity(BuildContext context, ActivityFeedItem item) {
   final payload = item.payload;
   final eventId = payload['event_id'] as String?;
-  final spotSlug = payload['spot_slug'] as String?;
+  // Il trigger del feed per new_spot scrive `slug` (non `spot_slug`) e mette lo slug anche in actor_slug.
+  final spotSlug = payload['spot_slug'] as String? ??
+      (item.eventType == 'new_spot'
+          ? (payload['slug'] as String? ?? item.actorSlug)
+          : null);
 
   if (eventId != null && eventId.isNotEmpty) {
     context.push('/event/$eventId');

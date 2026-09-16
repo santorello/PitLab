@@ -16,7 +16,8 @@ class SpotsRepository {
   static const _publicColumns =
       'id, slug, title, city, category, best_for, surface, note, '
       'image_accent, photo_count, address, latitude, longitude, '
-      'image_urls, video_url, is_custom, is_owned_by_current_user';
+      'image_urls, video_url, is_custom, is_owned_by_current_user, '
+      'best_for_tags, surface_tags, access_type, best_season';
 
   Future<List<SpotEntry>> fetchAll() async {
     final data = await _client
@@ -49,6 +50,10 @@ class SpotsRepository {
       'longitude': spot.longitude,
       'image_urls': spot.imageUrls,
       'video_url': spot.videoUrl,
+      'best_for_tags': spot.bestForTags,
+      'surface_tags': spot.surfaceTags,
+      'access_type': spot.accessType,
+      'best_season': spot.bestSeason,
       'is_custom': true,
       'owner_id': userId,
     };
@@ -58,7 +63,8 @@ class SpotsRepository {
         .select(
           'id, slug, title, city, category, best_for, surface, note, '
           'image_accent, photo_count, address, latitude, longitude, '
-          'image_urls, video_url, is_custom',
+          'image_urls, video_url, is_custom, '
+          'best_for_tags, surface_tags, access_type, best_season',
         )
         .single();
     return SpotEntry.fromMap({
@@ -82,6 +88,10 @@ class SpotsRepository {
       'longitude': spot.longitude,
       'image_urls': spot.imageUrls,
       'video_url': spot.videoUrl,
+      'best_for_tags': spot.bestForTags,
+      'surface_tags': spot.surfaceTags,
+      'access_type': spot.accessType,
+      'best_season': spot.bestSeason,
     };
     final data = await _client
         .from('spots')
@@ -90,7 +100,8 @@ class SpotsRepository {
         .select(
           'id, slug, title, city, category, best_for, surface, note, '
           'image_accent, photo_count, address, latitude, longitude, '
-          'image_urls, video_url, is_custom',
+          'image_urls, video_url, is_custom, '
+          'best_for_tags, surface_tags, access_type, best_season',
         )
         .single();
     return SpotEntry.fromMap({

@@ -16,6 +16,7 @@ import '../../../features/tracks/application/tracks_providers.dart';
 import '../../../shared/models/track_map_pin.dart';
 import '../application/spots_providers.dart';
 import '../domain/spot_catalog.dart';
+import '../domain/spot_tags.dart';
 
 // ─── Tipi di selezione mappa ─────────────────────────────────────────────────
 
@@ -900,8 +901,15 @@ class _SelectedSpotPanel extends StatelessWidget {
               spacing: 10,
               runSpacing: 10,
               children: [
-                _InfoChip(label: spot.bestFor),
-                _InfoChip(label: spot.surface),
+                for (final tag in [
+                  ...spotTagsFor(spotBestForTags, spot.bestForTags),
+                  ...spotTagsFor(spotSurfaceTags, spot.surfaceTags),
+                ])
+                  _InfoChip(label: tag.label(context)),
+                if (spot.bestForTags.isEmpty && spot.bestFor.trim().isNotEmpty)
+                  _InfoChip(label: spot.bestFor),
+                if (spot.surfaceTags.isEmpty && spot.surface.trim().isNotEmpty)
+                  _InfoChip(label: spot.surface),
               ],
             ),
             const SizedBox(height: 12),
