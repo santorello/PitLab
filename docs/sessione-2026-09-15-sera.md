@@ -181,3 +181,9 @@ Prossime fasi: 2 (mappa a pieno spazio), 3 (Profilo a schede, Garage compatto), 
 - Ricerca: MapTiler (se key) → **Photon** (photon.komoot.io, OSM: parchi, vie, civici; gratis, uso ragionevole, nessuna garanzia) → Open-Meteo (solo città).
 - `PlaceMapPreviewCard(onPointPicked:)`: mappa interattiva (zoom 15), tocco = segnaposto nel punto esatto. Attiva in Crea/Modifica spot e nei dialoghi evento.
 - Da verificare in locale: Network → `photon.komoot.io` risponde 200 (CORS) e trova "Parco della Madonnina".
+
+## "Vicino a te" vero + eventi sulla mappa (16/09 notte)
+- `nearby_screen.dart`: piste, spot, eventi in programma, negozi; distanza da casa (o GPS con "Vicino a me"), ordinamento per km, raggio 10/25/50/Ovunque (default 50).
+- Eventi pista: coordinate prese dalla pista (`tracks(latitude, longitude)` nelle select).
+- Mappa: livello Eventi (viola), tocco → dettaglio evento, contatore, "Adatta vista" li include.
+- Eventi community creati prima del 16/09 non hanno coordinate: compaiono solo in "Ovunque" (senza km) e non in mappa.

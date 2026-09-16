@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,7 +9,13 @@ import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/card_stat_row.dart';
 import '../../../shared/widgets/place_card.dart';
+import '../../../shared/models/track_map_pin.dart';
+import '../../events/application/public_events_provider.dart';
+import '../../location/application/user_location_context_provider.dart';
+import '../../profile/application/profile_hub_providers.dart';
 import '../../shops/application/public_shops_provider.dart';
+import '../../spots/application/spots_providers.dart';
+import '../../spots/domain/spot_tags.dart';
 import '../../tracks/application/tracks_providers.dart';
 
 class NearbyScreen extends ConsumerStatefulWidget {
@@ -22,6 +29,10 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
   String _type = 'all';
+  // null = tutti. Default 50 km (se c'è un punto di partenza).
+  double? _radiusKm = 50;
+  ({double lat, double lon})? _gps;
+  bool _locating = false;
 
   @override
   void dispose() {
@@ -29,78 +40,172 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
     super.dispose();
   }
 
+  Future<void> _useGps() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final denied = _t(context, 'Posizione non disponibile: uso la tua città di casa.',
+        'Location unavailable: using your home city.');
+    setState(() => _locating = true);
+    try {
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        throw Exception('permission denied');
+      }
+      final pos = await Geolocator.getCurrentPosition();
+      if (!mounted) return;
+      setState(() => _gps = (lat: pos.latitude, lon: pos.longitude));
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(denied)));
+    } finally {
+      if (mounted) setState(() => _locating = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final tracksAsync = ref.watch(publicTracksProvider);
+    final pinsBySlug = {
+      for (final pin in ref.watch(publicTrackPinsProvider).asData?.value ??
+          const <TrackMapPin>[])
+        pin.slug: pin,
+    };
     final shopsAsync = ref.watch(publicShopsProvider);
-    final items = [
+    final spots = ref.watch(spotEntriesProvider);
+    final events = ref.watch(publicUpcomingEventsProvider).asData?.value ??
+        const <CreatedEventRecord>[];
+    final home = ref.watch(userLocationContextProvider).asData?.value;
+
+    final origin = _gps ??
+        (home != null && home.hasCoordinates
+            ? (lat: home.latitude!, lon: home.longitude!)
+            : null);
+    final originLabel = _gps != null
+        ? _t(context, 'dalla tua posizione', 'from your location')
+        : origin != null
+            ? _t(context, 'da ${home!.label}', 'from ${home!.label}')
+            : null;
+
+    final items = <_NearbyItem>[
       ...tracksAsync.maybeWhen(
-        data: (tracks) => tracks
-            .map(
-              (track) => _NearbyItem(
-                title: track.name,
-                subtitle: track.city,
-                badge: l10n.nearbyBadgeTrack,
-                note: track.statusMessage.isNotEmpty
-                    ? track.statusMessage
-                    : track.shortDescription,
-                type: 'track',
-                route: '/track/${track.slug}',
-                distance: '',
-                imageUrl: '',
-                primaryMeta: _statusLabel(context, track.status),
-                secondaryMeta: track.availableServiceCount <= 0
-                    ? l10n.nearbyNoServices
-                    : l10n.nearbyServicesCount(track.availableServiceCount),
-                actionLabel: l10n.nearbyOpenTrack,
-                mapQuery: '${track.name} ${track.city}',
-              ),
-            )
-            .toList(),
+        data: (tracks) => tracks.map(
+          (track) => _NearbyItem(
+            title: track.name,
+            subtitle: track.city,
+            badge: l10n.nearbyBadgeTrack,
+            note: track.statusMessage.isNotEmpty
+                ? track.statusMessage
+                : track.shortDescription,
+            type: 'track',
+            route: '/track/${track.slug}',
+            imageUrl: '',
+            primaryMeta: _statusLabel(context, track.status),
+            secondaryMeta: track.availableServiceCount <= 0
+                ? l10n.nearbyNoServices
+                : l10n.nearbyServicesCount(track.availableServiceCount),
+            actionLabel: l10n.nearbyOpenTrack,
+            latitude: pinsBySlug[track.slug]?.latitude,
+            longitude: pinsBySlug[track.slug]?.longitude,
+          ),
+        ),
         orElse: () => const <_NearbyItem>[],
       ),
+      ...spots.map(
+        (spot) => _NearbyItem(
+          title: spot.title,
+          subtitle: spot.city,
+          badge: 'Spot',
+          note: spot.note,
+          type: 'spot',
+          route: '/spot/${spot.slug}',
+          imageUrl: spot.imageUrls.isEmpty ? '' : spot.imageUrls.first,
+          primaryMeta: spotTagsFor(spotBestForTags, spot.bestForTags)
+                  .firstOrNull
+                  ?.label(context) ??
+              '',
+          secondaryMeta: spotTagsFor(spotSurfaceTags, spot.surfaceTags)
+                  .firstOrNull
+                  ?.label(context) ??
+              '',
+          actionLabel: _t(context, 'Apri spot', 'Open spot'),
+          latitude: spot.latitude,
+          longitude: spot.longitude,
+        ),
+      ),
+      ...events.map(
+        (event) => _NearbyItem(
+          title: event.title,
+          subtitle: event.location,
+          badge: _t(context, 'Evento', 'Event'),
+          note: event.note,
+          type: 'event',
+          route: '/event/${event.id}',
+          imageUrl: event.imageSource ?? '',
+          primaryMeta: event.date,
+          secondaryMeta: event.venue ?? '',
+          actionLabel: _t(context, 'Apri evento', 'Open event'),
+          latitude: event.latitude,
+          longitude: event.longitude,
+        ),
+      ),
       ...shopsAsync.maybeWhen(
-        data: (shops) => shops
-            .map(
-              (shop) => _NearbyItem(
-                title: shop.name,
-                subtitle: shop.city,
-                badge: l10n.nearbyBadgeShop,
-                note: shop.shortDescription.isNotEmpty
-                    ? shop.shortDescription
-                    : shop.subtitle,
-                type: 'shop',
-                route: '/shop/${shop.slug}',
-                distance: '',
-                imageUrl: shop.imageUrl,
-                primaryMeta: shop.serviceLabels.isNotEmpty
-                    ? shop.serviceLabels.first
-                    : l10n.nearbyShopGeneric,
-                secondaryMeta: shop.serviceLabels.length > 1
-                    ? shop.serviceLabels[1]
-                    : shop.city,
-                actionLabel: l10n.nearbyOpenShop,
-                mapQuery: '${shop.name} ${shop.city}',
-              ),
-            )
-            .toList(),
+        data: (shops) => shops.map(
+          (shop) => _NearbyItem(
+            title: shop.name,
+            subtitle: shop.city,
+            badge: l10n.nearbyBadgeShop,
+            note: shop.shortDescription.isNotEmpty
+                ? shop.shortDescription
+                : shop.subtitle,
+            type: 'shop',
+            route: '/shop/${shop.slug}',
+            imageUrl: shop.imageUrl,
+            primaryMeta: shop.serviceLabels.isNotEmpty
+                ? shop.serviceLabels.first
+                : l10n.nearbyShopGeneric,
+            secondaryMeta:
+                shop.serviceLabels.length > 1 ? shop.serviceLabels[1] : '',
+            actionLabel: l10n.nearbyOpenShop,
+            latitude: shop.latitude,
+            longitude: shop.longitude,
+          ),
+        ),
         orElse: () => const <_NearbyItem>[],
       ),
     ];
-    final filtered = items.where((item) {
-      final matchesQuery =
-          _query.isEmpty ||
-          [
-            item.title,
-            item.subtitle,
-            item.note,
-            item.primaryMeta,
-            item.secondaryMeta,
-          ].join(' ').toLowerCase().contains(_query);
-      final matchesType = _type == 'all' || item.type == _type;
-      return matchesQuery && matchesType;
-    }).toList();
+
+    double? kmOf(_NearbyItem item) =>
+        origin == null || item.latitude == null || item.longitude == null
+            ? null
+            : distanceKmBetween(
+                fromLatitude: origin.lat,
+                fromLongitude: origin.lon,
+                toLatitude: item.latitude!,
+                toLongitude: item.longitude!,
+              );
+
+    final filtered = <({_NearbyItem item, double? km})>[
+      for (final item in items)
+        if ((_type == 'all' || item.type == _type) &&
+            (_query.isEmpty ||
+                [item.title, item.subtitle, item.note, item.primaryMeta, item.secondaryMeta]
+                    .join(' ')
+                    .toLowerCase()
+                    .contains(_query)))
+          (item: item, km: kmOf(item)),
+    ].where((e) {
+      if (origin == null || _radiusKm == null) return true;
+      return e.km != null && e.km! <= _radiusKm!;
+    }).toList()
+      ..sort((a, b) {
+        if (a.km == null && b.km == null) return a.item.title.compareTo(b.item.title);
+        if (a.km == null) return 1;
+        if (b.km == null) return -1;
+        return a.km!.compareTo(b.km!);
+      });
 
     return ContentScaffold(
       title: l10n.nearbyTitle,
@@ -136,23 +241,56 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
             spacing: 10,
             runSpacing: 10,
             children: [
-              _TypeChip(
-                label: l10n.nearbyFilterAll,
-                selected: _type == 'all',
-                onTap: () => setState(() => _type = 'all'),
-              ),
-              _TypeChip(
-                label: l10n.nearbyFilterTracks,
-                selected: _type == 'track',
-                onTap: () => setState(() => _type = 'track'),
-              ),
-              _TypeChip(
-                label: l10n.nearbyFilterShops,
-                selected: _type == 'shop',
-                onTap: () => setState(() => _type = 'shop'),
-              ),
+              for (final (key, label) in [
+                ('all', l10n.nearbyFilterAll),
+                ('track', l10n.nearbyFilterTracks),
+                ('spot', 'Spot'),
+                ('event', _t(context, 'Eventi', 'Events')),
+                ('shop', l10n.nearbyFilterShops),
+              ])
+                _TypeChip(
+                  label: label,
+                  selected: _type == key,
+                  onTap: () => setState(() => _type = key),
+                ),
             ],
           ),
+          const SizedBox(height: 12),
+          if (origin != null)
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                for (final km in <double?>[10, 25, 50, null])
+                  _TypeChip(
+                    label: km == null
+                        ? _t(context, 'Ovunque', 'Anywhere')
+                        : '${km.toInt()} km',
+                    selected: _radiusKm == km,
+                    onTap: () => setState(() => _radiusKm = km),
+                  ),
+                Text(
+                  originLabel!,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: AppColors.steel),
+                ),
+              ],
+            )
+          else
+            Text(
+              _t(
+                context,
+                'Imposta la città nel profilo o usa "Vicino a me" per vedere le distanze.',
+                'Set your city in your profile or use "Near me" to see distances.',
+              ),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: AppColors.steel),
+            ),
           const SizedBox(height: 18),
           LayoutBuilder(
             builder: (context, constraints) {
@@ -163,8 +301,14 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                 label: Text(l10n.openMapButton),
               );
               final nearbyButton = OutlinedButton.icon(
-                onPressed: () => context.go('/spots/map'),
-                icon: const Icon(Icons.place_outlined),
+                onPressed: _locating ? null : _useGps,
+                icon: _locating
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.my_location_outlined),
                 label: Text(l10n.nearbyNearMeButton),
               );
 
@@ -215,22 +359,20 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
               ),
             ),
           ...filtered.map(
-            (item) => Padding(
+            (e) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: _NearbyPreviewCard(
-                title: item.title,
-                subtitle: item.subtitle,
-                badge: item.badge,
-                type: item.type,
-                note: item.note,
-                distance: item.distance,
-                imageUrl: item.imageUrl,
-                primaryMeta: item.primaryMeta,
-                secondaryMeta: item.secondaryMeta,
-                actionLabel: item.actionLabel,
-                openInMapLabel: l10n.nearbyOpenInMap,
-                mapQuery: item.mapQuery,
-                onTap: () => context.go(item.route),
+                title: e.item.title,
+                subtitle: e.item.subtitle,
+                badge: e.item.badge,
+                type: e.item.type,
+                note: e.item.note,
+                distance: e.km == null ? '' : _formatKm(e.km!),
+                imageUrl: e.item.imageUrl,
+                primaryMeta: e.item.primaryMeta,
+                secondaryMeta: e.item.secondaryMeta,
+                actionLabel: e.item.actionLabel,
+                onTap: () => context.go(e.item.route),
               ),
             ),
           ),
@@ -239,6 +381,20 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
     );
   }
 }
+
+String _t(BuildContext context, String it, String en) =>
+    Localizations.localeOf(context).languageCode == 'en' ? en : it;
+
+String _formatKm(double km) => km < 10
+    ? '${km.toStringAsFixed(1).replaceAll('.', ',')} km'
+    : '${km.round()} km';
+
+IconData _typeIcon(String type) => switch (type) {
+      'shop' => Icons.storefront_outlined,
+      'spot' => Icons.terrain_outlined,
+      'event' => Icons.event_outlined,
+      _ => Icons.flag_outlined,
+    };
 
 String _statusLabel(BuildContext context, String status) {
   final l10n = AppLocalizations.of(context)!;
@@ -258,12 +414,12 @@ class _NearbyItem {
     required this.note,
     required this.type,
     required this.route,
-    required this.distance,
     required this.imageUrl,
     required this.primaryMeta,
     required this.secondaryMeta,
     required this.actionLabel,
-    required this.mapQuery,
+    this.latitude,
+    this.longitude,
   });
 
   final String title;
@@ -272,12 +428,12 @@ class _NearbyItem {
   final String note;
   final String type;
   final String route;
-  final String distance;
   final String imageUrl;
   final String primaryMeta;
   final String secondaryMeta;
   final String actionLabel;
-  final String mapQuery;
+  final double? latitude;
+  final double? longitude;
 }
 
 class _TypeChip extends StatelessWidget {
@@ -317,8 +473,6 @@ class _NearbyPreviewCard extends StatelessWidget {
     required this.primaryMeta,
     required this.secondaryMeta,
     required this.actionLabel,
-    required this.openInMapLabel,
-    required this.mapQuery,
     required this.onTap,
   });
 
@@ -332,8 +486,6 @@ class _NearbyPreviewCard extends StatelessWidget {
   final String primaryMeta;
   final String secondaryMeta;
   final String actionLabel;
-  final String openInMapLabel;
-  final String mapQuery;
   final VoidCallback onTap;
 
   @override
@@ -349,7 +501,6 @@ class _NearbyPreviewCard extends StatelessWidget {
         [subtitle, badge].where((s) => s.trim().isNotEmpty).join(' · ');
 
     // Riga statistiche compatta: meta principali + distanza.
-    // TODO(geolocation): distanza reale quando la geolocation utente sarà disponibile.
     final signals = <Widget>[
       CardStatRow(
         stats: [
@@ -364,9 +515,7 @@ class _NearbyPreviewCard extends StatelessWidget {
     // Build footer leading CTA
     final footerLeading = FilledButton.icon(
       onPressed: onTap,
-      icon: Icon(
-        type == 'shop' ? Icons.storefront_outlined : Icons.flag_outlined,
-      ),
+      icon: Icon(_typeIcon(type)),
       label: Text(actionLabel),
     );
 
@@ -416,7 +565,7 @@ class _NearbyMedia extends StatelessWidget {
             )
           : Center(
               child: Icon(
-                type == 'shop' ? Icons.storefront_outlined : Icons.flag_outlined,
+                _typeIcon(type),
                 color: AppColors.graphite.withAlpha(140),
                 size: 30,
               ),

@@ -16,11 +16,15 @@ import '../../../features/tracks/application/tracks_providers.dart';
 import '../../../shared/models/track_map_pin.dart';
 import '../application/spots_providers.dart';
 import '../domain/spot_catalog.dart';
+import '../../events/application/public_events_provider.dart';
+import '../../profile/application/profile_hub_providers.dart';
 import '../domain/spot_tags.dart';
 
 // ─── Tipi di selezione mappa ─────────────────────────────────────────────────
 
 enum _MarkerType { track, spot, shop }
+
+const _eventColor = Color(0xFF7C3AED);
 
 class _MapSelection {
   const _MapSelection({required this.type, required this.slug});
@@ -45,12 +49,19 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
   bool _showTracks = true;
   bool _showSpots = true;
   bool _showShops = true;
+  bool _showEvents = true;
 
   @override
   Widget build(BuildContext context) {
     final spotsAll = ref.watch(spotEntriesProvider);
     final trackPinsAsync = ref.watch(publicTrackPinsProvider);
     final shopsAsync = ref.watch(publicShopsProvider);
+    final eventPins = _showEvents
+        ? (ref.watch(publicUpcomingEventsProvider).asData?.value ??
+                const <CreatedEventRecord>[])
+            .where((e) => e.latitude != null && e.longitude != null)
+            .toList()
+        : <CreatedEventRecord>[];
 
     final mappableSpots = _showSpots
         ? spotsAll
@@ -79,11 +90,13 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
       ...mappableSpots.map((s) => s.latitude!),
       ...trackPins.map((t) => t.latitude),
       ...shopPins.map((s) => s.latitude!),
+      ...eventPins.map((e) => e.latitude!),
     ];
     final allLngs = [
       ...mappableSpots.map((s) => s.longitude!),
       ...trackPins.map((t) => t.longitude),
       ...shopPins.map((s) => s.longitude!),
+      ...eventPins.map((e) => e.longitude!),
     ];
     final initialCenter = _centerFor(allLats, allLngs);
     final hasPoints = allLats.isNotEmpty;
@@ -92,7 +105,7 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
     return ContentScaffold(
       title: 'Mappa',
       description:
-          'Piste, spot e negozi RC sulla stessa mappa. Tocca un marker per il dettaglio.',
+          'Piste, spot, eventi e negozi RC sulla stessa mappa. Tocca un marker per il dettaglio.',
       child: ListView(
         children: [
           // ── Hero card ─────────────────────────────────────────────────────
@@ -112,7 +125,7 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Tutte le piste, gli spot e i negozi in un\'unica vista interattiva.',
+                    'Piste, spot, eventi e negozi in un\'unica vista interattiva.',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: AppColors.steel,
                     ),
@@ -150,11 +163,19 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
                         onTap: () =>
                             setState(() => _showShops = !_showShops),
                       ),
+                      _LayerChip(
+                        label: 'Eventi',
+                        icon: Icons.event_outlined,
+                        color: _eventColor,
+                        active: _showEvents,
+                        onTap: () =>
+                            setState(() => _showEvents = !_showEvents),
+                      ),
                       // Adatta vista
                       if (hasPoints)
                         OutlinedButton.icon(
                           onPressed: () =>
-                              _fitMap(mappableSpots, trackPins, shopPins),
+                              _fitMap(mappableSpots, trackPins, shopPins, eventPins),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.graphite,
                             side: const BorderSide(color: AppColors.concrete),
@@ -191,6 +212,7 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
                 spots: mappableSpots,
                 tracks: trackPins,
                 shops: shopPins,
+                events: eventPins,
                 selection: _selection,
                 initialCenter: initialCenter,
                 initialZoom: hasPoints ? 8.4 : 9.0,
@@ -303,16 +325,19 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
     List<SpotEntry> spots,
     List<TrackMapPin> tracks,
     List<PublicShop> shops,
+    List<CreatedEventRecord> events,
   ) {
     final lats = [
       ...spots.map((s) => s.latitude!),
       ...tracks.map((t) => t.latitude),
       ...shops.map((s) => s.latitude!),
+      ...events.map((e) => e.latitude!),
     ];
     final lngs = [
       ...spots.map((s) => s.longitude!),
       ...tracks.map((t) => t.longitude),
       ...shops.map((s) => s.longitude!),
+      ...events.map((e) => e.longitude!),
     ];
     if (lats.isEmpty) return;
 
@@ -337,6 +362,7 @@ class _UnifiedMapPanel extends StatelessWidget {
     required this.spots,
     required this.tracks,
     required this.shops,
+    required this.events,
     required this.selection,
     required this.initialCenter,
     required this.initialZoom,
@@ -352,6 +378,7 @@ class _UnifiedMapPanel extends StatelessWidget {
   final List<SpotEntry> spots;
   final List<TrackMapPin> tracks;
   final List<PublicShop> shops;
+  final List<CreatedEventRecord> events;
   final _MapSelection? selection;
   final LatLng initialCenter;
   final double initialZoom;
@@ -446,6 +473,40 @@ class _UnifiedMapPanel extends StatelessWidget {
                       )
                       .toList(),
                 ),
+                // Layer eventi: tocco = apre direttamente il dettaglio.
+                MarkerLayer(
+                  markers: events
+                      .map(
+                        (event) => Marker(
+                          point: LatLng(event.latitude!, event.longitude!),
+                          width: 40,
+                          height: 40,
+                          child: Tooltip(
+                            message: '${event.title} · ${event.date}',
+                            child: InkWell(
+                              onTap: () => context.push('/event/${event.id}'),
+                              customBorder: const CircleBorder(),
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  color: _eventColor,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Color(0x33000000),
+                                      blurRadius: 8,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(Icons.event,
+                                    color: Colors.white, size: 20),
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
               ],
                 ),
                 Positioned(
@@ -484,6 +545,11 @@ class _UnifiedMapPanel extends StatelessWidget {
                   icon: Icons.storefront,
                   color: AppColors.openGreen,
                   label: '${shops.length} negozi',
+                ),
+                _CountChip(
+                  icon: Icons.event,
+                  color: _eventColor,
+                  label: '${events.length} eventi',
                 ),
                 Text(
                   'Mappa interattiva — dati reali',

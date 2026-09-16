@@ -29,7 +29,7 @@ class PublicEventsRepository {
           description,
           start_at,
           end_at,
-          tracks(name, city)
+          tracks(name, city, latitude, longitude)
         ''')
         .eq('visibility', 'public')
         // In corso o futuro: fine (o inizio, se manca la fine) non ancora passata.
@@ -76,7 +76,7 @@ class PublicEventsRepository {
           description,
           start_at,
           end_at,
-          tracks(name, city)
+          tracks(name, city, latitude, longitude)
         ''')
         .eq('visibility', 'public')
         .lt('start_at', now.toIso8601String())
@@ -129,7 +129,7 @@ class PublicEventsRepository {
           description,
           start_at,
           end_at,
-          tracks(name, city)
+          tracks(name, city, latitude, longitude)
         ''')
         .eq('id', eventId)
         .eq('visibility', 'public')
@@ -202,6 +202,9 @@ CreatedEventRecord mapPublicEventRow(Map<String, dynamic> row) {
     venue: trackName,
     startsAtIso: startsAtIso,
     endsAtIso: endsAtIso,
+    // Gli eventi pista usano le coordinate della pista.
+    latitude: (track?['latitude'] as num?)?.toDouble(),
+    longitude: (track?['longitude'] as num?)?.toDouble(),
   );
 }
 
