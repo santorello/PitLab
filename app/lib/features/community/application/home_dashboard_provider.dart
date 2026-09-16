@@ -55,8 +55,11 @@ class HomeBuildOfWeek {
   factory HomeBuildOfWeek.fromMap(Map<String, dynamic> map) {
     final profile = map['profiles'];
     final profileMap = profile is Map<String, dynamic> ? profile : null;
+    // Link al profilo solo se pubblico; il nome si mostra comunque.
     final fallbackSlug = map['author_public_slug'] as String? ??
-        profileMap?['public_slug'] as String? ??
+        (profileMap?['is_public'] == true
+            ? profileMap?['public_slug'] as String?
+            : null) ??
         '';
     final displayName = map['author_display_name'] as String? ??
         profileMap?['display_name'] as String? ??
@@ -458,7 +461,8 @@ final homeBuildOfWeekProvider = FutureProvider<HomeBuildOfWeek?>((ref) async {
     final response = await client
         .from('user_builds')
         .select(
-          'id, owner_id, title, meta, image_urls, created_at',
+          'id, owner_id, title, meta, image_urls, created_at, '
+          'profiles!user_builds_owner_id_fkey(display_name, public_slug, is_public)',
         )
         .eq('is_public', true)
         .order('created_at', ascending: false)
