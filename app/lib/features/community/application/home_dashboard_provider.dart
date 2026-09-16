@@ -56,10 +56,10 @@ class HomeBuildOfWeek {
     final profile = map['profiles'];
     final profileMap = profile is Map<String, dynamic> ? profile : null;
     // Link al profilo solo se pubblico; il nome si mostra comunque.
+    final profileSlug = profileMap?['public_slug'] as String?;
+    final isPublicProfile = profileMap?['is_public'] == true;
     final fallbackSlug = map['author_public_slug'] as String? ??
-        (profileMap?['is_public'] == true
-            ? profileMap?['public_slug'] as String?
-            : null) ??
+        (isPublicProfile ? profileSlug : null) ??
         '';
     final displayName = map['author_display_name'] as String? ??
         profileMap?['display_name'] as String? ??
