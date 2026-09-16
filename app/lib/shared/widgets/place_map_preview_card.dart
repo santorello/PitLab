@@ -10,11 +10,17 @@ class PlaceMapPreviewCard extends StatelessWidget {
   const PlaceMapPreviewCard({
     required this.selection,
     this.height = 180,
+    this.onPointPicked,
     super.key,
   });
 
   final PlaceSelection selection;
   final double height;
+
+  /// Se valorizzato la mappa è interattiva: un tocco sposta il segnaposto nel punto esatto.
+  final ValueChanged<PlaceSelection>? onPointPicked;
+
+  static const mapPinProvider = 'map-pin';
 
   // MapTiler quando c'è la key, altrimenti OpenStreetMap (gratis, senza key).
   static String get _tileUrlTemplate => AppConfig.hasMapTilerConfig
@@ -36,15 +42,41 @@ class PlaceMapPreviewCard extends StatelessWidget {
           SizedBox(
             height: height,
             child: FlutterMap(
+                    // Ricentra quando arriva un risultato di ricerca, non a ogni tocco.
+                    key: ValueKey(selection.provider == mapPinProvider
+                        ? mapPinProvider
+                        : '${selection.provider}:${selection.providerPlaceId}:${selection.latitude}'),
                     options: MapOptions(
-                      interactionOptions: const InteractionOptions(
-                        flags: InteractiveFlag.none,
+                      interactionOptions: InteractionOptions(
+                        flags: onPointPicked == null
+                            ? InteractiveFlag.none
+                            : InteractiveFlag.all &
+                                ~InteractiveFlag.rotate &
+                                ~InteractiveFlag.scrollWheelZoom,
                       ),
                       initialCenter: LatLng(
                         selection.latitude,
                         selection.longitude,
                       ),
-                      initialZoom: 11,
+                      initialZoom: onPointPicked == null ? 11 : 15,
+                      onTap: onPointPicked == null
+                          ? null
+                          : (_, point) => onPointPicked!(
+                                PlaceSelection(
+                                  label: selection.label,
+                                  latitude: point.latitude,
+                                  longitude: point.longitude,
+                                  provider: mapPinProvider,
+                                  providerPlaceId: mapPinProvider,
+                                  title: selection.title,
+                                  subtitle: 'Punto scelto sulla mappa',
+                                  countryCode: selection.countryCode,
+                                  country: selection.country,
+                                  region: selection.region,
+                                  city: selection.city,
+                                  address: selection.address,
+                                ),
+                              ),
                     ),
                     children: [
                       TileLayer(
@@ -102,6 +134,15 @@ class PlaceMapPreviewCard extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
+                      if (onPointPicked != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          'Tocca la mappa per mettere il segnaposto nel punto esatto.',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.steel,
+                          ),
+                        ),
+                      ],
                       if ((selection.subtitle ?? '').trim().isNotEmpty) ...[
                         const SizedBox(height: 2),
                         Text(

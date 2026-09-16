@@ -339,7 +339,15 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
             ],
             if (_selectedSpotPlace != null) ...[
               const SizedBox(height: 12),
-              PlaceMapPreviewCard(selection: _selectedSpotPlace!, height: 190),
+              PlaceMapPreviewCard(
+                selection: _selectedSpotPlace!,
+                height: 260,
+                onPointPicked: (pin) => setState(() {
+                  _selectedSpotPlace = pin;
+                  _latitude = pin.latitude;
+                  _longitude = pin.longitude;
+                }),
+              ),
             ],
             const SizedBox(height: 16),
           ],

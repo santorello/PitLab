@@ -221,6 +221,102 @@ class OpenMeteoPlaceSearchService implements PlaceSearchProvider {
   }
 }
 
+/// Geocoding Photon (komoot, dati OpenStreetMap): trova anche parchi, vie e civici.
+/// Gratis senza key; l'istanza pubblica chiede uso ragionevole (debounce 300 ms nel picker).
+class PhotonPlaceSearchService implements PlaceSearchProvider {
+  PhotonPlaceSearchService(this._client);
+
+  final http.Client _client;
+  final Map<String, List<PlaceSelection>> _cache =
+      <String, List<PlaceSelection>>{};
+
+  static const providerName = 'photon';
+  // Photon traduce solo in queste lingue; altrimenti nomi locali (italiani in Italia).
+  static const _langs = {'en', 'de', 'fr'};
+
+  @override
+  Future<List<PlaceSelection>> search(PlaceSearchRequest request) async {
+    final query = request.query.trim();
+    if (query.length < 2) return const [];
+    final cached = _cache[request.cacheKey];
+    if (cached != null) return cached;
+
+    final lang = request.language.toLowerCase();
+    final uri = Uri.https('photon.komoot.io', '/api/', <String, String>{
+      'q': query,
+      'limit': request.limit.toString(),
+      if (_langs.contains(lang)) 'lang': lang,
+      // Preferenza (non filtro) per l'Italia centrale.
+      'lat': '42.5',
+      'lon': '12.5',
+    });
+
+    final response = await _client.get(
+      uri,
+      headers: const <String, String>{'Accept': 'application/json'},
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Place search failed (${response.statusCode}).');
+    }
+
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final mapped = (decoded['features'] as List<dynamic>? ?? const <dynamic>[])
+        .whereType<Map<String, dynamic>>()
+        .map(_mapFeature)
+        .whereType<PlaceSelection>()
+        .toList(growable: false);
+
+    final wanted = request.countryCode.trim().toUpperCase();
+    final inCountry = mapped
+        .where((p) => (p.countryCode ?? '').toUpperCase() == wanted)
+        .toList(growable: false);
+    final results = inCountry.isNotEmpty ? inCountry : mapped;
+    _cache[request.cacheKey] = results;
+    return results;
+  }
+
+  static PlaceSelection? _mapFeature(Map<String, dynamic> feature) {
+    final coords = ((feature['geometry'] as Map<String, dynamic>?)?['coordinates']
+            as List<dynamic>? ??
+        const <dynamic>[])
+        .whereType<num>()
+        .toList(growable: false);
+    if (coords.length < 2) return null;
+    final p = feature['properties'] as Map<String, dynamic>? ?? const {};
+    String? str(String key) {
+      final v = (p[key] as String?)?.trim();
+      return (v == null || v.isEmpty) ? null : v;
+    }
+
+    final street = [str('street'), str('housenumber')].whereType<String>().join(' ');
+    final city = str('city') ?? str('town') ?? str('village') ?? str('county');
+    final name = str('name') ?? (street.isEmpty ? null : street);
+    if (name == null) return null;
+    final subtitleParts = <String>[
+      if (street.isNotEmpty && street != name) street,
+      if (city != null && city != name) city,
+      ?str('state'),
+      ?str('country'),
+    ];
+    final subtitle = subtitleParts.join(', ');
+
+    return PlaceSelection(
+      label: [name, if (city != null && city != name) city].join(', '),
+      latitude: coords[1].toDouble(),
+      longitude: coords[0].toDouble(),
+      provider: providerName,
+      providerPlaceId: '${p['osm_type'] ?? ''}${p['osm_id'] ?? ''}',
+      title: name,
+      subtitle: subtitle.isEmpty ? null : subtitle,
+      countryCode: str('countrycode'),
+      country: str('country'),
+      region: str('state'),
+      city: city ?? name,
+      address: [name, ...subtitleParts].join(', '),
+    );
+  }
+}
+
 /// Prova il provider principale; se lancia o non trova nulla, usa il fallback.
 class FallbackPlaceSearchService implements PlaceSearchProvider {
   FallbackPlaceSearchService(this._primary, this._fallback);
@@ -250,16 +346,18 @@ final placeSearchHttpClientProvider = Provider<http.Client>((ref) {
 
 final placeSearchProvider = Provider<PlaceSearchProvider>((ref) {
   final client = ref.watch(placeSearchHttpClientProvider);
-  final openMeteo = OpenMeteoPlaceSearchService(client);
-  // Con key MapTiler: MapTiler primario + Open-Meteo come fallback.
-  // Senza key (es. dev): solo Open-Meteo, così il geocoding funziona comunque.
+  // MapTiler (se c'è la key) → Photon (luoghi precisi) → Open-Meteo (solo città, riserva).
+  final photonThenOpenMeteo = FallbackPlaceSearchService(
+    PhotonPlaceSearchService(client),
+    OpenMeteoPlaceSearchService(client),
+  );
   if (AppConfig.hasMapTilerConfig) {
     return FallbackPlaceSearchService(
       MapTilerPlaceSearchService(client),
-      openMeteo,
+      photonThenOpenMeteo,
     );
   }
-  return openMeteo;
+  return photonThenOpenMeteo;
 });
 
 /// Testo scritto senza scegliere un suggerimento → primo risultato (preferendo l'Italia).

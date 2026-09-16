@@ -176,3 +176,8 @@ Prossime fasi: 2 (mappa a pieno spazio), 3 (Profilo a schede, Garage compatto), 
 - Eventi in corso: vetrina = fine (o inizio) non passata, per `events` e `community_events`; archivio include anche gli eventi community. Stessa regola nelle liste locali.
 - Test: `app/test/event_contract_test.dart` (2 casi Astra adattati).
 - Rimandato: eventi su mappa e in "Vicino a te" (coordinate già salvate).
+
+## Luoghi precisi: Photon + tocco mappa (16/09 notte)
+- Ricerca: MapTiler (se key) → **Photon** (photon.komoot.io, OSM: parchi, vie, civici; gratis, uso ragionevole, nessuna garanzia) → Open-Meteo (solo città).
+- `PlaceMapPreviewCard(onPointPicked:)`: mappa interattiva (zoom 15), tocco = segnaposto nel punto esatto. Attiva in Crea/Modifica spot e nei dialoghi evento.
+- Da verificare in locale: Network → `photon.komoot.io` risponde 200 (CORS) e trova "Parco della Madonnina".

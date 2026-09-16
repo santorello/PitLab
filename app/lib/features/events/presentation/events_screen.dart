@@ -18,6 +18,7 @@ import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/image_transfer_progress_card.dart';
 import '../../../shared/widgets/card_stat_row.dart';
 import '../../../shared/widgets/place_card.dart';
+import '../../../shared/widgets/place_map_preview_card.dart';
 import '../../../shared/widgets/place_picker_field.dart';
 import '../../../shared/places/place_search_service.dart';
 import '../../../shared/places/place_selection.dart';
@@ -353,8 +354,18 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                         controller: locationController,
                         initialSelection: pickedPlace,
                         labelText: l10n.eventsCreateLocationLabel,
-                        onSelected: (selection) => pickedPlace = selection,
+                        onSelected: (selection) =>
+                            setDialogState(() => pickedPlace = selection),
                       ),
+                      if (pickedPlace != null) ...[
+                        const SizedBox(height: 12),
+                        PlaceMapPreviewCard(
+                          selection: pickedPlace!,
+                          height: 200,
+                          onPointPicked: (pin) =>
+                              setDialogState(() => pickedPlace = pin),
+                        ),
+                      ],
                       const SizedBox(height: 12),
                       TextField(
                         controller: venueController,
@@ -810,8 +821,18 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                         controller: locationController,
                         initialSelection: pickedPlace,
                         labelText: l10n.eventsCreateLocationLabel,
-                        onSelected: (selection) => pickedPlace = selection,
+                        onSelected: (selection) =>
+                            setDialogState(() => pickedPlace = selection),
                       ),
+                      if (pickedPlace != null) ...[
+                        const SizedBox(height: 12),
+                        PlaceMapPreviewCard(
+                          selection: pickedPlace!,
+                          height: 200,
+                          onPointPicked: (pin) =>
+                              setDialogState(() => pickedPlace = pin),
+                        ),
+                      ],
                       const SizedBox(height: 12),
                       TextField(
                         controller: venueController,
