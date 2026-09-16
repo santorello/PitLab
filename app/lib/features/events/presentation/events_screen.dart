@@ -745,9 +745,10 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
       return;
     }
 
-    ref.read(createdEventsProvider.notifier).add(created);
-
-    messenger.showSnackBar(SnackBar(content: Text(l10n.eventsCreateSuccess)));
+    final saved = await ref.read(createdEventsProvider.notifier).add(created);
+    messenger.showSnackBar(
+      SnackBar(content: Text(saved ? l10n.eventsCreateSuccess : _eventSaveFailed)),
+    );
   }
 
   Future<void> _openEditEventDialog(
@@ -953,9 +954,11 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
 
     if (updated == null || !mounted) return;
 
-    ref.read(createdEventsProvider.notifier).update(updated);
+    final saved = await ref.read(createdEventsProvider.notifier).update(updated);
     messenger.showSnackBar(
-      const SnackBar(content: Text('Evento aggiornato con successo.')),
+      SnackBar(
+        content: Text(saved ? 'Evento aggiornato con successo.' : _eventSaveFailed),
+      ),
     );
   }
 
@@ -1322,3 +1325,7 @@ String _localeText(
 }) {
   return Localizations.localeOf(context).languageCode == 'it' ? it : en;
 }
+
+// ponytail: testo solo IT come il resto dei messaggi di modifica; in ARB se serve EN.
+const _eventSaveFailed =
+    'Evento NON salvato: controlla la connessione e riprova.';

@@ -12,6 +12,11 @@ class PublicEventsRepository {
 
   final SupabaseClient _client;
 
+  static const _communityColumns =
+      'id, author_id, title, location, venue, note, badge, '
+      'creator_label, creator_role, image_urls, starts_at, ends_at, '
+      'latitude, longitude';
+
   Future<List<CreatedEventRecord>> fetchUpcomingPublicEvents({
     int limit = 10,
   }) async {
@@ -27,7 +32,8 @@ class PublicEventsRepository {
           tracks(name, city)
         ''')
         .eq('visibility', 'public')
-        .gte('start_at', now)
+        // In corso o futuro: fine (o inizio, se manca la fine) non ancora passata.
+        .or('end_at.gte."$now",and(end_at.is.null,start_at.gte."$now")')
         .order('start_at')
         .limit(limit);
 
@@ -42,12 +48,8 @@ class PublicEventsRepository {
     try {
       final communityResponse = await _client
           .from('community_events')
-          .select('''
-            id, author_id, title, location, venue, note, badge,
-            creator_label, creator_role, image_urls, starts_at, ends_at,
-            latitude, longitude
-          ''')
-          .gte('starts_at', now)
+          .select(_communityColumns)
+          .or('ends_at.gte."$now",and(ends_at.is.null,starts_at.gte."$now")')
           .order('starts_at')
           .limit(limit);
       events.addAll(
@@ -90,11 +92,35 @@ class PublicEventsRepository {
           return effectiveEnd.toUtc().isBefore(now);
         })
         .toList();
+
+    try {
+      final communityResponse = await _client
+          .from('community_events')
+          .select(_communityColumns)
+          .lt('starts_at', now.toIso8601String())
+          .order('starts_at', ascending: false)
+          .limit(limit);
+      events.addAll(
+        (communityResponse as List<dynamic>)
+            .whereType<Map<String, dynamic>>()
+            .map(CreatedEventRecord.fromRow)
+            .where((event) {
+          final effectiveEnd = event.endsAt ?? event.startsAt;
+          return effectiveEnd != null && effectiveEnd.toUtc().isBefore(now);
+        }),
+      );
+    } catch (e, st) {
+      AppErrorReporter.report(e, st,
+          context: 'public_events_provider.community_past');
+    }
+
     events.sort(_compareEventsByStartDateDesc);
     return events;
   }
 
   Future<CreatedEventRecord?> fetchPublicEventById(String eventId) async {
+    // Id temporanei locali ('created-…') non sono UUID: la query darebbe errore 22P02.
+    if (!RegExp(r'^[0-9a-fA-F-]{36}$').hasMatch(eventId)) return null;
     final response = await _client
         .from('events')
         .select('''
@@ -109,11 +135,17 @@ class PublicEventsRepository {
         .eq('visibility', 'public')
         .maybeSingle();
 
-    if (response == null) {
-      return null;
+    if (response != null) {
+      return mapPublicEventRow(response);
     }
 
-    return mapPublicEventRow(response);
+    // Gli eventi creati dagli utenti vivono in community_events (tutti pubblici).
+    final community = await _client
+        .from('community_events')
+        .select(_communityColumns)
+        .eq('id', eventId)
+        .maybeSingle();
+    return community == null ? null : CreatedEventRecord.fromRow(community);
   }
 
   static String _formatDate(String? iso) {

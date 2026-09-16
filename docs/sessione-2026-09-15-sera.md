@@ -169,3 +169,10 @@ Prossime fasi: 2 (mappa a pieno spazio), 3 (Profilo a schede, Garage compatto), 
 - Profilo santorello su prod aveva coordinate di Milano con città Rho (vecchie coordinate tenute dal COALESCE di complete_onboarding).
 - Coordinate eventi non ancora usate da mappa / "Vicino a te": passo successivo.
 - Build della settimana: vista `home_build_of_week` restituiva autore NULL → `2026-09-16-build-of-week-author.sql` (dev applicato).
+
+## Eventi: P1/P2 della review (16/09 notte)
+- Dettaglio: `fetchPublicEventById` cerca anche in `community_events` (id non-UUID → null senza errore).
+- Salvataggio: `add/update` di `createdEventsProvider` restituiscono bool, niente più record ottimistico; la UI dice "Evento NON salvato" se il server rifiuta.
+- Eventi in corso: vetrina = fine (o inizio) non passata, per `events` e `community_events`; archivio include anche gli eventi community. Stessa regola nelle liste locali.
+- Test: `app/test/event_contract_test.dart` (2 casi Astra adattati).
+- Rimandato: eventi su mappa e in "Vicino a te" (coordinate già salvate).

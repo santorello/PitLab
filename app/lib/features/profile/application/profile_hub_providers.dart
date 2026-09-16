@@ -409,51 +409,43 @@ class CreatedEventsController extends Notifier<List<CreatedEventRecord>> {
 
   // ── Public API ────────────────────────────────────────────────────────────
 
-  Future<void> add(CreatedEventRecord event) async {
-    // Ottimistico: mostra subito il record con ID temporaneo
-    _cached = [event, ...state.where((e) => e.id != event.id)];
-    state = _cached;
-
+  /// Salva sul server. true = confermato; false = rifiutato/non disponibile
+  /// (in quel caso la modifica locale viene annullata: niente eventi "fantasma").
+  Future<bool> add(CreatedEventRecord event) async {
     final repository = ref.read(communityEventsRepositoryProvider);
     // Usa effectiveUserIdProvider: l'evento viene salvato per l'utente
     // corrente (o per quello osservato in impersonazione).
     final effectiveUserId = ref.read(effectiveUserIdProvider);
+    if (repository == null || effectiveUserId == null) return false;
 
-    if (repository != null && effectiveUserId != null) {
-      try {
-        final saved = await repository.insert(userId: effectiveUserId, event: event);
-        // Sostituisci il record temporaneo con l'UUID reale del server
-        _cached = [
-          saved,
-          ...state.where((e) => e.id != event.id && e.id != saved.id),
-        ];
-        state = _cached;
-      } catch (e) {
-        debugPrint('[CommunityEvents] insert error: $e');
-      }
+    try {
+      final saved =
+          await repository.insert(userId: effectiveUserId, event: event);
+      _cached = [saved, ...state.where((e) => e.id != saved.id)];
+      state = _cached;
+      _persistLocal();
+      return true;
+    } catch (e, st) {
+      AppErrorReporter.report(e, st, context: 'community_events.insert');
+      return false;
     }
-
-    _persistLocal();
   }
 
-  Future<void> update(CreatedEventRecord updated) async {
-    // Ottimistico: aggiorna subito la lista locale
-    _cached = state.map((e) => e.id == updated.id ? updated : e).toList();
-    state = _cached;
-
+  Future<bool> update(CreatedEventRecord updated) async {
     final repository = ref.read(communityEventsRepositoryProvider);
+    if (repository == null) return false;
 
-    if (repository != null) {
-      try {
-        final saved = await repository.update(eventId: updated.id, event: updated);
-        _cached = state.map((e) => e.id == saved.id ? saved : e).toList();
-        state = _cached;
-      } catch (e) {
-        debugPrint('[CommunityEvents] update error: $e');
-      }
+    try {
+      final saved =
+          await repository.update(eventId: updated.id, event: updated);
+      _cached = state.map((e) => e.id == saved.id ? saved : e).toList();
+      state = _cached;
+      _persistLocal();
+      return true;
+    } catch (e, st) {
+      AppErrorReporter.report(e, st, context: 'community_events.update');
+      return false;
     }
-
-    _persistLocal();
   }
 }
 
@@ -463,11 +455,12 @@ final activeCreatedEventsProvider = Provider<List<CreatedEventRecord>>((ref) {
   final now = DateTime.now();
   final events = ref.watch(createdEventsProvider);
   return events.where((event) {
-    final startsAt = event.startsAt;
-    if (startsAt == null) {
+    // Stessa regola delle liste pubbliche: attivo finché la fine (o l'inizio) non è passata.
+    final end = event.endsAt ?? event.startsAt;
+    if (end == null) {
       return true;
     }
-    final local = startsAt.toLocal();
+    final local = end.toLocal();
     return !local.isBefore(DateTime(now.year, now.month, now.day));
   }).toList();
 });
@@ -487,11 +480,11 @@ final archivedCreatedEventsProvider = Provider<List<CreatedEventRecord>>((ref) {
   final now = DateTime.now();
   final events = ref.watch(createdEventsProvider);
   return events.where((event) {
-    final startsAt = event.startsAt;
-    if (startsAt == null) {
+    final end = event.endsAt ?? event.startsAt;
+    if (end == null) {
       return false;
     }
-    final local = startsAt.toLocal();
+    final local = end.toLocal();
     return local.isBefore(DateTime(now.year, now.month, now.day));
   }).toList();
 });
