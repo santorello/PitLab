@@ -37,13 +37,9 @@ final _userInterestsProvider =
   final user = ref.watch(currentUserProvider);
   if (client == null || user == null) return [];
 
-  final response = await client
-      .from('profiles')
-      .select('user_interests')
-      .eq('id', user.id)
-      .maybeSingle();
-
-  if (response == null) return [];
+  final rows = await client.rpc('my_profile_private') as List<dynamic>;
+  if (rows.isEmpty) return [];
+  final response = rows.first as Map<String, dynamic>;
   final raw = response['user_interests'];
   if (raw == null) return [];
   return (raw as List<dynamic>).whereType<String>().toList();

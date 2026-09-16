@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/empty_state_panel.dart';
@@ -73,7 +74,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                 Card(
                   color: AppColors.graphite,
                   child: Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: AppSpacing.card(context),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -117,7 +118,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                     final compact = constraints.maxWidth < 980;
                     final introCard = Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(24),
+                        padding: AppSpacing.card(context),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -178,7 +179,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
 
                     final capabilityCard = Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(24),
+                        padding: AppSpacing.card(context),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -239,7 +240,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                 if (trackDrafts.any((d) => d.approvalStatus != 'approved')) ...[
                   Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(24),
+                      padding: AppSpacing.card(context),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -271,7 +272,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                 if (trackDrafts.any((d) => d.approvalStatus == 'approved')) ...[
                   Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(24),
+                      padding: AppSpacing.card(context),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -303,7 +304,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                 if (canManageShops && myShopDrafts.isNotEmpty) ...[
                   Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(24),
+                      padding: AppSpacing.card(context),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -332,7 +333,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                 ],
                 Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: AppSpacing.card(context),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -444,7 +445,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
               Card(
                 color: AppColors.graphite,
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: AppSpacing.card(context),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -485,7 +486,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
               const SizedBox(height: 18),
               Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: AppSpacing.card(context),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -532,7 +533,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                     children: [
                       Card(
                         child: Padding(
-                          padding: const EdgeInsets.all(24),
+                          padding: AppSpacing.card(context),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -565,7 +566,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
               if (canManageShops && myShopDrafts.isNotEmpty) ...[
                 Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: AppSpacing.card(context),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -594,7 +595,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
               ],
               Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: AppSpacing.card(context),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -678,7 +679,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
               const SizedBox(height: 18),
               Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: AppSpacing.card(context),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -886,7 +887,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
               const SizedBox(height: 18),
               Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: AppSpacing.card(context),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

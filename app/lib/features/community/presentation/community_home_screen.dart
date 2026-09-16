@@ -122,8 +122,13 @@ class CommunityHomeScreen extends ConsumerWidget {
                   ),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      _TopBar(userLabel: user?.email),
-                      const SizedBox(height: AppSpacing.lg),
+                      // Su telefono marchio e account sono gia' nella barra
+                      // scura e nel menu ⋮: niente doppione.
+                      if (!AppBreakpoints.isPhone(
+                          MediaQuery.sizeOf(context).width)) ...[
+                        _TopBar(userLabel: user?.email),
+                        const SizedBox(height: AppSpacing.lg),
+                      ],
                       _GreetingCard(
                         greeting: _timeGreeting(DateTime.now()),
                         userName: displayName,

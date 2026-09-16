@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/dialog_controller_scope.dart';
 import '../application/admin_providers.dart';
@@ -80,7 +81,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         children: [
           // ── Hero header ─────────────────────────────────────────────────
           Container(
-            padding: const EdgeInsets.all(24),
+            padding: AppSpacing.card(context),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
@@ -156,7 +157,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           if (!isAdmin)
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: AppSpacing.card(context),
                 child: Text(
                   l10n.adminAccessDeniedCard,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -1560,7 +1561,7 @@ class _AdminOverviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: AppSpacing.card(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1642,7 +1643,7 @@ class _AdminSectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: AppSpacing.card(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

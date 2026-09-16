@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../application/auth_providers.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -67,7 +68,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 460),
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: AppSpacing.card(context),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -115,7 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
                     ),
                     child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: AppSpacing.card(context),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,6 +1,12 @@
 class AppBreakpoints {
   AppBreakpoints._();
 
+  /// Sotto questa soglia (telefono) le intestazioni diventano compatte:
+  /// niente marchio ripetuto ne' azioni account, gia' presenti nelle barre.
+  static const double compactHeader = 600;
+
+  static bool isPhone(double width) => width < compactHeader;
+
   /// Sotto questa soglia i layout interni delle card vanno in stack verticale.
   static const double cardStack = 720;
 

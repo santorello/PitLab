@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/l10n/generated/app_localizations.dart';
+import '../../app/theme/app_breakpoints.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_radius.dart';
 import '../../app/theme/app_spacing.dart';
@@ -26,6 +27,35 @@ class ContentScaffoldHeader extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final currentUser = ref.watch(currentUserProvider);
     final impersonation = ref.watch(impersonationProvider);
+
+    // Telefono: marchio, lingua e account stanno gia' nella barra scura e in
+    // quella in basso (menu ⋮), e il banner impersonazione e' gia' mostrato da
+    // AppScaffold. Qui resta solo il titolo, per lasciare spazio al contenuto.
+    if (AppBreakpoints.isPhone(MediaQuery.sizeOf(context).width)) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
+                ?.copyWith(fontWeight: FontWeight.w800),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          if (trailingActions != null && trailingActions!.isNotEmpty) ...[
+            SizedBox(height: AppSpacing.xs),
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.xs,
+              children: trailingActions!,
+            ),
+          ],
+        ],
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -9,6 +9,8 @@ import '../../features/auth/application/auth_providers.dart';
 import '../../features/feedback/presentation/feedback_dialog.dart';
 import '../../features/notifications/presentation/notification_bell.dart';
 import '../../features/support/presentation/coffee_button.dart';
+import '../../shared/widgets/pitlap_logo.dart';
+import 'language_toggle.dart';
 
 class AppScaffold extends ConsumerStatefulWidget {
   const AppScaffold({required this.child, super.key});
@@ -29,12 +31,6 @@ class AppScaffold extends ConsumerStatefulWidget {
       location: '/tracks',
     ),
     _Destination(
-      labelKey: 'nearby',
-      labelFallback: 'Nearby',
-      icon: Icons.explore_outlined,
-      location: '/nearby',
-    ),
-    _Destination(
       labelKey: 'spots',
       labelFallback: 'Spots',
       icon: Icons.location_pin,
@@ -45,6 +41,14 @@ class AppScaffold extends ConsumerStatefulWidget {
       labelFallback: 'Events',
       icon: Icons.event_outlined,
       location: '/events',
+    ),
+    // Dopo Eventi: su telefono le prime 4 voci (Home, Piste, Spot, Eventi)
+    // restano in barra, questa finisce in "Altro".
+    _Destination(
+      labelKey: 'nearby',
+      labelFallback: 'Nearby',
+      icon: Icons.explore_outlined,
+      location: '/nearby',
     ),
     _Destination(
       labelKey: 'shops',
@@ -311,15 +315,12 @@ class _MobileNavigationBar extends StatelessWidget {
             label: label(item),
           ),
         ),
-        NavigationDestination(
-          icon: Icon(
-            isOverflowSelected
-                ? destinations[selectedIndex].icon
-                : Icons.more_horiz,
-          ),
-          label: isOverflowSelected
-              ? label(destinations[selectedIndex])
-              : 'Altro',
+        // Voce fissa: prima prendeva icona ed etichetta della pagina aperta
+        // (Eventi, Negozi, Garage...) e la barra cambiava a ogni pagina.
+        // L'evidenziazione basta a dire che si e' dentro "Altro".
+        const NavigationDestination(
+          icon: Icon(Icons.more_horiz),
+          label: 'Altro',
         ),
       ],
     );
@@ -432,7 +433,13 @@ class _MobileTopBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: AppColors.graphite,
       elevation: 0,
       automaticallyImplyLeading: false,
-      title: RichText(
+      titleSpacing: 12,
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const PitLapLogo(size: 30, shadow: false),
+          const SizedBox(width: 10),
+          RichText(
         text: TextSpan(
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: Colors.white,
@@ -447,15 +454,80 @@ class _MobileTopBar extends StatelessWidget implements PreferredSizeWidget {
           ],
         ),
       ),
-      actions: [
-        IconButton(
-          onPressed: () => showFeedbackDialog(context),
-          icon: const Icon(Icons.feedback_outlined, color: Colors.white),
-          tooltip: 'Invia feedback',
+        ],
+      ),
+      actions: const [
+        NotificationBell(),
+        _MobileOverflowMenu(),
+        SizedBox(width: 4),
+      ],
+    );
+  }
+}
+
+enum _MenuAction { language, feedback, coffee, account }
+
+/// Menu ⋮ della barra su telefono: raccoglie con etichetta le azioni che
+/// prima erano icone senza testo (feedback, caffe') piu' lingua e account.
+class _MobileOverflowMenu extends ConsumerWidget {
+  const _MobileOverflowMenu();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final isLoggedIn = ref.watch(currentUserProvider) != null;
+    final isIt = Localizations.localeOf(context).languageCode == 'it';
+
+    return PopupMenuButton<_MenuAction>(
+      icon: const Icon(Icons.more_vert, color: Colors.white),
+      tooltip: 'Menu',
+      onSelected: (action) {
+        switch (action) {
+          case _MenuAction.language:
+            toggleAppLanguage(context, ref);
+          case _MenuAction.feedback:
+            showFeedbackDialog(context);
+          case _MenuAction.coffee:
+            openDonationPage(context);
+          case _MenuAction.account:
+            context.go(isLoggedIn ? '/profile' : '/login');
+        }
+      },
+      itemBuilder: (_) => [
+        PopupMenuItem(
+          value: _MenuAction.account,
+          child: ListTile(
+            leading: Icon(isLoggedIn ? Icons.person_outline : Icons.login),
+            title: Text(isLoggedIn ? l10n.profileTitle : l10n.loginCtaButton),
+            contentPadding: EdgeInsets.zero,
+          ),
         ),
-        const CoffeeButton(),
-        const NotificationBell(),
-        const SizedBox(width: 4),
+        PopupMenuItem(
+          value: _MenuAction.language,
+          child: ListTile(
+            leading: const Icon(Icons.language),
+            title: Text(isIt ? 'Lingua: Italiano' : 'Language: English'),
+            subtitle: Text(isIt ? 'Passa a English' : 'Switch to Italiano'),
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+        const PopupMenuItem(
+          value: _MenuAction.feedback,
+          child: ListTile(
+            leading: Icon(Icons.feedback_outlined),
+            title: Text('Invia feedback'),
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+        if (isDonationEnabled)
+          const PopupMenuItem(
+            value: _MenuAction.coffee,
+            child: ListTile(
+              leading: Icon(Icons.local_cafe_outlined),
+              title: Text('Offri un caffè'),
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
       ],
     );
   }

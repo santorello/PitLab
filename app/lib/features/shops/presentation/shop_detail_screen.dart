@@ -231,7 +231,7 @@ class _ShopHero extends StatelessWidget {
 
           // Contenuto header
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: AppSpacing.card(context),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -728,7 +728,7 @@ class _DetailSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: AppSpacing.card(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

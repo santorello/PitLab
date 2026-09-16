@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../../auth/application/auth_providers.dart';
@@ -94,7 +95,7 @@ class _ProfileContent extends ConsumerWidget {
         Card(
           color: AppColors.graphite,
           child: Padding(
-            padding: const EdgeInsets.all(28),
+            padding: AppSpacing.card(context, 28),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -199,7 +200,7 @@ class _ProfileContent extends ConsumerWidget {
         ] else ...[
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: AppSpacing.card(context),
               child: Column(
                 children: [
                   const Icon(Icons.garage_outlined, size: 40, color: AppColors.steel),

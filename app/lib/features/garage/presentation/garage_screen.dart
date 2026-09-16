@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
+import '../../../app/theme/app_breakpoints.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
@@ -97,6 +98,7 @@ class _GarageBody extends ConsumerWidget {
     }
 
     final publicCount = state.builds.where((b) => b.isPublic).length;
+    final isPhone = AppBreakpoints.isPhone(MediaQuery.sizeOf(context).width);
 
     return ListView(
       children: [
@@ -105,10 +107,13 @@ class _GarageBody extends ConsumerWidget {
           color: AppColors.graphite,
           clipBehavior: Clip.antiAlias,
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: AppSpacing.card(context),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Telefono: la vetrina diventa una fascia con contatori e
+                // pulsante; titolo e testo descrittivo solo su schermi larghi.
+                if (!isPhone) ...[
                 Text(
                   l10n.garageHeroTitle,
                   style: Theme.of(context)
@@ -125,15 +130,16 @@ class _GarageBody extends ConsumerWidget {
                       ?.copyWith(color: AppColors.concrete),
                 ),
                 const SizedBox(height: 18),
+                ],
                 Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
+                  spacing: isPhone ? 6 : 10,
+                  runSpacing: isPhone ? 6 : 10,
                   children: [
                     _FlagChip(label: l10n.garageBuildsCount(state.builds.length)),
                     _FlagChip(label: l10n.garagePublicBuildsCount(publicCount)),
                   ],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: isPhone ? 10 : 16),
                 FilledButton.icon(
                   onPressed: state.isSaving
                       ? null
@@ -154,7 +160,7 @@ class _GarageBody extends ConsumerWidget {
             ),
           ),
         ),
-        const SizedBox(height: 18),
+        SizedBox(height: isPhone ? 12 : 18),
 
         // ── Build list ────────────────────────────────────────────────────
         if (state.builds.isEmpty)
@@ -167,7 +173,7 @@ class _GarageBody extends ConsumerWidget {
         else
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: AppSpacing.card(context),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

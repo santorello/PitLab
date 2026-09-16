@@ -6,7 +6,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/l10n/locale_controller.dart';
+import '../../../app/theme/app_breakpoints.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/dialog_controller_scope.dart';
 import '../../../shared/media/media_upload_controller.dart';
@@ -229,19 +231,16 @@ class ProfileScreen extends ConsumerWidget {
       ),
     ];
 
-    return ContentScaffold(
-      title: l10n.profileTitle,
-      description: l10n.profileDescription,
-      child: ListView(
-        children: [
-          Card(
+    final isPhone = AppBreakpoints.isPhone(MediaQuery.sizeOf(context).width);
+    final headerCard = Card(
             color: AppColors.graphite,
             clipBehavior: Clip.antiAlias,
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: AppSpacing.card(context),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (!isPhone) ...[
                   Text(
                     l10n.profileTitle,
                     style: Theme.of(
@@ -249,15 +248,16 @@ class ProfileScreen extends ConsumerWidget {
                     ).textTheme.labelLarge?.copyWith(color: Colors.white70),
                   ),
                   const SizedBox(height: 14),
+                  ],
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _AvatarPreview(
                         imageUrl: avatarUrl,
                         fallbackLabel: visibleName,
-                        size: 88,
+                        size: isPhone ? 56 : 88,
                       ),
-                      const SizedBox(width: 18),
+                      SizedBox(width: isPhone ? 12 : 18),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,6 +267,7 @@ class ProfileScreen extends ConsumerWidget {
                               style: Theme.of(context).textTheme.headlineMedium
                                   ?.copyWith(color: Colors.white),
                             ),
+                            if (!isPhone) ...[
                             const SizedBox(height: 10),
                             Text(
                               _profileText(
@@ -279,17 +280,22 @@ class ProfileScreen extends ConsumerWidget {
                               style: Theme.of(context).textTheme.bodyLarge
                                   ?.copyWith(color: AppColors.concrete),
                             ),
-                            const SizedBox(height: 18),
+                            ],
+                            SizedBox(height: isPhone ? 8 : 18),
                             Wrap(
-                              spacing: 12,
-                              runSpacing: 12,
+                              spacing: isPhone ? 6 : 12,
+                              runSpacing: isPhone ? 6 : 12,
                               children: [
+                                // Su telefono lingua e stato accesso sono gia'
+                                // nel menu ⋮: resta il ruolo.
+                                if (!isPhone) ...[
                                 _StatusChip(
                                   label: sessionUser != null
                                       ? l10n.accountActiveNow
                                       : l10n.guestModeLabel,
                                 ),
                                 _StatusChip(label: languageValue),
+                                ],
                                 _StatusChip(
                                   label:
                                       _roleLabel(l10n, roleValue),
@@ -312,14 +318,9 @@ class ProfileScreen extends ConsumerWidget {
                 ],
               ),
             ),
-          ),
-          const SizedBox(height: 18),
-          if (sessionUser != null) ...[
-            const PitcoinBalanceCard(),
-            const SizedBox(height: 18),
-          ],
-          if (isImpersonating)
-            Padding(
+          );
+    final Widget? impersonationNote = isImpersonating
+        ? Padding(
               padding: const EdgeInsets.only(bottom: 18),
               child: Card(
                 color: AppColors.signalOrange.withAlpha(18),
@@ -339,38 +340,36 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-            ),
-          _ProfileSection(
+            )
+        : null;
+    final overviewSection = _ProfileSection(
             eyebrow: 'View d’insieme',
             title: 'Panoramica account',
             body:
                 'Una lettura rapida di ciò che segui, salvi e pubblichi dentro PitLap.',
-            child: Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: overviewTiles
-                  .map(
-                    (tile) => _OverviewTile(
-                      data: tile,
-                    ),
-                  )
-                  .toList(),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Telefono: due colonne che riempiono la larghezza.
+                final gap = isPhone ? 10.0 : 16.0;
+                final tileWidth =
+                    isPhone ? (constraints.maxWidth - gap) / 2 : 220.0;
+                return Wrap(
+                  spacing: gap,
+                  runSpacing: gap,
+                  children: overviewTiles
+                      .map(
+                        (tile) => _OverviewTile(
+                          data: tile,
+                          width: tileWidth,
+                          compact: isPhone,
+                        ),
+                      )
+                      .toList(),
+                );
+              },
             ),
-          ),
-          const SizedBox(height: 18),
-          _ProfileSection(
-            eyebrow: 'Identità',
-            title: l10n.profileBasicsTitle,
-            body: l10n.profileBasicsBody,
-            child: _ProfileBasicsEditor(
-              targetUserId: effectiveUserId,
-              canEdit: !isImpersonating && sessionUser != null,
-              emailValue: emailValue,
-              profileAsync: profileAsync,
-            ),
-          ),
-          const SizedBox(height: 18),
-          _ProfileSection(
+          );
+    final quickLinksSection = _ProfileSection(
             eyebrow: 'Collegamenti',
             title: l10n.profileQuickLinksTitle,
             body: l10n.profileQuickLinksBody,
@@ -395,9 +394,19 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 18),
-          _ProfileSection(
+          );
+    final identitySection = _ProfileSection(
+            eyebrow: 'Identità',
+            title: l10n.profileBasicsTitle,
+            body: l10n.profileBasicsBody,
+            child: _ProfileBasicsEditor(
+              targetUserId: effectiveUserId,
+              canEdit: !isImpersonating && sessionUser != null,
+              emailValue: emailValue,
+              profileAsync: profileAsync,
+            ),
+          );
+    final presenceSection = _ProfileSection(
             eyebrow: 'Presenza',
             title: l10n.externalLinksTitle,
             body: l10n.externalLinksProfileBody,
@@ -419,18 +428,16 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ],
             ),
-          ),
-          if (sessionUser != null) ...[
-            const SizedBox(height: 18),
-            _ProfileSection(
+          );
+    final Widget? badgesSection = sessionUser != null
+        ? _ProfileSection(
               eyebrow: l10n.pitcoinBadgesTitle,
               title: l10n.pitcoinBadgesTitle,
               body: l10n.pitcoinBadgesSubtitle,
               child: const PitcoinBadgesSection(),
-            ),
-          ],
-          const SizedBox(height: 18),
-          _ProfileSection(
+            )
+        : null;
+    final privacySection = _ProfileSection(
             eyebrow: 'Privacy',
             title: l10n.profilePrivacyTitle,
             body: l10n.profilePrivacyBody,
@@ -442,9 +449,8 @@ class ProfileScreen extends ConsumerWidget {
                 _ConsentSummary(consentsAsync: consentsAsync),
               ],
             ),
-          ),
-          const SizedBox(height: 18),
-          _ProfileSection(
+          );
+    final settingsSection = _ProfileSection(
             eyebrow: 'Impostazioni',
             title: l10n.profileSettingsTitle,
             body: l10n.profileSettingsBody,
@@ -513,7 +519,95 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ],
             ),
+          );
+
+    // Telefono: intestazione compatta + schede, invece di un'unica pagina
+    // lunghissima. PC/tablet: layout originale a colonna unica.
+    if (isPhone) {
+      Widget tabList(List<Widget?> items) => ListView(
+            padding: const EdgeInsets.only(top: 12),
+            children: [
+              for (final item in items.whereType<Widget>()) ...[
+                item,
+                const SizedBox(height: 12),
+              ],
+            ],
+          );
+      final tabs = <(String, Widget)>[
+        (
+          _profileText(context, it: 'Panoramica', en: 'Overview'),
+          tabList([impersonationNote, overviewSection, quickLinksSection]),
+        ),
+        if (sessionUser != null)
+          (
+            'PitCoin',
+            tabList([const PitcoinBalanceCard(), badgesSection]),
           ),
+        (
+          _profileText(context, it: 'Dati', en: 'Details'),
+          tabList([identitySection, presenceSection]),
+        ),
+        (
+          _profileText(context, it: 'Impostazioni', en: 'Settings'),
+          tabList([privacySection, settingsSection]),
+        ),
+      ];
+      return ContentScaffold(
+        title: l10n.profileTitle,
+        description: l10n.profileDescription,
+        child: DefaultTabController(
+          length: tabs.length,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              headerCard,
+              const SizedBox(height: 4),
+              TabBar(
+                isScrollable: true,
+                tabAlignment: TabAlignment.start,
+                indicatorColor: AppColors.signalOrange,
+                labelColor: AppColors.graphite,
+                unselectedLabelColor: AppColors.steel,
+                tabs: [for (final tab in tabs) Tab(text: tab.$1)],
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [for (final tab in tabs) tab.$2],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return ContentScaffold(
+      title: l10n.profileTitle,
+      description: l10n.profileDescription,
+      child: ListView(
+        children: [
+          headerCard,
+          const SizedBox(height: 18),
+          if (sessionUser != null) ...[
+            const PitcoinBalanceCard(),
+            const SizedBox(height: 18),
+          ],
+          ?impersonationNote,
+          overviewSection,
+          const SizedBox(height: 18),
+          identitySection,
+          const SizedBox(height: 18),
+          quickLinksSection,
+          const SizedBox(height: 18),
+          presenceSection,
+          if (badgesSection != null) ...[
+            const SizedBox(height: 18),
+            badgesSection,
+          ],
+          const SizedBox(height: 18),
+          privacySection,
+          const SizedBox(height: 18),
+          settingsSection,
         ],
       ),
     );
@@ -908,28 +1002,34 @@ class _ProfileSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final resolvedEyebrow = _cleanProfileEyebrow(eyebrow);
     final resolvedBody = _cleanProfileSectionBody(context, body);
+    // Telefono: solo il titolo; occhiello e descrizione ripetevano la scheda.
+    final isPhone = AppBreakpoints.isPhone(MediaQuery.sizeOf(context).width);
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: AppSpacing.card(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              resolvedEyebrow,
-              style: Theme.of(
-                context,
-              ).textTheme.labelLarge?.copyWith(color: AppColors.signalOrange),
-            ),
-            const SizedBox(height: 8),
+            if (!isPhone) ...[
+              Text(
+                resolvedEyebrow,
+                style: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(color: AppColors.signalOrange),
+              ),
+              const SizedBox(height: 8),
+            ],
             Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
-            Text(
-              resolvedBody,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: AppColors.steel),
-            ),
-            const SizedBox(height: 16),
+            if (!isPhone) ...[
+              const SizedBox(height: 8),
+              Text(
+                resolvedBody,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: AppColors.steel),
+              ),
+            ],
+            SizedBox(height: isPhone ? 12 : 16),
             child,
           ],
         ),
@@ -996,9 +1096,17 @@ class _OverviewTileData {
 }
 
 class _OverviewTile extends StatelessWidget {
-  const _OverviewTile({required this.data});
+  const _OverviewTile({
+    required this.data,
+    this.width = 220,
+    this.compact = false,
+  });
 
   final _OverviewTileData data;
+  final double width;
+
+  /// Telefono: senza testo di aiuto e con padding ridotto.
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -1006,8 +1114,8 @@ class _OverviewTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       onTap: data.onTap,
       child: Ink(
-        width: 220,
-        padding: const EdgeInsets.all(16),
+        width: width,
+        padding: EdgeInsets.all(compact ? 12 : 16),
         decoration: BoxDecoration(
           color: const Color(0xFFF8F7F3),
           borderRadius: BorderRadius.circular(20),
@@ -1031,6 +1139,7 @@ class _OverviewTile extends StatelessWidget {
                 color: AppColors.graphite,
               ),
             ),
+            if (!compact) ...[
             const SizedBox(height: 6),
             Text(
               data.helper,
@@ -1040,6 +1149,7 @@ class _OverviewTile extends StatelessWidget {
                 context,
               ).textTheme.bodySmall?.copyWith(color: AppColors.steel),
             ),
+            ],
           ],
         ),
       ),

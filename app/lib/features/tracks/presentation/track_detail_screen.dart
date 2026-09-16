@@ -5,11 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
+import '../../../app/theme/app_breakpoints.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/models/track_arrival_summary.dart';
+import '../../../shared/models/track_detail.dart';
 import '../../../shared/models/track_weather_day.dart';
 import '../../../shared/models/today_arrival_status.dart';
 import '../../../shared/utils/share_entity.dart';
@@ -100,6 +102,8 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
             data: (summary) => summary,
             orElse: TrackArrivalSummary.empty,
           );
+          final isPhone =
+              AppBreakpoints.isPhone(MediaQuery.sizeOf(context).width);
           final isFollowed = ref.watch(isTrackFollowedProvider(track.id));
           final followerCountAsync = ref.watch(trackFollowerCountProvider(track.id));
           final followerCount = followerCountAsync.maybeWhen(
@@ -191,10 +195,13 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(24),
+                        padding: AppSpacing.card(context),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Su telefono il percorso "Piste / nome" ripete
+                            // titolo di pagina e nome pista subito sotto.
+                            if (!isPhone) ...[
                             Text(
                               l10n.trackBreadcrumb(track.name),
                               style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -202,6 +209,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                               ),
                             ),
                             const SizedBox(height: AppSpacing.sm),
+                            ],
                             Text(
                               track.name.toUpperCase(),
                               style: Theme.of(context)
@@ -244,12 +252,13 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                   ? track.statusMessage
                                   : l10n.trackStatusUpdated,
                             ),
-                            const SizedBox(height: 14),
+                            SizedBox(height: isPhone ? 10 : 14),
                             Wrap(
-                              spacing: 10,
-                              runSpacing: 10,
+                              spacing: isPhone ? 6 : 10,
+                              runSpacing: isPhone ? 6 : 10,
                               children: [
                                 _HeroQuickFact(
+                                  compact: isPhone,
                                   icon: Icons.group_outlined,
                                   label: _heroPresenceLabel(context),
                                   value: _heroPresenceValue(context, todayArrivalSummary),
@@ -257,6 +266,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                 ),
                                 if (weatherDays.isNotEmpty)
                                   _HeroQuickFact(
+                                    compact: isPhone,
                                     icon: Icons.cloud_outlined,
                                     label: l10n.weatherLabel,
                                     value: l10n.weatherTodayVerdict(
@@ -265,6 +275,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                     color: weatherDays.first.color,
                                   ),
                                 _HeroQuickFact(
+                                  compact: isPhone,
                                   icon: Icons.handyman_outlined,
                                   label: l10n.servicesLabel,
                                   value: l10n.servicesConfirmedCount(
@@ -273,6 +284,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                   color: Colors.white,
                                 ),
                                 _HeroQuickFact(
+                                  compact: isPhone,
                                   icon: Icons.favorite_border,
                                   label: l10n.profileFavoritesTitle,
                                   value: l10n.entitySavedCount(followerCount),
@@ -310,10 +322,13 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                   .bodyLarge
                                   ?.copyWith(color: Colors.white),
                             ),
-                            const SizedBox(height: AppSpacing.xl),
+                            SizedBox(
+                              height: isPhone ? AppSpacing.lg : AppSpacing.xl,
+                            ),
                             Wrap(
-                              spacing: 12,
-                              runSpacing: 12,
+                              spacing: isPhone ? 8 : 12,
+                              runSpacing: isPhone ? 8 : 12,
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 ElevatedButton(
                                   onPressed: () => _handleArrivalAction(
@@ -337,13 +352,16 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                       : Icons.favorite_border,
                                   active: isFollowed,
                                 ),
-                                _HeroIconAction(
-                                  tooltip: l10n.openMapButton,
-                                  onPressed: track.externalMapUrl.isEmpty
-                                      ? null
-                                      : () => _openMap(track.externalMapUrl),
-                                  icon: Icons.map_outlined,
-                                ),
+                                // Senza link esplicito si usano le coordinate;
+                                // senza nessuno dei due il pulsante non compare
+                                // (prima restava un'icona grigia su nero, invisibile).
+                                if (_mapUrlFor(track) != null)
+                                  _HeroIconAction(
+                                    tooltip: l10n.openMapButton,
+                                    onPressed: () =>
+                                        _openMap(_mapUrlFor(track)!),
+                                    icon: Icons.map_outlined,
+                                  ),
                                 _HeroIconAction(
                                   tooltip: l10n.shareAction,
                                   onPressed: () => shareEntity(
@@ -417,6 +435,15 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
     }
   }
 
+  static String? _mapUrlFor(TrackDetail track) {
+    if (track.externalMapUrl.isNotEmpty) return track.externalMapUrl;
+    if (track.latitude != null && track.longitude != null) {
+      return 'https://www.google.com/maps/search/?api=1&query='
+          '${track.latitude},${track.longitude}';
+    }
+    return null;
+  }
+
   static Future<void> _openMap(String mapUrl) async {
     final uri = Uri.tryParse(mapUrl);
     if (uri == null) {
@@ -441,7 +468,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
             : DateFormat.E(localeName).format(day.date),
         shortDate: DateFormat('d MMM', localeName).format(day.date),
         verdict: _forecastVerdict(l10n, day),
-        note: _forecastNote(l10n, day),
+        note: _forecastNote(l10n, day, localeName),
         color: _forecastColor(day),
       );
     }).toList();
@@ -457,11 +484,23 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
     return l10n.weatherOk;
   }
 
-  static String _forecastNote(AppLocalizations l10n, TrackWeatherDay day) {
+  static String _forecastNote(
+    AppLocalizations l10n,
+    TrackWeatherDay day,
+    String localeName,
+  ) {
     if (day.weatherCode >= 60 || (day.precipitationProbabilityMax ?? 0) >= 70) {
       return l10n.weatherApiRainExpected(day.precipitationProbabilityMax ?? 0);
     }
-    if (day.weatherCode >= 3 || (day.precipitationProbabilityMax ?? 0) >= 35) {
+    final rain = day.precipitationProbabilityMax ?? 0;
+    if (day.weatherCode >= 3 && rain < 10) {
+      // Nuvoloso ma senza pioggia: prima usciva "pioggia fino al 0%".
+      final max = day.temperatureMaxC?.round() ?? 0;
+      return localeName.startsWith('it')
+          ? 'Nuvoloso, max $max°C'
+          : 'Cloudy, max $max°C';
+    }
+    if (day.weatherCode >= 3 || rain >= 35) {
       return l10n.weatherApiMixedConditions(
         day.precipitationProbabilityMax ?? 0,
       );
@@ -748,7 +787,7 @@ class _TodayAtTrackCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: AppSpacing.card(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1135,14 +1174,16 @@ class _WeatherVerdictCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isPhone = AppBreakpoints.isPhone(MediaQuery.sizeOf(context).width);
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: AppSpacing.card(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
+                if (!isPhone)
                 Container(
                   width: 44,
                   height: 44,
@@ -1155,12 +1196,13 @@ class _WeatherVerdictCard extends StatelessWidget {
                     color: AppColors.graphite,
                   ),
                 ),
-                const SizedBox(width: 14),
+                if (!isPhone) const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(l10n.weatherTrackTitle, style: Theme.of(context).textTheme.titleLarge),
+                      if (!isPhone) ...[
                       const SizedBox(height: 2),
                       Text(
                         l10n.weatherQuickVerdict,
@@ -1168,6 +1210,7 @@ class _WeatherVerdictCard extends StatelessWidget {
                           color: AppColors.steel,
                         ),
                       ),
+                      ],
                     ],
                   ),
                 ),
@@ -1189,6 +1232,9 @@ class _WeatherVerdictCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                  // "Meteo live" su telefono e' superfluo: l'attribuzione
+                  // Open-Meteo in fondo dice gia' da dove vengono i dati.
+                  if (!isPhone) ...[
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -1206,16 +1252,28 @@ class _WeatherVerdictCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                  ],
                 ],
               ],
             ),
-            const SizedBox(height: AppSpacing.xl),
+            SizedBox(height: isPhone ? AppSpacing.md : AppSpacing.xl),
             if (days.isEmpty)
               Text(
                 l10n.weatherUnavailable,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.steel,
                 ),
+              )
+            else if (isPhone)
+              // Telefono: i tre giorni affiancati in una sola riga.
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (var i = 0; i < days.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 8),
+                    Expanded(child: _WeatherDayTile(day: days[i], compact: true)),
+                  ],
+                ],
               )
             else
               Wrap(
@@ -1238,12 +1296,53 @@ class _WeatherVerdictCard extends StatelessWidget {
 }
 
 class _WeatherDayTile extends StatelessWidget {
-  const _WeatherDayTile({required this.day});
+  const _WeatherDayTile({required this.day, this.compact = false});
 
   final _WeatherDay day;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
+    if (compact) {
+      return Container(
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        decoration: BoxDecoration(
+          color: day.color.withAlpha(14),
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border(top: BorderSide(color: day.color, width: 3)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${day.label} ${day.shortDate}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: AppColors.steel,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              day.verdict,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: day.color,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              day.note,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.steel,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return Container(
       width: 172,
       height: 190,
@@ -1399,6 +1498,7 @@ class _HeroQuickFact extends StatelessWidget {
     required this.label,
     required this.value,
     required this.color,
+    this.compact = false,
   });
 
   final IconData icon;
@@ -1406,8 +1506,42 @@ class _HeroQuickFact extends StatelessWidget {
   final String value;
   final Color color;
 
+  /// Telefono: pillola su una riga (icona + valore), senza etichetta e senza
+  /// larghezza minima, cosi' ne stanno due o tre per riga.
+  final bool compact;
+
   @override
   Widget build(BuildContext context) {
+    if (compact) {
+      return Tooltip(
+        message: label,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white10,
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+            border: Border.all(color: Colors.white12),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 15, color: color),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Container(
       constraints: const BoxConstraints(minWidth: 150),
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 11),

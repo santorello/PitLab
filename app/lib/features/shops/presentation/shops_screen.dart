@@ -74,7 +74,7 @@ class _ShopsScreenState extends ConsumerState<ShopsScreen> {
         children: [
           if (canManageShops) ...[
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: AppSpacing.card(context),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
@@ -131,7 +131,7 @@ class _ShopsScreenState extends ConsumerState<ShopsScreen> {
             if (myDrafts.isNotEmpty) ...[
               Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: AppSpacing.card(context),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

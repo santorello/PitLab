@@ -73,7 +73,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
           const SizedBox(height: 18),
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: AppSpacing.card(context),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -216,7 +216,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
           if (customEvents.isNotEmpty)
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: AppSpacing.card(context),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

@@ -105,3 +105,54 @@ rimosso il selettore duplicato da `tracks_home_screen.dart`. Da fare: `run_dev.b
 Passi (Giuseppe): Supabase prod → Sign In / Providers → Google → Enable, stesso Client ID + Client Secret → Save.
 Google Cloud Console → Credenziali → client OAuth → aggiungere redirect `https://klfjvyytubiorqzfisdu.supabase.co/auth/v1/callback`
 e origine JS `https://pitlap.app` (+ `https://www.pitlap.app`). Schermata consenso: se in "Testing" pubblicarla ("In production").
+
+## Verifica branding Google + legali allineati (15/09, sera)
+
+- `app/web/index.html`: blocco statico `#pitlap-static` (descrizione app, uso dati Google, link a privacy/termini/cookie, contatto),
+  leggibile senza JavaScript e nascosto via CSS appena Flutter monta `flutter-view`. Serve alla verifica branding di Google OAuth.
+- Legali: piè di pagina portati a **v1.2 — 2026-09-15** (erano 1.0); privacy §3.5 allineata a §9 (nessun log proprio);
+  privacy §2 e §3.1 ora citano **Accedi con Google** (solo scope openid/email/profile, uso limitato all'autenticazione).
+  `legalDocumentVersion` nell'app era già `'1.2'`. Pagine rigenerate con `tools/build_legal_pages.py`.
+- Google Cloud → Branding: problema "home page non registrata a tuo nome" → verificare `pitlap.app` in Search Console
+  (proprietà Dominio, TXT su Cloudflare) con lo stesso account del progetto, poi "Ho risolto i problemi".
+
+## Mobile — Fase 1 "Ottimizzato" (scelta di Giuseppe dal mockup, vale per TUTTE le pagine incl. Gestione/Admin)
+
+Mockup di riferimento: artifact "PitLap Mobile a confronto" (oggi / stile Strava / ottimizzato).
+Codice (NON compilato, da `analyze`):
+- `AppBreakpoints.compactHeader = 600` + `isPhone()`.
+- `ContentScaffoldHeader` su telefono: solo titolo (headlineSmall), niente marchio/slogan/lingua/account/descrizione;
+  `trailingActions` ancora mostrate se presenti. Banner impersonazione lasciato ad AppScaffold.
+- `ContentScaffold` su telefono: margini 16/12 invece di 24.
+- `AppScaffold` telefono: barra scura = logo + campanella + menu ⋮ (Profilo/Accedi, Lingua, Invia feedback, Offri un caffè).
+  Voce "Altro" in basso ora fissa (non prende più icona/etichetta della pagina aperta).
+  Ordine voci: Home, Piste, Spot, Eventi in barra; Vicino a te sposta in "Altro" (anche il rail desktop cambia ordine).
+- Home: `_TopBar` nascosta su telefono.
+- Mappa: su telefono riquadro "Mappa unificata" ridotto ai soli chip; altezza mappa = min(540, 50% schermo) per non bloccare lo scroll.
+- `toggleAppLanguage()` estratta in `language_toggle.dart` e riusata dal menu.
+Prossime fasi: 2 (mappa a pieno spazio), 3 (Profilo a schede, Garage compatto), 4 (rifiniture, saluto+PitCoin in una fascia).
+
+## Mobile — Fase 1b: pagine interne + logo in barra
+
+- Barra scura su telefono: aggiunto il logo `PitLapLogo` (30 px) accanto a "PitLap".
+- `AppSpacing.card(context, [wide])`: 16 px su telefono, 24 (o valore dato) altrimenti. Sostituiti i 44 `const EdgeInsets.all(24/28)`
+  in 13 schermate (admin, login, eventi + dettaglio, garage, gestione, profilo + pubblico, negozi + dettaglio, spot dettaglio, mappa, pista dettaglio).
+- `ContentScaffold` su telefono avvolge il contenuto in `_PhoneTypography`: display/headline ridotti (headlineMedium→titleLarge ecc.),
+  bodyLarge→bodyMedium. Colori dei singoli `copyWith` preservati.
+- Dettaglio pista su telefono: niente breadcrumb, "quick facts" come pillole su una riga (icona+valore, etichetta in tooltip), spaziature ridotte.
+- `run_dev.bat mobile`: server locale su 0.0.0.0:8080 per provare dal telefono (config DEV).
+
+## Mobile — ritocchi da prova locale (16/09 notte)
+- Spot: tolto il badge "Spot di guida" (su tutti i formati).
+- Dettaglio pista: pulsante mappa usa `external_map_url`, altrimenti Google Maps dalle coordinate; se non c'è nessuno dei due non compare più (era icona disabilitata grigia su nero).
+- Meteo pista su telefono: 3 giorni in una riga (giorno+data, verdetto colorato, nota), niente icona/sottotitolo/"Meteo live".
+- Meteo: nuvoloso con pioggia < 10% ora dice "Nuvoloso, max X°C" invece di "pioggia fino al 0%" (testo IT/EN nel codice, non in ARB).
+- ⚠️ Su DEV lo spot "Claudia Ferri Luogo" ha come foto la scansione di una dichiarazione con dati personali/giudiziari: da rimuovere dallo Storage dev.
+
+## Sicurezza profili — review Astra 6 (16/09 sera)
+- P1 auto-promozione ruolo CONFERMATO su dev e prod → `2026-09-16-guard-profile-role.sql` (trigger `trg_guard_profile_role`). Applicato e verificato su **dev e prod**.
+- P1 colonne private leggibili da tutti CONFERMATO → `2026-09-16-profile-private-A-rpc.sql` (RPC `my_profile_private`) + `...-B-revoke.sql` (SELECT solo su 11 colonne pubbliche). Applicati su **dev** (8/8 prove OK).
+  App: `user_location_context_provider` e `activity_feed_provider` leggono via RPC (NON compilato: `run_dev.bat analyze`).
+  **Prod, in quest'ordine:** A subito → build + deploy web → B.
+- Resta aperto: profili non pubblici ancora visibili (solo colonne pubbliche) agli utenti loggati, serve agli autori dei commenti.
+- `run_dev.bat prod` / `mobile-prod`: app locale collegata a pitlap-prod, con conferma.

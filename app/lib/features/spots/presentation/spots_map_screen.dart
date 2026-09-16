@@ -7,7 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../app/theme/app_breakpoints.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../features/shops/application/public_shops_provider.dart';
 import '../../../features/tracks/application/tracks_providers.dart';
@@ -84,6 +86,7 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
     ];
     final initialCenter = _centerFor(allLats, allLngs);
     final hasPoints = allLats.isNotEmpty;
+    final isPhone = AppBreakpoints.isPhone(MediaQuery.sizeOf(context).width);
 
     return ContentScaffold(
       title: 'Mappa',
@@ -94,10 +97,11 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
           // ── Hero card ─────────────────────────────────────────────────────
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(isPhone ? 12 : 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (!isPhone) ...[
                   Text(
                     'Mappa unificata',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -113,9 +117,10 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  ],
                   Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
+                    spacing: isPhone ? 8 : 12,
+                    runSpacing: isPhone ? 8 : 12,
                     children: [
                       // Toggle Piste
                       _LayerChip(
@@ -172,7 +177,7 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 18),
+          SizedBox(height: isPhone ? 12 : 18),
 
           // ── Layout: mappa + pannello dettaglio ────────────────────────────
           LayoutBuilder(
@@ -194,6 +199,11 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
                     _MapSelection(type: _MarkerType.track, slug: slug)),
                 onSelectShop: (slug) => setState(() => _selection =
                     _MapSelection(type: _MarkerType.shop, slug: slug)),
+                // Su telefono la mappa non riempie lo schermo: resta sempre
+                // una fascia fuori dalla mappa da cui far scorrere la pagina.
+                height: isPhone
+                    ? math.min(540, MediaQuery.sizeOf(context).height * 0.5)
+                    : 540,
               );
 
               // Pannello dettaglio
@@ -239,7 +249,7 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
       // Nessuna selezione: mostra un hint
       return Card(
         child: Padding(
-          padding: const EdgeInsets.all(28),
+          padding: AppSpacing.card(context, 28),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -332,7 +342,10 @@ class _UnifiedMapPanel extends StatelessWidget {
     required this.onSelectSpot,
     required this.onSelectTrack,
     required this.onSelectShop,
+    this.height = 540,
   });
+
+  final double height;
 
   final MapController mapController;
   final List<SpotEntry> spots;
@@ -353,7 +366,7 @@ class _UnifiedMapPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 540,
+            height: height,
             child: Stack(
               children: [
                 FlutterMap(
@@ -751,7 +764,7 @@ class _SelectedTrackPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: AppSpacing.card(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -842,7 +855,7 @@ class _SelectedSpotPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: AppSpacing.card(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -935,7 +948,7 @@ class _SelectedShopPanel extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: AppSpacing.card(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

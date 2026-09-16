@@ -36,7 +36,7 @@ class SpotDetailScreen extends ConsumerWidget {
         description: l10n.spotsDescription,
         child: Card(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: AppSpacing.card(context),
             child: Text(
               _localeText(
                 context,
@@ -71,7 +71,7 @@ class SpotDetailScreen extends ConsumerWidget {
             color: AppColors.graphite,
             clipBehavior: Clip.antiAlias,
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: AppSpacing.card(context),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -345,7 +345,7 @@ class SpotDetailScreen extends ConsumerWidget {
           ],
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: AppSpacing.card(context),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

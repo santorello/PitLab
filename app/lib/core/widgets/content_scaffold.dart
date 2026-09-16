@@ -25,6 +25,9 @@ class ContentScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isPhone =
+        AppBreakpoints.isPhone(MediaQuery.sizeOf(context).width);
+    final side = isPhone ? 16.0 : 24.0;
     // Sfondo opaco: evita il "bleed" della pagina precedente durante le
     // transizioni go_router (le pagine figlie non hanno uno Scaffold proprio).
     return ColoredBox(
@@ -36,7 +39,7 @@ class ContentScaffold extends ConsumerWidget {
             constraints: const BoxConstraints(
                 maxWidth: AppBreakpoints.contentMaxWidth),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+              padding: EdgeInsets.fromLTRB(side, isPhone ? 12 : 24, side, 0),
               // Intestazione fissa + area contenuto che occupa il resto.
               //
               // NON rimettere qui un CustomScrollView con
@@ -55,11 +58,11 @@ class ContentScaffold extends ConsumerWidget {
                     description: description,
                     trailingActions: trailingActions,
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: isPhone ? 12 : 24),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      child: child,
+                      padding: EdgeInsets.only(bottom: isPhone ? 12 : 24),
+                      child: isPhone ? _PhoneTypography(child: child) : child,
                     ),
                   ),
                 ],
@@ -68,6 +71,38 @@ class ContentScaffold extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Su telefono i titoli "da vetrina" delle pagine (display/headline) vengono
+/// portati a una scala adatta a 360 px. Agisce sul tema, quindi vale per tutte
+/// le schermate senza toccarle una per una; chi usa `copyWith(color: ...)`
+/// mantiene il proprio colore.
+class _PhoneTypography extends StatelessWidget {
+  const _PhoneTypography({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final t = theme.textTheme;
+    TextStyle? size(TextStyle? style, TextStyle? target) =>
+        style?.copyWith(fontSize: target?.fontSize, height: target?.height);
+    return Theme(
+      data: theme.copyWith(
+        textTheme: t.copyWith(
+          displayLarge: size(t.displayLarge, t.headlineMedium),
+          displayMedium: size(t.displayMedium, t.headlineSmall),
+          displaySmall: size(t.displaySmall, t.headlineSmall),
+          headlineLarge: size(t.headlineLarge, t.headlineSmall),
+          headlineMedium: size(t.headlineMedium, t.titleLarge),
+          headlineSmall: size(t.headlineSmall, t.titleLarge),
+          bodyLarge: size(t.bodyLarge, t.bodyMedium),
+        ),
+      ),
+      child: child,
     );
   }
 }

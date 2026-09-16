@@ -51,7 +51,7 @@ class EventDetailScreen extends ConsumerWidget {
         description: l10n.eventsDetailDescription,
         child: Card(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: AppSpacing.card(context),
             child: Text(
               _localeText(
                 context,
@@ -225,7 +225,7 @@ class EventDetailScreen extends ConsumerWidget {
           ],
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: AppSpacing.card(context),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

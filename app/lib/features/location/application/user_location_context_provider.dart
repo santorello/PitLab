@@ -48,28 +48,13 @@ final userLocationContextProvider =
   final user = ref.watch(currentUserProvider);
   if (client == null || user == null) return UserLocationContext.none;
 
+  // Colonne private leggibili solo via RPC (delta 2026-09-16-profile-private).
   try {
-    final row = await client
-        .from('profiles')
-        .select(
-          'preferred_city, home_city, home_country, home_latitude, home_longitude',
-        )
-        .eq('id', user.id)
-        .maybeSingle();
+    final rows = await client.rpc('my_profile_private') as List<dynamic>;
+    final row = rows.isEmpty ? null : rows.first as Map<String, dynamic>;
     return _locationFromProfileRow(row);
   } catch (error) {
-    debugPrint('[LocationContext] rich profile location unavailable: $error');
-  }
-
-  try {
-    final row = await client
-        .from('profiles')
-        .select('preferred_city')
-        .eq('id', user.id)
-        .maybeSingle();
-    return _locationFromProfileRow(row);
-  } catch (error) {
-    debugPrint('[LocationContext] profile preferred_city unavailable: $error');
+    debugPrint('[LocationContext] profile location unavailable: $error');
     return UserLocationContext.none;
   }
 });

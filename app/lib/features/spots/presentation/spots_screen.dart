@@ -28,29 +28,6 @@ class SpotsScreen extends ConsumerWidget {
           LayoutBuilder(
             builder: (context, constraints) {
               final compact = constraints.maxWidth < 560;
-              final badge = Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.signalOrange.withAlpha(22),
-                  borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: AppColors.signalOrange.withAlpha(80)),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.push_pin_outlined,
-                      size: 18,
-                      color: AppColors.signalOrange,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Spot di guida',
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  ],
-                ),
-              );
               final actions = Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -69,29 +46,12 @@ class SpotsScreen extends ConsumerWidget {
                 ],
               );
 
-              if (compact) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    badge,
-                    const SizedBox(height: 12),
-                    actions,
-                  ],
-                );
-              }
-
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: badge,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Flexible(child: actions),
-                ],
+              // Il badge decorativo "Spot di guida" e' stato tolto: non
+              // portava informazione e su telefono occupava una riga intera.
+              return Align(
+                alignment:
+                    compact ? Alignment.centerLeft : Alignment.centerRight,
+                child: actions,
               );
             },
           ),
