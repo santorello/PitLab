@@ -86,7 +86,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
     final originLabel = _gps != null
         ? _t(context, 'dalla tua posizione', 'from your location')
         : origin != null
-            ? _t(context, 'da ${home!.label}', 'from ${home!.label}')
+            ? _t(context, 'da ${home!.label}', 'from ${home.label}')
             : null;
 
     final items = <_NearbyItem>[
