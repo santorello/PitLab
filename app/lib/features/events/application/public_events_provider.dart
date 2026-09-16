@@ -44,7 +44,8 @@ class PublicEventsRepository {
           .from('community_events')
           .select('''
             id, author_id, title, location, venue, note, badge,
-            creator_label, creator_role, image_urls, starts_at, ends_at
+            creator_label, creator_role, image_urls, starts_at, ends_at,
+            latitude, longitude
           ''')
           .gte('starts_at', now)
           .order('starts_at')

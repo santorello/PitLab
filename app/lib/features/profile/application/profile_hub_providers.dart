@@ -25,6 +25,8 @@ class CreatedEventRecord {
     String? imageSource,
     this.startsAtIso,
     this.endsAtIso,
+    this.latitude,
+    this.longitude,
   }) : imageUrls = imageUrls.isNotEmpty
            ? imageUrls
            : [
@@ -45,6 +47,8 @@ class CreatedEventRecord {
   final List<String> imageUrls;
   final String? startsAtIso;
   final String? endsAtIso;
+  final double? latitude;
+  final double? longitude;
 
   String? get imageSource => imageUrls.isEmpty ? null : imageUrls.first;
 
@@ -64,6 +68,8 @@ class CreatedEventRecord {
       'image_urls': imageUrls,
       'starts_at_iso': startsAtIso,
       'ends_at_iso': endsAtIso,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 
@@ -90,6 +96,8 @@ class CreatedEventRecord {
       'image_urls': cacheableImageUrls,
       'starts_at_iso': startsAtIso,
       'ends_at_iso': endsAtIso,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 
@@ -115,6 +123,8 @@ class CreatedEventRecord {
       ),
       startsAtIso: map['starts_at_iso'] as String?,
       endsAtIso: map['ends_at_iso'] as String?,
+      latitude: (map['latitude'] as num?)?.toDouble(),
+      longitude: (map['longitude'] as num?)?.toDouble(),
     );
   }
 
@@ -141,6 +151,8 @@ class CreatedEventRecord {
       ),
       startsAtIso: startsAtIso,
       endsAtIso: row['ends_at'] as String?,
+      latitude: (row['latitude'] as num?)?.toDouble(),
+      longitude: (row['longitude'] as num?)?.toDouble(),
     );
   }
 
@@ -210,7 +222,8 @@ class CommunityEventsRepository {
 
   static const _columns =
       'id, author_id, title, location, venue, note, badge, '
-      'creator_label, creator_role, image_urls, starts_at, ends_at';
+      'creator_label, creator_role, image_urls, starts_at, ends_at, '
+      'latitude, longitude';
 
   Future<List<CreatedEventRecord>> fetchForUser(String userId) async {
     final data = await _client
@@ -240,6 +253,8 @@ class CommunityEventsRepository {
       'creator_label': event.creatorLabel,
       'creator_role': event.creatorRole,
       'image_urls': event.imageUrls,
+      'latitude': event.latitude,
+      'longitude': event.longitude,
       if (startsAt != null) 'starts_at': startsAt.toUtc().toIso8601String(),
       if (endsAt != null) 'ends_at': endsAt.toUtc().toIso8601String(),
     };
@@ -266,6 +281,8 @@ class CommunityEventsRepository {
       'creator_label': event.creatorLabel,
       'creator_role': event.creatorRole,
       'image_urls': event.imageUrls,
+      'latitude': event.latitude,
+      'longitude': event.longitude,
       if (startsAt != null) 'starts_at': startsAt.toUtc().toIso8601String(),
       'ends_at': endsAt?.toUtc().toIso8601String(), // null = rimuovi data fine
     };

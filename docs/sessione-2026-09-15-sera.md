@@ -162,3 +162,10 @@ Prossime fasi: 2 (mappa a pieno spazio), 3 (Profilo a schede, Garage compatto), 
 - App: `spots/domain/spot_tags.dart` (chiavi + IT/EN + `SpotTagPicker`), modulo, scheda, mappa, lista con filtro "Ideale per". Avviso ENAC/d-flight per Drone FPV e Aerei RC.
 - Home: il feed `new_spot` apriva /track (payload usa `slug`, non `spot_slug`) → corretto.
 - Build pubbliche: nome autore sempre visibile ai loggati, link solo se profilo pubblico.
+
+## Luoghi: ricerca automatica se non si sceglie il suggerimento (16/09 notte)
+- `resolvePlaceText()` in `shared/places/place_search_service.dart` (primo risultato, preferenza Italia). Usata in onboarding, Crea/Modifica spot, Crea/Modifica evento.
+- Eventi community: il luogo ora usa `PlacePickerField` e salva `latitude/longitude` → delta `2026-09-16-community-events-coords.sql` (**applicato su dev**; prod eseguibile prima del deploy).
+- Profilo santorello su prod aveva coordinate di Milano con città Rho (vecchie coordinate tenute dal COALESCE di complete_onboarding).
+- Coordinate eventi non ancora usate da mappa / "Vicino a te": passo successivo.
+- Build della settimana: vista `home_build_of_week` restituiva autore NULL → `2026-09-16-build-of-week-author.sql` (dev applicato).

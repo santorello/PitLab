@@ -261,3 +261,19 @@ final placeSearchProvider = Provider<PlaceSearchProvider>((ref) {
   }
   return openMeteo;
 });
+
+/// Testo scritto senza scegliere un suggerimento → primo risultato (preferendo l'Italia).
+/// null se il testo è troppo corto, non trova nulla o la ricerca fallisce.
+Future<PlaceSelection?> resolvePlaceText(
+  PlaceSearchProvider service,
+  String text,
+) async {
+  final query = text.trim();
+  if (query.length < 2) return null;
+  try {
+    final found = await service.search(PlaceSearchRequest(query: query));
+    return found.isEmpty ? null : found.first;
+  } catch (_) {
+    return null;
+  }
+}

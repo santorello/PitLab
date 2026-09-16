@@ -18,6 +18,9 @@ import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/image_transfer_progress_card.dart';
 import '../../../shared/widgets/card_stat_row.dart';
 import '../../../shared/widgets/place_card.dart';
+import '../../../shared/widgets/place_picker_field.dart';
+import '../../../shared/places/place_search_service.dart';
+import '../../../shared/places/place_selection.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../profile/application/profile_hub_providers.dart';
 import '../application/public_events_provider.dart';
@@ -307,8 +310,10 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
         .read(effectiveUserProfileProvider)
         .maybeWhen(data: (value) => value, orElse: () => null);
     final uploadService = ref.read(mediaUploadServiceProvider);
+    final placeSearch = ref.read(placeSearchProvider);
     final titleController = TextEditingController();
     final locationController = TextEditingController();
+    PlaceSelection? pickedPlace;
     final venueController = TextEditingController();
     final noteController = TextEditingController();
     DateTime selectedDate = DateTime.now().add(const Duration(days: 7));
@@ -344,11 +349,11 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TextField(
+                      PlacePickerField(
                         controller: locationController,
-                        decoration: InputDecoration(
-                          labelText: l10n.eventsCreateLocationLabel,
-                        ),
+                        initialSelection: pickedPlace,
+                        labelText: l10n.eventsCreateLocationLabel,
+                        onSelected: (selection) => pickedPlace = selection,
                       ),
                       const SizedBox(height: 12),
                       TextField(
@@ -692,12 +697,15 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
               ),
             ),
             FilledButton(
-              onPressed: () {
+              onPressed: () async {
                 final title = titleController.text.trim();
                 final location = locationController.text.trim();
                 if (title.isEmpty || location.isEmpty) {
                   return;
                 }
+                // Luogo scritto senza scegliere il suggerimento → coordinate dal primo risultato.
+                pickedPlace ??= await resolvePlaceText(placeSearch, location);
+                if (!dialogContext.mounted) return;
                 Navigator.of(dialogContext).pop(
                   CreatedEventRecord(
                     id: 'created-${DateTime.now().microsecondsSinceEpoch}',
@@ -717,6 +725,8 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                     imageUrls: pickedImages,
                     startsAtIso: selectedDate.toIso8601String(),
                     endsAtIso: selectedEndDate?.toIso8601String(),
+                    latitude: pickedPlace?.latitude,
+                    longitude: pickedPlace?.longitude,
                   ),
                 );
               },
@@ -746,8 +756,19 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
   ) async {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
+    final placeSearch = ref.read(placeSearchProvider);
     final titleController = TextEditingController(text: original.title);
     final locationController = TextEditingController(text: original.location);
+    PlaceSelection? pickedPlace =
+        original.latitude != null && original.longitude != null
+            ? PlaceSelection(
+                label: original.location,
+                latitude: original.latitude!,
+                longitude: original.longitude!,
+                provider: 'saved',
+                providerPlaceId: original.id,
+              )
+            : null;
     final venueController = TextEditingController(text: original.venue ?? '');
     final noteController = TextEditingController(
       text: original.note == l10n.eventsCreateDefaultNote ? '' : original.note,
@@ -784,11 +805,11 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TextField(
+                      PlacePickerField(
                         controller: locationController,
-                        decoration: InputDecoration(
-                          labelText: l10n.eventsCreateLocationLabel,
-                        ),
+                        initialSelection: pickedPlace,
+                        labelText: l10n.eventsCreateLocationLabel,
+                        onSelected: (selection) => pickedPlace = selection,
                       ),
                       const SizedBox(height: 12),
                       TextField(
@@ -891,10 +912,12 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
               child: Text(MaterialLocalizations.of(dialogContext).cancelButtonLabel),
             ),
             FilledButton(
-              onPressed: () {
+              onPressed: () async {
                 final title = titleController.text.trim();
                 final location = locationController.text.trim();
                 if (title.isEmpty || location.isEmpty) return;
+                pickedPlace ??= await resolvePlaceText(placeSearch, location);
+                if (!dialogContext.mounted) return;
                 Navigator.of(dialogContext).pop(
                   CreatedEventRecord(
                     id: original.id,
@@ -912,6 +935,8 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                     imageUrls: pickedImages,
                     startsAtIso: selectedDate.toIso8601String(),
                     endsAtIso: selectedEndDate?.toIso8601String(),
+                    latitude: pickedPlace?.latitude,
+                    longitude: pickedPlace?.longitude,
                   ),
                 );
               },

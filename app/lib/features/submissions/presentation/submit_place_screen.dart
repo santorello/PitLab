@@ -14,6 +14,7 @@ import '../../../shared/media/media_upload_controller.dart';
 import '../../../shared/media/media_upload_labels.dart';
 import '../../../shared/media/media_upload_service.dart';
 import '../../../shared/media/media_upload_state.dart';
+import '../../../shared/places/place_search_service.dart';
 import '../../../shared/places/place_selection.dart';
 import '../../../shared/utils/local_image_data_url.dart';
 import '../../../shared/widgets/adaptive_image.dart';
@@ -617,6 +618,20 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
           ),
         );
         return;
+      }
+      // Indirizzo/città scritti senza scegliere il suggerimento: coordinate dal primo risultato.
+      if (_latitude == null || _longitude == null) {
+        final typed = _addressController.text.trim();
+        final place = await resolvePlaceText(
+          ref.read(placeSearchProvider),
+          typed.isNotEmpty ? typed : city,
+        );
+        if (!context.mounted) return;
+        if (place != null) {
+          _latitude = place.latitude;
+          _longitude = place.longitude;
+          if (typed.isEmpty) _addressController.text = place.label;
+        }
       }
       final slug = existingSpot?.slug ?? SpotCatalog.createSlug(name, city);
       final customSpot = SpotEntry(
