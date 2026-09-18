@@ -187,3 +187,9 @@ Prossime fasi: 2 (mappa a pieno spazio), 3 (Profilo a schede, Garage compatto), 
 - Eventi pista: coordinate prese dalla pista (`tracks(latitude, longitude)` nelle select).
 - Mappa: livello Eventi (viola), tocco → dettaglio evento, contatore, "Adatta vista" li include.
 - Eventi community creati prima del 16/09 non hanno coordinate: compaiono solo in "Ovunque" (senza km) e non in mappa.
+
+## Revisione pagina admin (18/09)
+- **Difetto principale:** nessuna azione admin invalidava le liste pubbliche (in cache per tutta la sessione) → approvazioni/eliminazioni invisibili in Piste/Spot/Eventi/Negozi/Home fino a un reload. Aggiunto `_invalidatePublicCaches()` in admin_settings_screen e richiamato nelle 11 azioni.
+- `_updateTrackApproval` non invalidava coda approvazioni e overview: aggiunto.
+- Conteggi dashboard: `select('id')` + `.length` → `count(CountOption.exact)` (oltre 1000 righe il numero era sbagliato). Test `app/test/admin_counts_test.dart`.
+- Aperti (non toccati): eventi community non si possono nascondere (solo eliminare), `deleteEvent` non chiede conferma extra per gli eventi altrui, nessuna azione admin sulle richieste di cancellazione account (solo elenco).

@@ -162,10 +162,10 @@ class AdminRepository {
 
   final SupabaseClient _client;
 
-  Future<int> _count(String table) async {
-    final response = await _client.from(table).select('id');
-    return (response as List<dynamic>).length;
-  }
+  // COUNT lato server: scaricare tutte le righe per contarle era anche
+  // sbagliato oltre il limite di righe di PostgREST (1000 per default).
+  Future<int> _count(String table) =>
+      _client.from(table).count(CountOption.exact);
 
   // ── Overview ──────────────────────────────────────────────────────────────
 
@@ -361,20 +361,22 @@ class AdminRepository {
 
   /// Conta le piste con approval_status = 'pending'.
   Future<int> countPendingTracks() async {
-    final response = await _client
+    return _client
         .from('tracks')
-        .select('id')
-        .eq('approval_status', 'pending');
-    return (response as List<dynamic>).length;
+        .select()
+        .eq('approval_status', 'pending')
+        .count(CountOption.exact)
+        .then((res) => res.count);
   }
 
   /// Conta i negozi con approval_status = 'pending'.
   Future<int> countPendingShops() async {
-    final response = await _client
+    return _client
         .from('shops')
-        .select('id')
-        .eq('approval_status', 'pending');
-    return (response as List<dynamic>).length;
+        .select()
+        .eq('approval_status', 'pending')
+        .count(CountOption.exact)
+        .then((res) => res.count);
   }
 
   /// Recupera le piste in attesa di approvazione come coda admin.

@@ -7,6 +7,12 @@ import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/dialog_controller_scope.dart';
+import '../../events/application/public_events_provider.dart';
+import '../../garage/application/public_builds_provider.dart';
+import '../../profile/application/public_profiles_provider.dart';
+import '../../shops/application/public_shops_provider.dart';
+import '../../spots/application/spots_providers.dart';
+import '../../tracks/application/tracks_providers.dart';
 import '../application/admin_providers.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../shops/application/shop_editor_providers.dart';
@@ -402,6 +408,20 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     return confirmed == true;
   }
 
+  /// Le liste pubbliche sono in cache per tutta la sessione: senza questo
+  /// svuotamento un'approvazione o un'eliminazione dall'admin non si vedeva
+  /// nelle pagine Piste/Spot/Eventi/Negozi/Home fino a un ricaricamento.
+  void _invalidatePublicCaches() {
+    ref.invalidate(publicTracksProvider);
+    ref.invalidate(publicTrackPinsProvider);
+    ref.invalidate(publicShopsProvider);
+    ref.invalidate(publicUpcomingEventsProvider);
+    ref.invalidate(publicPastEventsProvider);
+    ref.invalidate(spotEntriesProvider);
+    ref.invalidate(publicBuildsProvider);
+    ref.invalidate(publicProfilesProvider);
+  }
+
   // ── Approvals ─────────────────────────────────────────────────────────────
 
   Future<void> _resolveApproval(AdminApprovalRecord item, String nextStatus) async {
@@ -417,6 +437,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         ref.invalidate(adminApprovalQueueProvider);
         ref.invalidate(adminOverviewProvider);
         ref.invalidate(adminAllTracksProvider);
+        _invalidatePublicCaches();
       } catch (e) {
         if (mounted) _showSnackBar('Errore nell\'aggiornamento: $e');
         return;
@@ -433,6 +454,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         ref.invalidate(adminApprovalQueueProvider);
         ref.invalidate(adminOverviewProvider);
         ref.invalidate(adminAllShopsProvider);
+        _invalidatePublicCaches();
       } catch (e) {
         if (mounted) _showSnackBar('Errore nell\'aggiornamento: $e');
         return;
@@ -502,6 +524,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           createdAt: user.createdAt,
         ),
       );
+      _invalidatePublicCaches();
       _showSnackBar('Ruolo aggiornato: $selected');
     } catch (e) {
       _showSnackBar('Errore: $e');
@@ -552,6 +575,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           createdAt: user.createdAt,
         ),
       );
+      _invalidatePublicCaches();
       _showSnackBar('Display name aggiornato');
     } catch (e) {
       _showSnackBar('Errore: $e');
@@ -566,6 +590,9 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     try {
       await repository.updateTrackApproval(track.id, status);
       ref.invalidate(adminAllTracksProvider);
+      ref.invalidate(adminApprovalQueueProvider);
+      ref.invalidate(adminOverviewProvider);
+      _invalidatePublicCaches();
       _showSnackBar(
         '"${track.name}" ${status == 'approved' ? 'approvata' : 'rifiutata'}',
       );
@@ -582,6 +609,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       await repository.deleteTrack(track.id);
       ref.invalidate(adminAllTracksProvider);
       ref.invalidate(adminOverviewProvider);
+      _invalidatePublicCaches();
       _showSnackBar('"${track.name}" eliminata');
     } catch (e) {
       _showSnackBar('Errore: $e');
@@ -597,6 +625,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       await repository.updateShopApproval(shop.id, status);
       ref.invalidate(adminAllShopsProvider);
       ref.invalidate(adminOverviewProvider);
+      _invalidatePublicCaches();
       _showSnackBar(
         '"${shop.name}" ${status == 'approved' ? 'approvato' : 'rifiutato'}',
       );
@@ -611,6 +640,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     try {
       await repository.updateShopVisibility(shop.id, isPublic: !shop.isPublic);
       ref.invalidate(adminAllShopsProvider);
+      _invalidatePublicCaches();
       _showSnackBar(
         '"${shop.name}" ora ${!shop.isPublic ? 'pubblico' : 'nascosto'}',
       );
@@ -627,6 +657,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       await repository.deleteShop(shop.id);
       ref.invalidate(adminAllShopsProvider);
       ref.invalidate(adminOverviewProvider);
+      _invalidatePublicCaches();
       _showSnackBar('"${shop.name}" eliminato');
     } catch (e) {
       _showSnackBar('Errore: $e');
@@ -643,6 +674,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     try {
       await repository.updateEventVisibility(event.id, newVisibility);
       ref.invalidate(adminAllEventsProvider);
+      _invalidatePublicCaches();
       _showSnackBar('"${event.title}" ora $newVisibility');
     } catch (e) {
       _showSnackBar('Errore: $e');
@@ -657,6 +689,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       await repository.deleteEvent(event);
       ref.invalidate(adminAllEventsProvider);
       ref.invalidate(adminOverviewProvider);
+      _invalidatePublicCaches();
       _showSnackBar('"${event.title}" eliminato');
     } catch (e) {
       _showSnackBar('Errore: $e');
