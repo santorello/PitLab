@@ -29,14 +29,15 @@ void main() {
     );
     addTearDown(client.dispose);
 
-    final overview = await AdminRepository(client).fetchOverview();
+    final repository = AdminRepository(client);
+    final overview = await repository.fetchOverview();
 
     expect(overview.usersCount, 1500);
     expect(overview.tracksCount, 1500);
     // eventi = events + community_events
     expect(overview.eventsCount, 3000);
-    // Registrazioni ultimi 7 giorni: stessa fonte, contate dal server.
-    expect(overview.newUsers7dCount, 1500);
+    // Registrazioni ultimi 7 giorni: contate dal server (il totale lo compone il provider).
+    expect(await repository.countNewUsers(), 1500);
     expect(asked.every((p) => p.contains('count=exact')), isTrue);
   });
 
