@@ -16,6 +16,7 @@ class AdminOverviewRecord {
     required this.eventsCount,
     required this.trackCategoriesCount,
     required this.pendingApprovalsCount,
+    this.newUsers7dCount = 0,
   });
 
   final int usersCount;
@@ -24,6 +25,9 @@ class AdminOverviewRecord {
   final int eventsCount;
   final int trackCategoriesCount;
   final int pendingApprovalsCount;
+
+  /// Registrazioni negli ultimi 7 giorni (profiles.created_at).
+  final int newUsers7dCount;
 }
 
 class AdminTrackCategoryRecord {
@@ -43,21 +47,6 @@ class AdminTrackCategoryRecord {
 }
 
 /// Preview record (used in recent users widget)
-class AdminUserPreviewRecord {
-  const AdminUserPreviewRecord({
-    required this.id,
-    required this.displayName,
-    required this.role,
-    required this.preferredLanguage,
-  });
-
-  final String id;
-  final String displayName;
-  final String role;
-  final String preferredLanguage;
-}
-
-/// Full user record with created_at (used in complete users list)
 class AdminFullUserRecord {
   const AdminFullUserRecord({
     required this.id,
@@ -231,26 +220,6 @@ class AdminRepository {
 
   // ── Users ─────────────────────────────────────────────────────────────────
 
-  Future<List<AdminUserPreviewRecord>> fetchRecentUsers() async {
-    final response = await _client
-        .from('profiles')
-        .select('id, display_name, role, preferred_language')
-        .order('created_at', ascending: false)
-        .limit(8);
-
-    return (response as List<dynamic>)
-        .whereType<Map<String, dynamic>>()
-        .map(
-          (row) => AdminUserPreviewRecord(
-            id: row['id'] as String? ?? '',
-            displayName: row['display_name'] as String? ?? '',
-            role: row['role'] as String? ?? 'user',
-            preferredLanguage: row['preferred_language'] as String? ?? 'it',
-          ),
-        )
-        .toList();
-  }
-
   Future<List<AdminFullUserRecord>> fetchAllUsers({int limit = 100}) async {
     final response = await _client
         .from('profiles')
@@ -365,6 +334,17 @@ class AdminRepository {
         .from('tracks')
         .select()
         .eq('approval_status', 'pending')
+        .count(CountOption.exact)
+        .then((res) => res.count);
+  }
+
+  /// Iscritti negli ultimi [days] giorni.
+  Future<int> countNewUsers({int days = 7}) {
+    final since = DateTime.now().toUtc().subtract(Duration(days: days));
+    return _client
+        .from('profiles')
+        .select()
+        .gte('created_at', since.toIso8601String())
         .count(CountOption.exact)
         .then((res) => res.count);
   }
@@ -566,10 +546,12 @@ final adminOverviewProvider = FutureProvider<AdminOverviewRecord?>((ref) async {
     repository.fetchOverview(),
     repository.countPendingTracks(),
     repository.countPendingShops(),
+    repository.countNewUsers(),
   ]);
   final overview = results[0] as AdminOverviewRecord;
   final pendingTracks = results[1] as int;
   final pendingShops = results[2] as int;
+  final newUsers = results[3] as int;
   return AdminOverviewRecord(
     usersCount: overview.usersCount,
     tracksCount: overview.tracksCount,
@@ -577,6 +559,7 @@ final adminOverviewProvider = FutureProvider<AdminOverviewRecord?>((ref) async {
     eventsCount: overview.eventsCount,
     trackCategoriesCount: overview.trackCategoriesCount,
     pendingApprovalsCount: pendingTracks + pendingShops,
+    newUsers7dCount: newUsers,
   );
 });
 
@@ -586,14 +569,6 @@ final adminTrackCategoriesProvider =
       final role = ref.watch(effectiveUserRoleProvider);
       if (repository == null || role != 'admin') return const [];
       return repository.fetchTrackCategories();
-    });
-
-final adminRecentUsersProvider =
-    FutureProvider<List<AdminUserPreviewRecord>>((ref) async {
-      final repository = ref.watch(adminRepositoryProvider);
-      final role = ref.watch(effectiveUserRoleProvider);
-      if (repository == null || role != 'admin') return const [];
-      return repository.fetchRecentUsers();
     });
 
 final adminAllUsersProvider =

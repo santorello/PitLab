@@ -1639,6 +1639,10 @@ class _AdminOverviewCard extends StatelessWidget {
                         value: overview.trackCategoriesCount.toString(),
                       ),
                       _OverviewItem(
+                        label: 'Nuovi iscritti (7 giorni)',
+                        value: overview.newUsers7dCount.toString(),
+                      ),
+                      _OverviewItem(
                         label: 'Da approvare',
                         value: overview.pendingApprovalsCount.toString(),
                       ),
