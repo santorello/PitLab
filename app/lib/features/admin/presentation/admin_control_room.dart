@@ -31,9 +31,9 @@ class AdminControlRoom extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _StatusBand(data: data),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             _CountsRow(data: data),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             LayoutBuilder(
               builder: (context, constraints) {
                 final todo = _TodoList(data: data);
@@ -53,7 +53,7 @@ class AdminControlRoom extends ConsumerWidget {
                 );
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             _SignupsChart(data: data),
           ],
         );
@@ -110,7 +110,7 @@ class _Banner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(AppRadius.xl),
@@ -216,8 +216,8 @@ class _Tile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
-      padding: const EdgeInsets.all(16),
+      width: 176,
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surfaceMuted,
         borderRadius: BorderRadius.circular(AppRadius.xl),
@@ -505,6 +505,7 @@ class _SignupsChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final values = data.signups30d;
+    final total = values.fold<int>(0, (sum, value) => sum + value);
     final max = values.isEmpty
         ? 0
         : values.reduce((a, b) => a > b ? a : b);
@@ -514,8 +515,23 @@ class _SignupsChart extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Sotto i 5 iscritti il grafico è una barra sola e sembra rotto.
+          if (total < 5)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(
+                total == 0
+                    ? 'Nessuna iscrizione negli ultimi 30 giorni.'
+                    : '$total ${total == 1 ? 'iscritto' : 'iscritti'} negli ultimi 30 giorni: troppo pochi per un grafico.',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.steel),
+              ),
+            )
+          else
           SizedBox(
-            height: 110,
+            height: 90,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -527,7 +543,7 @@ class _SignupsChart extends StatelessWidget {
                         message: '$value iscritti',
                         child: Container(
                           // Barra minima visibile anche a zero.
-                          height: max == 0 ? 2 : 2 + (value / max) * 100,
+                          height: max == 0 ? 2 : 2 + (value / max) * 80,
                           decoration: BoxDecoration(
                             color: value == 0
                                 ? AppColors.borderSubtle

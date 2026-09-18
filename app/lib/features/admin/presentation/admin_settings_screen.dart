@@ -58,6 +58,9 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     'Riparazioni',
   ];
 
+  /// Scheda aperta: 0 Panoramica · 1 Contenuti · 2 Persone · 3 Impostazioni.
+  int _tab = 0;
+
   @override
   void dispose() {
     _trackLabelController.dispose();
@@ -80,247 +83,180 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     final feedbackAsync = ref.watch(adminFeedbackProvider);
     final feedback = feedbackAsync.asData?.value ?? const <AdminFeedbackRecord>[];
 
-    return ContentScaffold(
-      title: l10n.adminTitle,
-      description: l10n.adminDescription,
-      child: ListView(
-        children: [
-          // ── Hero header ─────────────────────────────────────────────────
-          Container(
-            padding: AppSpacing.card(context),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFFF6EFE3), Colors.white, Color(0xFFF2F4F7)],
-              ),
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: Color(0xFFE5DDD0)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.signalOrange.withAlpha(22),
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(color: AppColors.signalOrange.withAlpha(80)),
-                  ),
-                  child: const Text(
-                    'Pannello admin',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                Text(
-                  'Admin operativo',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: AppColors.graphite,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  isAdmin
-                      ? 'Controllo completo su utenti, piste, negozi ed eventi.'
-                      : l10n.adminAccessDeniedBody,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppColors.steel,
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  // Qui c'erano sei chip con i nomi delle sezioni
-                  // (Dashboard, Approvazioni, Utenti, Piste, Negozi, Eventi):
-                  // sembravano tab ma non erano cliccabili (difetto A-12), e
-                  // duplicavano l'elenco delle sezioni che sta subito sotto.
-                  // Restano i due contatori, che informano invece di fingere
-                  // di navigare.
-                  children: [
-                    if (approvals.isNotEmpty)
-                      _AdminChip(
-                        label: approvals.length == 1
-                            ? '1 in coda'
-                            : '${approvals.length} in coda',
-                      ),
-                    if (feedback.isNotEmpty)
-                      _AdminChip(
-                        label: feedback.length == 1
-                            ? '1 feedback'
-                            : '${feedback.length} feedback',
-                      ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 18),
-
-          if (!isAdmin)
+    if (!isAdmin) {
+      return ContentScaffold(
+        title: l10n.adminTitle,
+        description: l10n.adminDescription,
+        child: ListView(
+          children: [
             Card(
               child: Padding(
                 padding: AppSpacing.card(context),
                 child: Text(
                   l10n.adminAccessDeniedCard,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppColors.steel,
-                  ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(color: AppColors.steel),
                 ),
               ),
-            )
-          else ...[
-
-            // ── Dashboard ────────────────────────────────────────────────
-            _AdminSectionCard(
-              title: 'Dashboard',
-              body: 'Snapshot operativo e accesso rapido alle aree chiave.',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const AdminControlRoom(),
-                ],
-              ),
-            ),
-            const SizedBox(height: 18),
-
-            // ── Approvazioni ──────────────────────────────────────────────
-            _AdminSectionCard(
-              title: 'Approvazioni',
-              body: 'Coda di lavoro per spot, piste e negozi da validare.',
-              child: _ApprovalQueueCard(
-                items: approvals,
-                onApprove: (item) => _resolveApproval(item, 'approved'),
-                onReject: (item) => _resolveApproval(item, 'rejected'),
-              ),
-            ),
-            const SizedBox(height: 18),
-
-            // ── Utenti ────────────────────────────────────────────────────
-            _AdminSectionCard(
-              title: 'Utenti',
-              body: 'Cerca, filtra per ruolo, modifica o osserva l\'app come un utente specifico.',
-              child: _AdminUsersPanel(
-                onChangeRole: _changeUserRole,
-                onRename: _renameUser,
-              ),
-            ),
-            const SizedBox(height: 18),
-
-            // ── Piste ─────────────────────────────────────────────────────
-            _AdminSectionCard(
-              title: 'Piste',
-              body: 'Lista completa: modifica stato approvazione, naviga all\'editor, elimina.',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _AdminTracksSection(
-                    tracksAsync: allTracksAsync,
-                    onApprove: (t) => _updateTrackApproval(t, 'approved'),
-                    onReject: (t) => _updateTrackApproval(t, 'rejected'),
-                    onDelete: (t) => _deleteTrack(t),
-                  ),
-                  const SizedBox(height: 24),
-                  _TrackCategoriesSection(
-                    title: 'Label categorie pista',
-                    body: 'Le categorie alimentano card e filtri senza hardcode.',
-                    controller: _trackLabelController,
-                    addLabel: 'Nuova categoria',
-                    actionLabel: 'Aggiungi',
-                    categoriesAsync: trackCategoriesAsync,
-                    onAdd: _addTrackCategory,
-                    onDelete: _deleteTrackCategory,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 18),
-
-            // ── Negozi ────────────────────────────────────────────────────
-            _AdminSectionCard(
-              title: 'Negozi',
-              body: 'Lista completa: modifica stato approvazione, visibilità pubblica, elimina.',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _AdminShopsSection(
-                    shopsAsync: allShopsAsync,
-                    onApprove: (s) => _updateShopApproval(s, 'approved'),
-                    onReject: (s) => _updateShopApproval(s, 'rejected'),
-                    onTogglePublic: (s) => _toggleShopPublic(s),
-                    onDelete: (s) => _deleteShop(s),
-                  ),
-                  const SizedBox(height: 24),
-                  _EditableTagSection(
-                    title: 'Label servizi negozio',
-                    body: 'Tag usati in card e dettaglio negozio.',
-                    controller: _shopLabelController,
-                    items: _shopServiceLabels,
-                    addLabel: 'Nuova label negozio',
-                    actionLabel: 'Aggiungi',
-                    onAdd: () async {
-                      final value = _shopLabelController.text.trim();
-                      if (value.isEmpty) return;
-                      setState(() {
-                        _shopServiceLabels.insert(0, value);
-                        _shopLabelController.clear();
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 18),
-
-            // ── Eventi ────────────────────────────────────────────────────
-            _AdminSectionCard(
-              title: 'Eventi',
-              // Il controllo di visibilita' esiste solo per gli eventi
-              // ufficiali (tabella `events`, che ha la colonna visibility).
-              // Gli eventi creati dagli utenti stanno in `community_events`,
-              // dove quella colonna non c'e': li' l'unica azione possibile e'
-              // eliminare. Il testo precedente prometteva a tutti una
-              // funzione disponibile solo per alcuni (difetto A-20).
-              body:
-                  'Eventi ufficiali e della community. La visibilità si può '
-                  'cambiare solo sugli eventi ufficiali; quelli creati dagli '
-                  'utenti si possono solo eliminare.',
-              child: _AdminEventsSection(
-                eventsAsync: allEventsAsync,
-                onToggleVisibility: _toggleEventVisibility,
-                onDelete: (e) => _deleteEvent(e),
-              ),
-            ),
-            const SizedBox(height: 18),
-
-            // FR-24: rimossa la card di note tecniche interne
-            // (nomi tabelle Supabase, is_custom, owner_id, view, SharedPreferences).
-
-            // ── Richieste di cancellazione account ────────────────────────
-            _AdminSectionCard(
-              title: 'Cancellazioni account richieste',
-              body:
-                  'Richieste ex art. 17 GDPR. L\'informativa promette la '
-                  'cancellazione entro 30 giorni: la rimozione va eseguita a '
-                  'mano dalla dashboard Supabase.',
-              child: _AdminDeletionRequestsSection(
-                requestsAsync: pendingDeletionsAsync,
-              ),
-            ),
-            const SizedBox(height: 18),
-
-            // ── Feedback utenti ───────────────────────────────────────────
-            _AdminSectionCard(
-              title: 'Feedback utenti',
-              body:
-                  'Messaggi inviati dagli utenti (anche guest). Visibili solo a te.',
-              child: _AdminFeedbackSection(feedbackAsync: feedbackAsync),
             ),
           ],
-          const SizedBox(height: 32),
+        ),
+      );
+    }
+
+    final pendingDeletions = pendingDeletionsAsync.asData?.value ?? const [];
+
+    // Sezioni per scheda. La panoramica sta in una schermata; le altre
+    // scorrono dentro il loro riquadro, non trascinando tutta la pagina.
+    final sections = <List<Widget>>[
+      // 0 · Panoramica
+      const [AdminControlRoom()],
+      // 1 · Contenuti
+      [
+        _AdminSectionCard(
+          title: 'Approvazioni',
+          body: 'Coda di lavoro per spot, piste e negozi da validare.',
+          child: _ApprovalQueueCard(
+            items: approvals,
+            onApprove: (item) => _resolveApproval(item, 'approved'),
+            onReject: (item) => _resolveApproval(item, 'rejected'),
+          ),
+        ),
+        _AdminSectionCard(
+          title: 'Piste',
+          body:
+              'Lista completa: modifica stato approvazione, naviga all\'editor, elimina.',
+          child: _AdminTracksSection(
+            tracksAsync: allTracksAsync,
+            onApprove: (t) => _updateTrackApproval(t, 'approved'),
+            onReject: (t) => _updateTrackApproval(t, 'rejected'),
+            onDelete: (t) => _deleteTrack(t),
+          ),
+        ),
+        _AdminSectionCard(
+          title: 'Negozi',
+          body:
+              'Lista completa: modifica stato approvazione, visibilità pubblica, elimina.',
+          child: _AdminShopsSection(
+            shopsAsync: allShopsAsync,
+            onApprove: (s) => _updateShopApproval(s, 'approved'),
+            onReject: (s) => _updateShopApproval(s, 'rejected'),
+            onTogglePublic: (s) => _toggleShopPublic(s),
+            onDelete: (s) => _deleteShop(s),
+          ),
+        ),
+        _AdminSectionCard(
+          title: 'Eventi',
+          // Il controllo di visibilità esiste solo per gli eventi ufficiali
+          // (tabella `events`): quelli della community si possono solo eliminare.
+          body:
+              'Eventi ufficiali e della community. La visibilità si può '
+              'cambiare solo sugli eventi ufficiali; quelli creati dagli '
+              'utenti si possono solo eliminare.',
+          child: _AdminEventsSection(
+            eventsAsync: allEventsAsync,
+            onToggleVisibility: _toggleEventVisibility,
+            onDelete: (e) => _deleteEvent(e),
+          ),
+        ),
+      ],
+      // 2 · Persone
+      [
+        _AdminSectionCard(
+          title: 'Utenti',
+          body:
+              'Cerca, filtra per ruolo, modifica o osserva l\'app come un utente specifico.',
+          child: _AdminUsersPanel(
+            onChangeRole: _changeUserRole,
+            onRename: _renameUser,
+          ),
+        ),
+        _AdminSectionCard(
+          title: 'Cancellazioni account richieste',
+          body:
+              'Richieste ex art. 17 GDPR. L\'informativa promette la '
+              'cancellazione entro 30 giorni: la rimozione va eseguita a '
+              'mano dalla dashboard Supabase.',
+          child: _AdminDeletionRequestsSection(
+            requestsAsync: pendingDeletionsAsync,
+          ),
+        ),
+        _AdminSectionCard(
+          title: 'Feedback utenti',
+          body:
+              'Messaggi inviati dagli utenti (anche guest). Visibili solo a te.',
+          child: _AdminFeedbackSection(feedbackAsync: feedbackAsync),
+        ),
+      ],
+      // 3 · Impostazioni
+      [
+        _AdminSectionCard(
+          title: 'Categorie pista',
+          body: 'Le categorie alimentano card e filtri senza hardcode.',
+          child: _TrackCategoriesSection(
+            title: 'Label categorie pista',
+            body: 'Le categorie alimentano card e filtri senza hardcode.',
+            controller: _trackLabelController,
+            addLabel: 'Nuova categoria',
+            actionLabel: 'Aggiungi',
+            categoriesAsync: trackCategoriesAsync,
+            onAdd: _addTrackCategory,
+            onDelete: _deleteTrackCategory,
+          ),
+        ),
+        _AdminSectionCard(
+          title: 'Servizi negozio',
+          body: 'Tag usati in card e dettaglio negozio.',
+          child: _EditableTagSection(
+            title: 'Label servizi negozio',
+            body: 'Tag usati in card e dettaglio negozio.',
+            controller: _shopLabelController,
+            items: _shopServiceLabels,
+            addLabel: 'Nuova label negozio',
+            actionLabel: 'Aggiungi',
+            onAdd: () async {
+              final value = _shopLabelController.text.trim();
+              if (value.isEmpty) return;
+              setState(() {
+                _shopServiceLabels.insert(0, value);
+                _shopLabelController.clear();
+              });
+            },
+          ),
+        ),
+      ],
+    ];
+
+    final current = sections[_tab];
+
+    return ContentScaffold(
+      title: l10n.adminTitle,
+      description: l10n.adminDescription,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _AdminTabBar(
+            current: _tab,
+            badges: [
+              0,
+              approvals.length,
+              feedback.length + pendingDeletions.length,
+              0,
+            ],
+            onChanged: (index) => setState(() => _tab = index),
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListView.separated(
+              key: ValueKey(_tab),
+              padding: const EdgeInsets.only(bottom: 24),
+              itemCount: current.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 18),
+              itemBuilder: (_, index) => current[index],
+            ),
+          ),
         ],
       ),
     );
@@ -1857,32 +1793,6 @@ class _EditableTagSection extends StatelessWidget {
   }
 }
 
-class _AdminChip extends StatelessWidget {
-  const _AdminChip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.signalOrange.withAlpha(18),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppColors.signalOrange.withAlpha(60)),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: AppColors.graphite,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-}
-
-
 class _AdminDeletionRequestsSection extends StatelessWidget {
   const _AdminDeletionRequestsSection({required this.requestsAsync});
 
@@ -1981,6 +1891,74 @@ class _AdminDeletionRequestsSection extends StatelessWidget {
           color: Colors.red.shade700,
         ),
       ),
+    );
+  }
+}
+
+/// Schede della pagina admin. Il pallino arancione segnala che dentro c'è
+/// qualcosa da guardare.
+class _AdminTabBar extends StatelessWidget {
+  const _AdminTabBar({
+    required this.current,
+    required this.badges,
+    required this.onChanged,
+  });
+
+  static const labels = ['Panoramica', 'Contenuti', 'Persone', 'Impostazioni'];
+
+  final int current;
+  final List<int> badges;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (var index = 0; index < labels.length; index++)
+          ChoiceChip(
+            selected: current == index,
+            onSelected: (_) => onChanged(index),
+            selectedColor: AppColors.signalOrange.withAlpha(35),
+            side: BorderSide(
+              color: current == index
+                  ? AppColors.signalOrange
+                  : AppColors.borderSubtle,
+            ),
+            label: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  labels[index],
+                  style: TextStyle(
+                    fontWeight:
+                        current == index ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                ),
+                if (badges[index] > 0) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.signalOrange,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      '${badges[index]}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+      ],
     );
   }
 }
