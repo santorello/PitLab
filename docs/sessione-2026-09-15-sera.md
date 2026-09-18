@@ -193,3 +193,10 @@ Prossime fasi: 2 (mappa a pieno spazio), 3 (Profilo a schede, Garage compatto), 
 - `_updateTrackApproval` non invalidava coda approvazioni e overview: aggiunto.
 - Conteggi dashboard: `select('id')` + `.length` → `count(CountOption.exact)` (oltre 1000 righe il numero era sbagliato). Test `app/test/admin_counts_test.dart`.
 - Aperti (non toccati): eventi community non si possono nascondere (solo eliminare), `deleteEvent` non chiede conferma extra per gli eventi altrui, nessuna azione admin sulle richieste di cancellazione account (solo elenco).
+
+## Control room admin — fase 1 (18/09)
+- Delta `2026-09-18-admin-dashboard.sql`: RPC `admin_dashboard()` SECURITY DEFINER, solo admin (non-admin → `{"error":"forbidden"}`), restituisce todo/health/counts/created_7d/signups_30d in un'unica chiamata. **Applicata e verificata su dev**; da eseguire su prod.
+- App: `AdminDashboard` + `adminDashboardProvider` in admin_providers; nuovo `presentation/admin_control_room.dart` (fascia semaforo, 6 numeri, Da fare ora, colonna Salute, grafico 30 giorni). Rimossi `AdminOverviewRecord`, `fetchOverview`, `_count`, `countPending*`, `adminOverviewProvider`, `_AdminOverviewCard`, `_OverviewWrap/_OverviewItem` e i due banner testuali della dashboard.
+- Test: `admin_dashboard_test.dart` (una sola chiamata, parsing, caso non-admin) al posto di `admin_counts_test.dart`.
+- Mockup di riferimento: artifact "PitLap Control Room — mockup admin", variante C.
+- Fase 2 (da fare): colonne "letto/gestito" su feedback, esito su entity_comment_reports, chiusura richieste cancellazione. Fase 3: attivi 7gg da pitcoin_transactions.awarded_at, regola definitiva "contenuti da sistemare".

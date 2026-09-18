@@ -8,26 +8,45 @@ import '../../auth/application/auth_providers.dart';
 
 // ─── Record types ────────────────────────────────────────────────────────────
 
-class AdminOverviewRecord {
-  const AdminOverviewRecord({
-    required this.usersCount,
-    required this.tracksCount,
-    required this.shopsCount,
-    required this.eventsCount,
-    required this.trackCategoriesCount,
-    required this.pendingApprovalsCount,
-    this.newUsers7dCount = 0,
-  });
+class AdminDashboard {
+  const AdminDashboard(this.raw);
 
-  final int usersCount;
-  final int tracksCount;
-  final int shopsCount;
-  final int eventsCount;
-  final int trackCategoriesCount;
-  final int pendingApprovalsCount;
+  final Map<String, dynamic> raw;
 
-  /// Registrazioni negli ultimi 7 giorni (profiles.created_at).
-  final int newUsers7dCount;
+  Map<String, dynamic> _section(String key) =>
+      (raw[key] as Map?)?.cast<String, dynamic>() ?? const {};
+
+  int todo(String key) => (_section('todo')[key] as num?)?.toInt() ?? 0;
+  int count(String key) => (_section('counts')[key] as num?)?.toInt() ?? 0;
+  int created7d(String key) => (_section('created_7d')[key] as num?)?.toInt() ?? 0;
+
+  DateTime? healthDate(String key) {
+    final value = _section('health')[key] as String?;
+    return value == null ? null : DateTime.tryParse(value)?.toLocal();
+  }
+
+  int get consentsCurrent =>
+      (_section('health')['consents_current'] as num?)?.toInt() ?? 0;
+
+  /// Azioni aperte: quello che decide colore e testo della fascia in cima.
+  int get todoTotal =>
+      todo('pending_tracks') +
+      todo('pending_shops') +
+      todo('reported_comments') +
+      todo('feedback') +
+      todo('deletion_requests') +
+      todo('content_to_fix');
+
+  /// Ore dall'ultimo contenuto pubblicato (indicatore "silenzio").
+  int? get silenceHours {
+    final last = healthDate('last_content_at');
+    return last == null ? null : DateTime.now().difference(last).inHours;
+  }
+
+  List<int> get signups30d => ((raw['signups_30d'] as List?) ?? const [])
+      .whereType<Map>()
+      .map((row) => (row['n'] as num?)?.toInt() ?? 0)
+      .toList();
 }
 
 class AdminTrackCategoryRecord {
@@ -153,26 +172,11 @@ class AdminRepository {
 
   // COUNT lato server: scaricare tutte le righe per contarle era anche
   // sbagliato oltre il limite di righe di PostgREST (1000 per default).
-  Future<int> _count(String table) =>
-      _client.from(table).count(CountOption.exact);
-
-  // ── Overview ──────────────────────────────────────────────────────────────
-
-  Future<AdminOverviewRecord> fetchOverview() async {
-    final usersCount = await _count('profiles');
-    final tracksCount = await _count('tracks');
-    final shopsCount = await _count('shops');
-    final officialEventsCount = await _count('events');
-    final communityEventsCount = await _count('community_events');
-    final trackCategoriesCount = await _count('track_categories');
-    return AdminOverviewRecord(
-      usersCount: usersCount,
-      tracksCount: tracksCount,
-      shopsCount: shopsCount,
-      eventsCount: officialEventsCount + communityEventsCount,
-      trackCategoriesCount: trackCategoriesCount,
-      pendingApprovalsCount: 0,
-    );
+  Future<AdminDashboard?> fetchDashboard() async {
+    final data = await _client.rpc('admin_dashboard');
+    if (data is! Map) return null;
+    final map = data.cast<String, dynamic>();
+    return map['error'] != null ? null : AdminDashboard(map);
   }
 
   // ── Track categories ──────────────────────────────────────────────────────
@@ -329,36 +333,6 @@ class AdminRepository {
   }
 
   /// Conta le piste con approval_status = 'pending'.
-  Future<int> countPendingTracks() async {
-    return _client
-        .from('tracks')
-        .select()
-        .eq('approval_status', 'pending')
-        .count(CountOption.exact)
-        .then((res) => res.count);
-  }
-
-  /// Iscritti negli ultimi [days] giorni.
-  Future<int> countNewUsers({int days = 7}) {
-    final since = DateTime.now().toUtc().subtract(Duration(days: days));
-    return _client
-        .from('profiles')
-        .select()
-        .gte('created_at', since.toIso8601String())
-        .count(CountOption.exact)
-        .then((res) => res.count);
-  }
-
-  /// Conta i negozi con approval_status = 'pending'.
-  Future<int> countPendingShops() async {
-    return _client
-        .from('shops')
-        .select()
-        .eq('approval_status', 'pending')
-        .count(CountOption.exact)
-        .then((res) => res.count);
-  }
-
   /// Recupera le piste in attesa di approvazione come coda admin.
   Future<List<AdminApprovalRecord>> fetchPendingTrackSubmissions() async {
     final response = await _client
@@ -538,29 +512,11 @@ final adminRepositoryProvider = Provider<AdminRepository?>((ref) {
   return AdminRepository(client);
 });
 
-final adminOverviewProvider = FutureProvider<AdminOverviewRecord?>((ref) async {
+final adminDashboardProvider = FutureProvider<AdminDashboard?>((ref) async {
   final repository = ref.watch(adminRepositoryProvider);
   final role = ref.watch(effectiveUserRoleProvider);
   if (repository == null || role != 'admin') return null;
-  final results = await Future.wait([
-    repository.fetchOverview(),
-    repository.countPendingTracks(),
-    repository.countPendingShops(),
-    repository.countNewUsers(),
-  ]);
-  final overview = results[0] as AdminOverviewRecord;
-  final pendingTracks = results[1] as int;
-  final pendingShops = results[2] as int;
-  final newUsers = results[3] as int;
-  return AdminOverviewRecord(
-    usersCount: overview.usersCount,
-    tracksCount: overview.tracksCount,
-    shopsCount: overview.shopsCount,
-    eventsCount: overview.eventsCount,
-    trackCategoriesCount: overview.trackCategoriesCount,
-    pendingApprovalsCount: pendingTracks + pendingShops,
-    newUsers7dCount: newUsers,
-  );
+  return repository.fetchDashboard();
 });
 
 final adminTrackCategoriesProvider =

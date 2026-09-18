@@ -14,6 +14,7 @@ import '../../shops/application/public_shops_provider.dart';
 import '../../spots/application/spots_providers.dart';
 import '../../tracks/application/tracks_providers.dart';
 import '../application/admin_providers.dart';
+import 'admin_control_room.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../shops/application/shop_editor_providers.dart';
 
@@ -69,7 +70,6 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     final l10n = AppLocalizations.of(context)!;
     final currentRole = ref.watch(effectiveUserRoleProvider);
     final isAdmin = currentRole == 'admin';
-    final overviewAsync = ref.watch(adminOverviewProvider);
     final trackCategoriesAsync = ref.watch(adminTrackCategoriesProvider);
     final pendingDeletionsAsync = ref.watch(adminPendingDeletionsProvider);
     final approvalsAsync = ref.watch(adminApprovalQueueProvider);
@@ -181,54 +181,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _AdminOverviewCard(
-                    title: l10n.adminOverviewTitle,
-                    body: l10n.adminOverviewBody,
-                    itemsAsync: overviewAsync,
-                  ),
-                  const SizedBox(height: 18),
-                  if (approvals.isNotEmpty) ...[
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFF1E8),
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: AppColors.signalOrange.withValues(alpha: 0.28),
-                        ),
-                      ),
-                      child: Text(
-                        'Inbox admin: ${approvals.length} richiesta${approvals.length == 1 ? '' : 'e'} da controllare.',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.graphite,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                  ],
-                  if (feedback.isNotEmpty) ...[
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEAF3DE),
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: AppColors.openGreen.withValues(alpha: 0.35),
-                        ),
-                      ),
-                      child: Text(
-                        'Hai ${feedback.length} feedback dagli utenti da leggere (sezione "Feedback utenti").',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.graphite,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                  ],
+                  const AdminControlRoom(),
                 ],
               ),
             ),
@@ -435,7 +388,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       try {
         await repository.updateTrackApproval(trackId, nextStatus);
         ref.invalidate(adminApprovalQueueProvider);
-        ref.invalidate(adminOverviewProvider);
+        ref.invalidate(adminDashboardProvider);
         ref.invalidate(adminAllTracksProvider);
         _invalidatePublicCaches();
       } catch (e) {
@@ -452,7 +405,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
               approvalStatus: nextStatus,
             );
         ref.invalidate(adminApprovalQueueProvider);
-        ref.invalidate(adminOverviewProvider);
+        ref.invalidate(adminDashboardProvider);
         ref.invalidate(adminAllShopsProvider);
         _invalidatePublicCaches();
       } catch (e) {
@@ -591,7 +544,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       await repository.updateTrackApproval(track.id, status);
       ref.invalidate(adminAllTracksProvider);
       ref.invalidate(adminApprovalQueueProvider);
-      ref.invalidate(adminOverviewProvider);
+      ref.invalidate(adminDashboardProvider);
       _invalidatePublicCaches();
       _showSnackBar(
         '"${track.name}" ${status == 'approved' ? 'approvata' : 'rifiutata'}',
@@ -609,7 +562,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       await repository.deleteTrack(track.id);
       ref.invalidate(adminAllTracksProvider);
       ref.invalidate(adminApprovalQueueProvider);
-      ref.invalidate(adminOverviewProvider);
+      ref.invalidate(adminDashboardProvider);
       _invalidatePublicCaches();
       _showSnackBar('"${track.name}" eliminata');
     } catch (e) {
@@ -625,7 +578,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     try {
       await repository.updateShopApproval(shop.id, status);
       ref.invalidate(adminAllShopsProvider);
-      ref.invalidate(adminOverviewProvider);
+      ref.invalidate(adminDashboardProvider);
       _invalidatePublicCaches();
       _showSnackBar(
         '"${shop.name}" ${status == 'approved' ? 'approvato' : 'rifiutato'}',
@@ -658,7 +611,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       await repository.deleteShop(shop.id);
       ref.invalidate(adminAllShopsProvider);
       ref.invalidate(adminApprovalQueueProvider);
-      ref.invalidate(adminOverviewProvider);
+      ref.invalidate(adminDashboardProvider);
       _invalidatePublicCaches();
       _showSnackBar('"${shop.name}" eliminato');
     } catch (e) {
@@ -690,7 +643,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     try {
       await repository.deleteEvent(event);
       ref.invalidate(adminAllEventsProvider);
-      ref.invalidate(adminOverviewProvider);
+      ref.invalidate(adminDashboardProvider);
       _invalidatePublicCaches();
       _showSnackBar('"${event.title}" eliminato');
     } catch (e) {
@@ -711,10 +664,9 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       _trackLabelController.clear();
       ref.invalidate(adminTrackCategoriesProvider);
       ref.invalidate(trackCategoryOptionsProvider);
-      // La tile "Categorie pista" della dashboard legge adminOverviewProvider,
-      // non la lista: senza questa invalidazione il numero restava fermo finche'
-      // non si ricaricava la pagina (difetto A-18).
-      ref.invalidate(adminOverviewProvider);
+      // La dashboard legge i conteggi dalla RPC: senza invalidarla il numero
+      // delle categorie resterebbe fermo (difetto A-18).
+      ref.invalidate(adminDashboardProvider);
       if (!mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.adminCategorySaved)));
     } catch (error) {
@@ -734,7 +686,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       await repository.deleteTrackCategory(categoryId);
       ref.invalidate(adminTrackCategoriesProvider);
       ref.invalidate(trackCategoryOptionsProvider);
-      ref.invalidate(adminOverviewProvider);
+      ref.invalidate(adminDashboardProvider);
       if (!mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.adminCategoryDeleted)));
     } catch (error) {
@@ -1583,92 +1535,6 @@ class _ActionButton extends StatelessWidget {
 
 // ─── Existing reused widgets ──────────────────────────────────────────────────
 
-class _AdminOverviewCard extends StatelessWidget {
-  const _AdminOverviewCard({
-    required this.title,
-    required this.body,
-    this.itemsAsync,
-  });
-
-  final String title;
-  final String body;
-  final AsyncValue<AdminOverviewRecord?>? itemsAsync;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: AppSpacing.card(context),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
-            Text(
-              body,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.steel,
-              ),
-            ),
-            const SizedBox(height: 16),
-            if (itemsAsync != null)
-              itemsAsync!.when(
-                data: (overview) {
-                  if (overview == null) return const SizedBox.shrink();
-                  return _OverviewWrap(
-                    items: [
-                      _OverviewItem(
-                        label: AppLocalizations.of(context)!.adminUsersMetric,
-                        value: overview.usersCount.toString(),
-                      ),
-                      _OverviewItem(
-                        label: AppLocalizations.of(context)!.adminTracksMetric,
-                        value: overview.tracksCount.toString(),
-                      ),
-                      _OverviewItem(
-                        label: 'Negozi',
-                        value: overview.shopsCount.toString(),
-                      ),
-                      _OverviewItem(
-                        label: AppLocalizations.of(context)!.adminEventsMetric,
-                        value: overview.eventsCount.toString(),
-                      ),
-                      _OverviewItem(
-                        label: AppLocalizations.of(context)!
-                            .adminCategoriesMetric,
-                        value: overview.trackCategoriesCount.toString(),
-                      ),
-                      _OverviewItem(
-                        label: 'Nuovi iscritti (7 giorni)',
-                        value: overview.newUsers7dCount.toString(),
-                      ),
-                      _OverviewItem(
-                        label: 'Da approvare',
-                        value: overview.pendingApprovalsCount.toString(),
-                      ),
-                    ],
-                  );
-                },
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: CircularProgressIndicator(),
-                ),
-                error: (_, _) => Text(
-                  AppLocalizations.of(context)!.adminOverviewFallback,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.steel,
-                  ),
-                ),
-              )
-            else
-              const SizedBox.shrink(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _AdminSectionCard extends StatelessWidget {
   const _AdminSectionCard({
     required this.title,
@@ -2017,61 +1883,6 @@ class _AdminChip extends StatelessWidget {
 }
 
 
-class _OverviewWrap extends StatelessWidget {
-  const _OverviewWrap({required this.items});
-
-  final List<_OverviewItem> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 16,
-      runSpacing: 16,
-      children: items
-          .map(
-            (item) => Container(
-              width: 200,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8F7F3),
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: AppColors.concrete),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.label,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: AppColors.steel,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    item.value,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                ],
-              ),
-            ),
-          )
-          .toList(),
-    );
-  }
-}
-
-class _OverviewItem {
-  const _OverviewItem({required this.label, required this.value});
-
-  final String label;
-  final String value;
-}
-
-
-/// Elenco delle richieste di cancellazione account ancora aperte.
-///
-/// Serve a rendere operabile l'art. 17: prima la richiesta finiva in
-/// `profiles.deletion_requested_at` e nessuno la vedeva mai.
 class _AdminDeletionRequestsSection extends StatelessWidget {
   const _AdminDeletionRequestsSection({required this.requestsAsync});
 
