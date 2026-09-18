@@ -608,6 +608,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     try {
       await repository.deleteTrack(track.id);
       ref.invalidate(adminAllTracksProvider);
+      ref.invalidate(adminApprovalQueueProvider);
       ref.invalidate(adminOverviewProvider);
       _invalidatePublicCaches();
       _showSnackBar('"${track.name}" eliminata');
@@ -656,6 +657,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     try {
       await repository.deleteShop(shop.id);
       ref.invalidate(adminAllShopsProvider);
+      ref.invalidate(adminApprovalQueueProvider);
       ref.invalidate(adminOverviewProvider);
       _invalidatePublicCaches();
       _showSnackBar('"${shop.name}" eliminato');
@@ -708,6 +710,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       await repository.createTrackCategory(value);
       _trackLabelController.clear();
       ref.invalidate(adminTrackCategoriesProvider);
+      ref.invalidate(trackCategoryOptionsProvider);
       // La tile "Categorie pista" della dashboard legge adminOverviewProvider,
       // non la lista: senza questa invalidazione il numero restava fermo finche'
       // non si ricaricava la pagina (difetto A-18).
@@ -730,6 +733,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     try {
       await repository.deleteTrackCategory(categoryId);
       ref.invalidate(adminTrackCategoriesProvider);
+      ref.invalidate(trackCategoryOptionsProvider);
       ref.invalidate(adminOverviewProvider);
       if (!mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.adminCategoryDeleted)));
