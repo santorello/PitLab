@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
@@ -213,6 +214,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           child: _AdminFeedbackSection(
             feedbackAsync: feedbackAsync,
             onHandled: _markFeedbackHandled,
+            onReply: _replyToFeedback,
           ),
         ),
       ],
@@ -375,6 +377,30 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             .reviewSpotSuggestion(item.id, approve),
         approve ? 'Proposta applicata allo spot' : 'Proposta rifiutata',
       );
+
+  /// Apre il client di posta con destinatario, oggetto e citazione già pronti.
+  /// L'invio dall'app richiederebbe SMTP configurato (Resend), non ancora attivo.
+  Future<void> _replyToFeedback(AdminFeedbackRecord item) async {
+    final to = (item.contactEmail ?? '').trim();
+    if (to.isEmpty) return;
+    final quoted = item.message
+        .split('\n')
+        .map((line) => '> $line')
+        .join('\n');
+    final uri = Uri(
+      scheme: 'mailto',
+      path: to,
+      queryParameters: {
+        'subject': 'Re: il tuo feedback su PitLap',
+        'body': 'Ciao,\ngrazie per la segnalazione.\n\n'
+            '\n\n--- Il tuo messaggio ---\n$quoted\n\n'
+            'PitLap · https://pitlap.app',
+      },
+    );
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      _showSnackBar('Nessun client di posta disponibile: scrivi a $to');
+    }
+  }
 
   Future<void> _markDeletionHandled(AdminDeletionRequest request) =>
       _runAdminAction(
@@ -898,6 +924,14 @@ class _UserRow extends StatelessWidget {
     };
   }
 
+  /// createdAt arriva come stringa ISO da Supabase.
+  static String _signupLabel(String raw) {
+    final date = DateTime.tryParse(raw)?.toLocal();
+    if (date == null) return '';
+    String two(int n) => n.toString().padLeft(2, '0');
+    return ' · iscritto il ${two(date.day)}/${two(date.month)}/${date.year}';
+  }
+
   String _initials(String name, String id) {
     if (name.isNotEmpty) return name.substring(0, 1).toUpperCase();
     return id.substring(0, 1).toUpperCase();
@@ -946,7 +980,8 @@ class _UserRow extends StatelessWidget {
                   maxLines: 1,
                 ),
                 Text(
-                  'ID $shortId… · ${user.preferredLanguage.toUpperCase()}',
+                  'ID $shortId… · ${user.preferredLanguage.toUpperCase()}'
+                  '${_signupLabel(user.createdAt)}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.steel,
                   ),
@@ -1281,10 +1316,12 @@ class _AdminFeedbackSection extends StatelessWidget {
   const _AdminFeedbackSection({
     required this.feedbackAsync,
     required this.onHandled,
+    required this.onReply,
   });
 
   final AsyncValue<List<AdminFeedbackRecord>> feedbackAsync;
   final ValueChanged<AdminFeedbackRecord> onHandled;
+  final ValueChanged<AdminFeedbackRecord> onReply;
 
   static String _fmt(DateTime d) {
     final l = d.toLocal();
@@ -1344,13 +1381,22 @@ class _AdminFeedbackSection extends StatelessWidget {
                             ?.copyWith(color: AppColors.steel),
                       ),
                       const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton.icon(
-                          onPressed: () => onHandled(f),
-                          icon: const Icon(Icons.check, size: 18),
-                          label: const Text('Segna come letto'),
-                        ),
+                      Wrap(
+                        spacing: 8,
+                        alignment: WrapAlignment.end,
+                        children: [
+                          if ((f.contactEmail ?? '').trim().isNotEmpty)
+                            TextButton.icon(
+                              onPressed: () => onReply(f),
+                              icon: const Icon(Icons.reply_outlined, size: 18),
+                              label: const Text('Rispondi'),
+                            ),
+                          TextButton.icon(
+                            onPressed: () => onHandled(f),
+                            icon: const Icon(Icons.check, size: 18),
+                            label: const Text('Segna come letto'),
+                          ),
+                        ],
                       ),
                     ],
                   ),

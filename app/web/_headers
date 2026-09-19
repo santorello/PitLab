@@ -1,0 +1,24 @@
+# Cloudflare Pages — politica di cache.
+#
+# main.dart.js e flutter_bootstrap.js NON hanno un hash nel nome: se il browser
+# li tiene in cache, dopo un deploy continua a eseguire il bundle vecchio contro
+# il database nuovo. E' il caso classico in cui "ho fatto il deploy" e non
+# cambia niente. Questi file si rivalidano sempre.
+/index.html
+  Cache-Control: no-cache
+/main.dart.js
+  Cache-Control: no-cache
+/flutter_bootstrap.js
+  Cache-Control: no-cache
+/flutter.js
+  Cache-Control: no-cache
+/version.json
+  Cache-Control: no-cache
+/manifest.json
+  Cache-Control: no-cache
+
+# Gli asset hanno il contenuto versionato dal build: si possono tenere a lungo.
+/assets/*
+  Cache-Control: public, max-age=604800
+/canvaskit/*
+  Cache-Control: public, max-age=604800

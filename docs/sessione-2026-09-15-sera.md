@@ -213,3 +213,5 @@ Prossime fasi: 2 (mappa a pieno spazio), 3 (Profilo a schede, Garage compatto), 
 - App: nuova sezione **Moderazione** (scheda Contenuti) con "Nascondi commento" / "Respingi segnalazione";
   pulsante "Segna come letto" sui feedback; "Segna gestita" sulle richieste di cancellazione. I pallini delle schede
   contano solo ciò che resta da fare.
+- Lista utenti: aggiunta la data di iscrizione (`created_at`) nella riga.
+- Feedback: pulsante "Rispondi" che apre il client di posta (mailto) con destinatario, oggetto e messaggio citato. L'invio dall'app richiede SMTP Resend, non ancora configurato.
