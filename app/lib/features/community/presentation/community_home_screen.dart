@@ -17,6 +17,7 @@ import '../../../features/tracks/application/tracks_providers.dart';
 import '../../../shared/utils/share_entity.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/pitlap_logo.dart';
+import '../../../shared/widgets/weather_visuals.dart';
 import '../application/activity_feed_provider.dart';
 import '../application/home_dashboard_provider.dart';
 import '../domain/activity_feed_item.dart';
@@ -382,7 +383,7 @@ class _WeatherCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = _weatherPalette(weather);
+    final WeatherPalette p = _weatherPalette(weather);
     final rain = weather.precipitationProbability;
     return Container(
       padding: const EdgeInsets.all(14),
@@ -467,77 +468,8 @@ class _WeatherCard extends StatelessWidget {
   }
 }
 
-/// Colori della card meteo in base alla condizione (weatherCode + pioggia).
-class _WeatherPalette {
-  const _WeatherPalette({
-    required this.top,
-    required this.bottom,
-    required this.accent,
-    required this.strong,
-    required this.soft,
-    required this.chipBg,
-    required this.chipText,
-  });
-
-  final Color top;
-  final Color bottom;
-  final Color accent;
-  final Color strong;
-  final Color soft;
-  final Color chipBg;
-  final Color chipText;
-}
-
-_WeatherPalette _weatherPalette(HomeTrackWeather weather) {
-  final code = weather.weatherCode;
-  final rain = weather.precipitationProbability ?? 0;
-  // Pioggia / rovesci → teal-verde acqua
-  if (code >= 60 || rain >= 65) {
-    return const _WeatherPalette(
-      top: Color(0xFFE1F5EE),
-      bottom: Color(0xFF9FE1CB),
-      accent: Color(0xFF1D9E75),
-      strong: Color(0xFF085041),
-      soft: Color(0xFF0F6E56),
-      chipBg: Color(0xFF7FD3B6),
-      chipText: Color(0xFF04342C),
-    );
-  }
-  // Nebbia → grigio
-  if (code >= 45) {
-    return const _WeatherPalette(
-      top: Color(0xFFF1EFE8),
-      bottom: Color(0xFFD3D1C7),
-      accent: Color(0xFF5F5E5A),
-      strong: Color(0xFF2C2C2A),
-      soft: Color(0xFF5F5E5A),
-      chipBg: Color(0xFFC4C2B8),
-      chipText: Color(0xFF2C2C2A),
-    );
-  }
-  // Nuvoloso → azzurro
-  if (code >= 3 || rain >= 35) {
-    return const _WeatherPalette(
-      top: Color(0xFFE6F1FB),
-      bottom: Color(0xFFB5D4F4),
-      accent: Color(0xFF378ADD),
-      strong: Color(0xFF0C447C),
-      soft: Color(0xFF185FA5),
-      chipBg: Color(0xFF9CC6EF),
-      chipText: Color(0xFF042C53),
-    );
-  }
-  // Sereno → ambra calda
-  return const _WeatherPalette(
-    top: Color(0xFFFCEFD6),
-    bottom: Color(0xFFF8C66B),
-    accent: Color(0xFFBA7517),
-    strong: Color(0xFF633806),
-    soft: Color(0xFF854F0B),
-    chipBg: Color(0xFFF3B44E),
-    chipText: Color(0xFF412402),
-  );
-}
+WeatherPalette _weatherPalette(HomeTrackWeather w) =>
+    weatherPalette(w.weatherCode, w.precipitationProbability ?? 0);
 
 class _PitcoinStrip extends StatelessWidget {
   const _PitcoinStrip({
@@ -2314,14 +2246,8 @@ String _homeDisplayName(String? profileName) {
   return 'Pilota';
 }
 
-IconData _weatherIcon(HomeTrackWeather weather) {
-  final code = weather.weatherCode;
-  final rain = weather.precipitationProbability ?? 0;
-  if (code >= 60 || rain >= 65) return Icons.water_drop_outlined;
-  if (code >= 45) return Icons.foggy;
-  if (code >= 3 || rain >= 35) return Icons.cloud_outlined;
-  return Icons.wb_sunny_outlined;
-}
+IconData _weatherIcon(HomeTrackWeather weather) =>
+    weatherIcon(weather.weatherCode, weather.precipitationProbability ?? 0);
 
 Color _weatherColor(HomeTrackWeather weather) {
   final code = weather.weatherCode;

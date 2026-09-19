@@ -15,6 +15,7 @@ import '../../../shared/models/track_detail.dart';
 import '../../../shared/models/track_weather_day.dart';
 import '../../../shared/models/today_arrival_status.dart';
 import '../../../shared/widgets/dialog_controller_scope.dart';
+import '../../../shared/widgets/weather_visuals.dart';
 import '../../../shared/utils/share_entity.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../comments/presentation/comments_section.dart';
@@ -582,53 +583,27 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
             : DateFormat.E(localeName).format(day.date),
         shortDate: DateFormat('d MMM', localeName).format(day.date),
         verdict: _forecastVerdict(l10n, day),
-        note: _forecastNote(l10n, day, localeName),
         color: _forecastColor(day),
+        weatherCode: day.weatherCode,
+        rain: day.precipitationProbabilityMax,
+        temperatureMaxC: day.temperatureMaxC?.round(),
       );
     }).toList();
   }
 
   static String _forecastVerdict(AppLocalizations l10n, TrackWeatherDay day) {
-    if (day.weatherCode >= 60 || (day.precipitationProbabilityMax ?? 0) >= 70) {
-      return l10n.weatherNo;
-    }
-    if (day.weatherCode >= 3 || (day.precipitationProbabilityMax ?? 0) >= 35) {
-      return l10n.weatherWarning;
-    }
+    final rain = day.precipitationProbabilityMax ?? 0;
+    if (day.weatherCode >= 60 || rain >= 70) return l10n.weatherNo;
+    // ponytail: solo nebbia o pioggia probabile fanno "attenzione".
+    // Il codice 3 (coperto) con 0% di pioggia e' una giornata buona.
+    if (day.weatherCode >= 45 || rain >= 35) return l10n.weatherWarning;
     return l10n.weatherOk;
   }
 
-  static String _forecastNote(
-    AppLocalizations l10n,
-    TrackWeatherDay day,
-    String localeName,
-  ) {
-    if (day.weatherCode >= 60 || (day.precipitationProbabilityMax ?? 0) >= 70) {
-      return l10n.weatherApiRainExpected(day.precipitationProbabilityMax ?? 0);
-    }
-    final rain = day.precipitationProbabilityMax ?? 0;
-    if (day.weatherCode >= 3 && rain < 10) {
-      // Nuvoloso ma senza pioggia: prima usciva "pioggia fino al 0%".
-      final max = day.temperatureMaxC?.round() ?? 0;
-      return localeName.startsWith('it')
-          ? 'Nuvoloso, max $max°C'
-          : 'Cloudy, max $max°C';
-    }
-    if (day.weatherCode >= 3 || rain >= 35) {
-      return l10n.weatherApiMixedConditions(
-        day.precipitationProbabilityMax ?? 0,
-      );
-    }
-    return l10n.weatherApiStableDay(day.temperatureMaxC?.round() ?? 0);
-  }
-
   static Color _forecastColor(TrackWeatherDay day) {
-    if (day.weatherCode >= 60 || (day.precipitationProbabilityMax ?? 0) >= 70) {
-      return AppColors.closedRed;
-    }
-    if (day.weatherCode >= 3 || (day.precipitationProbabilityMax ?? 0) >= 35) {
-      return AppColors.warningAmber;
-    }
+    final rain = day.precipitationProbabilityMax ?? 0;
+    if (day.weatherCode >= 60 || rain >= 70) return AppColors.closedRed;
+    if (day.weatherCode >= 45 || rain >= 35) return AppColors.warningAmber;
     return AppColors.openGreen;
   }
 
@@ -1417,89 +1392,87 @@ class _WeatherDayTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (compact) {
-      return Container(
-        padding: const EdgeInsets.all(AppSpacing.sm),
-        decoration: BoxDecoration(
-          color: day.color.withAlpha(14),
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border(top: BorderSide(color: day.color, width: 3)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${day.label} ${day.shortDate}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: AppColors.steel,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              day.verdict,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: day.color,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              day.note,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.steel,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
+    final rain = day.rain;
+    final p = weatherPalette(day.weatherCode, rain ?? 0);
+    final text = Theme.of(context).textTheme;
     return Container(
-      width: 172,
-      height: 190,
-      padding: const EdgeInsets.all(AppSpacing.md),
+      width: compact ? null : 172,
+      padding: EdgeInsets.all(compact ? AppSpacing.sm : AppSpacing.md),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: p.gradient,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.concrete),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  compact ? day.label : '${day.label} ${day.shortDate}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: text.labelMedium?.copyWith(
+                    color: p.soft,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Icon(
+                weatherIcon(day.weatherCode, rain ?? 0),
+                color: p.accent,
+                size: compact ? 22 : 28,
+              ),
+            ],
+          ),
+          SizedBox(height: compact ? 6 : AppSpacing.sm),
           Text(
-            day.label,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: AppColors.steel,
+            day.temperatureMaxC == null ? '--' : '${day.temperatureMaxC}°',
+            style: TextStyle(
+              color: p.strong,
+              fontWeight: FontWeight.w800,
+              fontSize: compact ? 26 : 32,
+              height: 1.0,
             ),
           ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(day.shortDate, style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: AppSpacing.sm),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: day.color.withAlpha(24),
-              borderRadius: BorderRadius.circular(AppRadius.pill),
+          const SizedBox(height: 4),
+          Text(
+            day.verdict,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: text.labelMedium?.copyWith(
+              color: p.strong,
+              fontWeight: FontWeight.w800,
             ),
-            child: Text(
-              day.verdict,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: day.color,
+          ),
+          if (rain != null) ...[
+            SizedBox(height: compact ? 6 : AppSpacing.sm),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: p.chipBg,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.water_drop_outlined, size: 13, color: p.chipText),
+                    const SizedBox(width: 4),
+                    Text(
+                      '$rain%',
+                      style: TextStyle(
+                        color: p.chipText,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            day.note,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.steel,
-            ),
-          ),
+          ],
         ],
       ),
     );
@@ -1511,15 +1484,19 @@ class _WeatherDay {
     required this.label,
     required this.shortDate,
     required this.verdict,
-    required this.note,
     required this.color,
+    required this.weatherCode,
+    required this.rain,
+    required this.temperatureMaxC,
   });
 
   final String label;
   final String shortDate;
   final String verdict;
-  final String note;
   final Color color;
+  final int weatherCode;
+  final int? rain;
+  final int? temperatureMaxC;
 }
 
 class _ServiceTag extends StatelessWidget {
