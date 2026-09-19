@@ -637,8 +637,10 @@ final adminRepositoryProvider = Provider<AdminRepository?>((ref) {
 
 final adminDashboardProvider = FutureProvider<AdminDashboard?>((ref) async {
   final repository = ref.watch(adminRepositoryProvider);
-  final role = ref.watch(effectiveUserRoleProvider);
-  if (repository == null || role != 'admin') return null;
+  // Nessun filtro sul ruolo: al primo caricamento arriva prima della sessione e
+  // la panoramica restava vuota finché non si cambiava scheda. È la RPC stessa
+  // a rispondere solo agli admin.
+  if (repository == null) return null;
   return repository.fetchDashboard();
 });
 

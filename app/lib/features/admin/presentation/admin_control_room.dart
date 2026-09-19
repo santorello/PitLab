@@ -26,7 +26,15 @@ class AdminControlRoom extends ConsumerWidget {
         subtitle: 'Riprova ad aggiornare la pagina. ($error)',
       ),
       data: (data) {
-        if (data == null) return const SizedBox.shrink();
+        // Niente dati: meglio dirlo che mostrare una pagina bianca.
+        if (data == null) {
+          return _Banner(
+            color: AppColors.steel,
+            background: AppColors.surfaceMuted,
+            title: 'Panoramica non disponibile',
+            subtitle: 'Ricarica la pagina; se resta vuota, rifai l\'accesso.',
+          );
+        }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
