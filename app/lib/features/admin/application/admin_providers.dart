@@ -23,6 +23,26 @@ class AdminReportedComment {
       ((raw['reasons'] as List?) ?? const []).whereType<String>().toList();
 }
 
+/// Proposta di modifica a uno spot, in attesa di revisione
+/// (vista `admin_spot_suggestions`).
+class AdminSpotSuggestion {
+  const AdminSpotSuggestion(this.raw);
+
+  final Map<String, dynamic> raw;
+
+  String get id => raw['id'] as String? ?? '';
+  String get spotSlug => raw['spot_slug'] as String? ?? '';
+  String get spotTitle => raw['spot_title'] as String? ?? '';
+  String get author => raw['submitted_by_name'] as String? ?? 'Utente';
+  Map<String, dynamic> get payload =>
+      (raw['payload'] as Map?)?.cast<String, dynamic>() ?? const {};
+
+  /// Riepilogo leggibile: solo i campi effettivamente proposti.
+  String get summary => payload.entries
+      .map((e) => '${e.key}: ${e.value}')
+      .join(' · ');
+}
+
 class AdminDashboard {
   const AdminDashboard(this.raw);
 
@@ -204,6 +224,25 @@ class AdminRepository {
         .map((row) => AdminReportedComment(row.cast<String, dynamic>()))
         .toList();
   }
+
+  Future<List<AdminSpotSuggestion>> fetchSpotSuggestions() async {
+    final rows = await _client
+        .from('admin_spot_suggestions')
+        .select()
+        .order('created_at');
+    return (rows as List<dynamic>)
+        .whereType<Map<String, dynamic>>()
+        .map(AdminSpotSuggestion.new)
+        .toList();
+  }
+
+  /// approve=true applica il payload allo spot, false lo archivia come rifiutato.
+  Future<void> reviewSpotSuggestion(String id, bool approve, [String? notes]) =>
+      _client.rpc('admin_review_spot_suggestion', params: {
+        'p_id': id,
+        'p_approve': approve,
+        'p_notes': notes,
+      });
 
   Future<AdminDashboard?> fetchDashboard() async {
     final data = await _client.rpc('admin_dashboard');
@@ -558,6 +597,14 @@ final adminReportedCommentsProvider =
   final role = ref.watch(effectiveUserRoleProvider);
   if (repository == null || role != 'admin') return const [];
   return repository.fetchReportedComments();
+});
+
+final adminSpotSuggestionsProvider =
+    FutureProvider<List<AdminSpotSuggestion>>((ref) async {
+  final repository = ref.watch(adminRepositoryProvider);
+  final role = ref.watch(effectiveUserRoleProvider);
+  if (repository == null || role != 'admin') return const [];
+  return repository.fetchSpotSuggestions();
 });
 
 final adminTrackCategoriesProvider =

@@ -394,17 +394,21 @@ class _CommentInputState extends ConsumerState<_CommentInput> {
     if (body.isEmpty || body.length > 2000) return;
     setState(() => _submitting = true);
     final key = CommentsKey(entityType: widget.entityType, entityId: widget.entityId);
-    final ok = await ref.read(commentsProvider(key).notifier).postComment(
+    final error = await ref.read(commentsProvider(key).notifier).postComment(
           authorId: widget.userId,
           body: body,
         );
     if (mounted) {
       setState(() => _submitting = false);
-      if (ok) {
+      if (error == null) {
         _controller.clear();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(widget.l10n.commentsPostError)),
+          SnackBar(
+            // Il testo resta nel campo: l'utente corregge invece di riscrivere.
+            content: Text(error.isEmpty ? widget.l10n.commentsPostError : error),
+            duration: const Duration(seconds: 6),
+          ),
         );
       }
     }

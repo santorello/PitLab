@@ -6,8 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/bootstrap/error_reporting.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../pitcoin/providers/pitcoin_providers.dart';
+import '../../tracks/application/tracks_providers.dart' show supabaseClientProvider;
 import '../domain/entity_comment.dart';
 import '../infrastructure/comments_repository.dart';
+import '../../../shared/utils/moderation_message.dart';
+import '../../../shared/utils/moderation_log.dart';
 
 // ── Repository provider ───────────────────────────────────────────────────
 
@@ -84,12 +87,14 @@ class CommentsNotifier extends AsyncNotifier<List<EntityComment>> {
     }
   }
 
-  Future<bool> postComment({
+  /// null = pubblicato. Stringa = messaggio d'errore gia' pronto per l'utente
+  /// (il filtro contenuti deve poter spiegare PERCHE', non solo fallire).
+  Future<String?> postComment({
     required String authorId,
     required String body,
   }) async {
     final repo = ref.read(commentsRepositoryProvider);
-    if (repo == null) return false;
+    if (repo == null) return 'Connessione al server non disponibile.';
     try {
       final newComment = await repo.postComment(
         entityType: _key.entityType,
@@ -107,10 +112,22 @@ class CommentsNotifier extends AsyncNotifier<List<EntityComment>> {
         ref.invalidate(effectiveUserPitcoinBalanceProvider);
         ref.invalidate(effectiveUserPitcoinRecentDeltaProvider);
       });
-      return true;
+      return null;
     } catch (e, st) {
+      final blocked = moderationMessage(e);
+      // Un commento respinto dal filtro non e' un guasto: non va nei report,
+      // ma va tracciato per capire se i termini sono troppo aggressivi.
+      if (blocked != null) {
+        logModerationBlock(
+          ref.read(supabaseClientProvider),
+          e,
+          source: 'entity_comments',
+          sample: body,
+        );
+        return blocked;
+      }
       AppErrorReporter.report(e, st, context: 'commentsPost');
-      return false;
+      return '';
     }
   }
 

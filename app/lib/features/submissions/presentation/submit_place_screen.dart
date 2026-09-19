@@ -134,20 +134,28 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
         (isAdmin && impersonation == null) ||
         (effectiveUserId != null && existingSpot.isOwnedByCurrentUser);
     return ContentScaffold(
-      title: isEditingSpot
-          ? _localeText(
-              context,
-              it: 'Modifica spot',
-              en: 'Edit spot',
-            )
-          : l10n.submitPlaceTitle,
-      description: isEditingSpot
-          ? _localeText(
-              context,
-              it: 'Aggiorna foto, posizione e dettagli del tuo spot.',
-              en: 'Update photos, location, and details for your spot.',
-            )
-          : l10n.submitPlaceDescription,
+      title: !isEditingSpot
+          ? l10n.submitPlaceTitle
+          : canEditExistingSpot
+              ? _localeText(context, it: 'Modifica spot', en: 'Edit spot')
+              : _localeText(
+                  context,
+                  it: 'Proponi una modifica',
+                  en: 'Suggest an edit',
+                ),
+      description: !isEditingSpot
+          ? l10n.submitPlaceDescription
+          : canEditExistingSpot
+              ? _localeText(
+                  context,
+                  it: 'Aggiorna foto, posizione e dettagli del tuo spot.',
+                  en: 'Update photos, location, and details for your spot.',
+                )
+              : _localeText(
+                  context,
+                  it: 'Correggi posizione, tag o descrizione: la proposta va in coda agli admin.',
+                  en: 'Fix the location, tags or description: your suggestion goes to the admin queue.',
+                ),
       child: ListView(
         children: [
           if (isEditingSpot && !canEditExistingSpot) ...[
@@ -157,8 +165,8 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                 child: Text(
                   _localeText(
                     context,
-                    it: 'Questo spot può essere modificato solo dall\'owner o da un admin.',
-                    en: 'This spot can only be edited by its owner or an admin.',
+                    it: 'Non sei l\'owner di questo spot: le tue modifiche saranno inviate come proposta e un admin le approvera.',
+                    en: 'You are not the owner of this spot: your changes will be sent as a suggestion for an admin to approve.',
                   ),
                 ),
               ),
@@ -613,18 +621,63 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
       final canEditExistingSpot = existingSpot == null ||
           (isAdmin && impersonation == null) ||
           (effectiveUserId != null && existingSpot.isOwnedByCurrentUser);
+      // Chi non e' owner ne admin non viene piu' respinto: la stessa schermata
+      // registra una proposta di modifica che l'admin approva o rifiuta.
       if (!canEditExistingSpot) {
+        if (effectiveUserId == null || existingSpot.id == null) {
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text(
+                _localeText(
+                  context,
+                  it: 'Accedi per proporre una modifica.',
+                  en: 'Sign in to suggest an edit.',
+                ),
+              ),
+            ),
+          );
+          return;
+        }
+        final sent = await ref
+            .read(spotEntriesProvider.notifier)
+            .submitEditSuggestion(
+              userId: effectiveUserId,
+              spotId: existingSpot.id!,
+              payload: <String, dynamic>{
+                'title': name,
+                'city': city,
+                if (description.isNotEmpty) 'note': description,
+                if (_addressController.text.trim().isNotEmpty)
+                  'address': _addressController.text.trim(),
+                if (_latitude != null) 'latitude': _latitude,
+                if (_longitude != null) 'longitude': _longitude,
+                if (videoUrl.isNotEmpty) 'video_url': videoUrl,
+                'best_for_tags': _bestForTags.toList(),
+                'surface_tags': _surfaceTags.toList(),
+                if (_accessType.isNotEmpty) 'access_type': _accessType.first,
+                if (_bestSeason.isNotEmpty) 'best_season': _bestSeason.first,
+              },
+            );
+        if (!context.mounted) return;
         messenger.showSnackBar(
           SnackBar(
             content: Text(
-              _localeText(
-                context,
-                it: 'Non puoi modificare questo spot.',
-                en: 'You cannot edit this spot.',
-              ),
+              sent
+                  ? _localeText(
+                      context,
+                      it: 'Proposta inviata: la vedra un admin.',
+                      en: 'Suggestion sent: an admin will review it.',
+                    )
+                  : (ref.read(spotEntriesProvider.notifier).lastSaveError ??
+                      _localeText(
+                        context,
+                        it: 'Proposta non inviata. Forse ne hai gia una in attesa su questo spot.',
+                        en: 'Suggestion not sent. You may already have one pending for this spot.',
+                      )),
             ),
           ),
         );
+        if (sent) router.go('/spot/${existingSpot.slug}');
         return;
       }
       // Indirizzo/città scritti senza scegliere il suggerimento: coordinate dal primo risultato.
@@ -692,9 +745,11 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
               .read(spotEntriesProvider.notifier)
               .addCustomSpot(customSpot);
       if (!savedRemotely) {
+        final blocked = ref.read(spotEntriesProvider.notifier).lastSaveError;
         messenger.showSnackBar(
           SnackBar(
-            content: Text(remoteUnavailableMessage),
+            content: Text(blocked ?? remoteUnavailableMessage),
+            duration: const Duration(seconds: 6),
           ),
         );
         return;

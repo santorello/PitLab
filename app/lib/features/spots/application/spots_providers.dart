@@ -5,6 +5,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../features/auth/application/auth_providers.dart';
 import '../../../features/tracks/application/tracks_providers.dart';
 import '../domain/spot_catalog.dart';
+import '../../../shared/utils/moderation_message.dart';
+import '../../../shared/utils/moderation_log.dart';
 
 // ── Repository Supabase ───────────────────────────────────────────────────────
 
@@ -109,6 +111,20 @@ class SpotsRepository {
       'is_owned_by_current_user': true,
     });
   }
+
+  /// Proposta di modifica da parte di chi non e' owner ne admin.
+  /// ponytail: un solo insert, niente tabella di revisioni versionate.
+  Future<void> submitEditSuggestion({
+    required String userId,
+    required String spotId,
+    required Map<String, dynamic> payload,
+  }) async {
+    await _client.from('spot_edit_suggestions').insert({
+      'spot_id': spotId,
+      'submitted_by': userId,
+      'payload': payload,
+    });
+  }
 }
 
 // ── Providers ─────────────────────────────────────────────────────────────────
@@ -126,6 +142,18 @@ final spotEntriesProvider =
 
 class SpotEntriesController extends Notifier<List<SpotEntry>> {
   bool _loaded = false;
+
+  /// Messaggio dell'ultimo salvataggio fallito, quando e' spiegabile
+  /// all'utente (filtro contenuti). Letto subito dopo un metodo che ha
+  /// restituito false; null altrimenti.
+  String? lastSaveError;
+
+  void _logBlock(Object error, String source, String sample) => logModerationBlock(
+        ref.read(supabaseClientProvider),
+        error,
+        source: source,
+        sample: sample,
+      );
 
   @override
   List<SpotEntry> build() {
@@ -161,13 +189,25 @@ class SpotEntriesController extends Notifier<List<SpotEntry>> {
     // osservato. Il JWT admin soddisfa "admins manage all" sulla tabella spots.
     final userId = ref.read(effectiveUserIdProvider);
 
+    lastSaveError = null;
     if (repository != null && userId != null) {
-      final saved = await repository.insertCustomSpot(
-        userId: userId,
-        spot: spot,
-      );
-      state = [saved, ...state.where((s) => s.slug != saved.slug)];
-      return true;
+      try {
+        final saved = await repository.insertCustomSpot(
+          userId: userId,
+          spot: spot,
+        );
+        state = [saved, ...state.where((s) => s.slug != saved.slug)];
+        return true;
+      } catch (e) {
+        // Testo respinto dal filtro: niente fallback locale, altrimenti lo
+        // spot comparirebbe in UI senza essere mai stato salvato.
+        lastSaveError = moderationMessage(e);
+        if (lastSaveError != null) {
+          _logBlock(e, 'spots', '${spot.title} ${spot.note}');
+          return false;
+        }
+        rethrow;
+      }
     }
 
     // Fallback locale se Supabase non disponibile
@@ -183,7 +223,33 @@ class SpotEntriesController extends Notifier<List<SpotEntry>> {
       state = state.map((s) => s.slug == saved.slug ? saved : s).toList();
       return true;
     } catch (e) {
+      lastSaveError = moderationMessage(e);
+      _logBlock(e, 'spots', '${spot.title} ${spot.note}');
       debugPrint('[Spots] updateCustomSpot error: $e');
+      return false;
+    }
+  }
+
+  /// true = proposta registrata. Un secondo invio sullo stesso spot fallisce
+  /// per via dell'indice unico sui pending: e' voluto.
+  Future<bool> submitEditSuggestion({
+    required String userId,
+    required String spotId,
+    required Map<String, dynamic> payload,
+  }) async {
+    final repository = ref.read(spotsRepositoryProvider);
+    if (repository == null) return false;
+    try {
+      await repository.submitEditSuggestion(
+        userId: userId,
+        spotId: spotId,
+        payload: payload,
+      );
+      return true;
+    } catch (e) {
+      lastSaveError = moderationMessage(e);
+      _logBlock(e, 'spot_edit_suggestions', payload.values.join(' '));
+      debugPrint('[Spots] submitEditSuggestion error: $e');
       return false;
     }
   }

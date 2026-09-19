@@ -159,6 +159,17 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           ),
         ),
         _AdminSectionCard(
+          title: 'Proposte sugli spot',
+          body:
+              'Modifiche proposte dagli utenti su spot che non possono editare. '
+              'Approvando, i campi proposti sovrascrivono quelli dello spot.',
+          child: _AdminSpotSuggestionsSection(
+            itemsAsync: ref.watch(adminSpotSuggestionsProvider),
+            onApprove: (item) => _reviewSpotSuggestion(item, true),
+            onReject: (item) => _reviewSpotSuggestion(item, false),
+          ),
+        ),
+        _AdminSectionCard(
           title: 'Eventi',
           // Il controllo di visibilità esiste solo per gli eventi ufficiali
           // (tabella `events`): quelli della community si possono solo eliminare.
@@ -337,6 +348,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       ref.invalidate(adminFeedbackProvider);
       ref.invalidate(adminReportedCommentsProvider);
       ref.invalidate(adminPendingDeletionsProvider);
+      ref.invalidate(adminSpotSuggestionsProvider);
       _showSnackBar(done);
     } catch (e) {
       _showSnackBar('Errore: $e');
@@ -354,6 +366,14 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             .read(adminRepositoryProvider)!
             .resolveCommentReport(item.id, hide: hide),
         hide ? 'Commento nascosto' : 'Segnalazione respinta',
+      );
+
+  Future<void> _reviewSpotSuggestion(AdminSpotSuggestion item, bool approve) =>
+      _runAdminAction(
+        () => ref
+            .read(adminRepositoryProvider)!
+            .reviewSpotSuggestion(item.id, approve),
+        approve ? 'Proposta applicata allo spot' : 'Proposta rifiutata',
       );
 
   Future<void> _markDeletionHandled(AdminDeletionRequest request) =>
@@ -2132,6 +2152,103 @@ class _AdminTabBar extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// Proposte di modifica agli spot: applicarle o rifiutarle.
+class _AdminSpotSuggestionsSection extends StatelessWidget {
+  const _AdminSpotSuggestionsSection({
+    required this.itemsAsync,
+    required this.onApprove,
+    required this.onReject,
+  });
+
+  final AsyncValue<List<AdminSpotSuggestion>> itemsAsync;
+  final ValueChanged<AdminSpotSuggestion> onApprove;
+  final ValueChanged<AdminSpotSuggestion> onReject;
+
+  @override
+  Widget build(BuildContext context) {
+    return itemsAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Text('Errore nel caricamento proposte: $e'),
+      data: (items) {
+        if (items.isEmpty) {
+          return Text(
+            'Nessuna proposta in attesa.',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.steel),
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (final item in items)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEF6EC),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFF3D5AE)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.spotTitle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(color: AppColors.graphite),
+                    ),
+                    const SizedBox(height: 6),
+                    // ponytail: riepilogo grezzo dei campi proposti. Un diff
+                    // campo per campo si fa quando le proposte saranno tante.
+                    Text(
+                      item.summary,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.graphite),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Proposta da ${item.author}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.steel),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      alignment: WrapAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => onReject(item),
+                          child: const Text('Rifiuta'),
+                        ),
+                        FilledButton.icon(
+                          onPressed: () => onApprove(item),
+                          icon: const Icon(Icons.check, size: 18),
+                          label: const Text('Applica allo spot'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }

@@ -42,7 +42,7 @@ footer.site a { margin-right:1rem; }
 <header class="site"><a href="/">PitLap</a></header>
 <main>
 <h1>Informativa sul trattamento dei dati personali (Privacy Policy)</h1>
-<p><strong>Versione: 1.2 — in vigore dal 2026-09-15</strong><br><strong>Ultimo aggiornamento: 2026-09-15</strong></p>
+<p><strong>Versione: 1.3 — in vigore dal 2026-09-19</strong><br><strong>Ultimo aggiornamento: 2026-09-19</strong></p>
 <hr>
 <h2>1. Titolare del trattamento</h2>
 <p>Il titolare del trattamento dei dati personali raccolti tramite PitLap è:</p>
@@ -110,6 +110,18 @@ footer.site a { margin-right:1rem; }
 <li>Pagina dell'applicazione da cui è partita la segnalazione e user agent del dispositivo, a soli fini diagnostici</li>
 </ul>
 <p>L'utente è invitato a non inserire nel testo libero del messaggio dati personali non necessari, propri o di terzi.</p>
+<h3>3.8 Dati relativi al filtro automatico dei contenuti</h3>
+<p>PitLap applica un controllo automatico sui testi inviati dagli utenti (commenti, descrizioni degli spot, proposte di modifica, nome pubblico del profilo) per impedire la pubblicazione di linguaggio volgare, bestemmie, contenuti sessuali espliciti, insulti discriminatori e riferimenti sessuali che coinvolgano minori.</p>
+<p>Il controllo confronta il testo con un elenco di termini ed espressioni predefinito, conservato all'interno del database di PitLap. <strong>Non viene utilizzato alcun servizio di intelligenza artificiale esterno e nessun testo lascia l'infrastruttura del titolare per questa finalità.</strong></p>
+<p>Se il controllo rileva una corrispondenza, il contenuto <strong>non viene pubblicato né conservato</strong>: l'utente riceve un messaggio che lo invita a modificare il testo. Del tentativo bloccato viene registrato:</p>
+<ul>
+<li>La categoria rilevata (es. linguaggio volgare, contenuto sessuale)</li>
+<li>La sezione dell'applicazione e il campo interessati</li>
+<li>L'identificativo utente tecnico, se l'utente è autenticato</li>
+<li>La data e l'ora</li>
+<li><strong>I primi 300 caratteri del testo respinto</strong>, conservati per un massimo di 90 giorni e successivamente cancellati in modo automatico e irreversibile</li>
+</ul>
+<p>Trascorsi i 90 giorni restano le sole informazioni di classificazione, prive del testo originale.</p>
 <hr>
 <h2>4. Finalità del trattamento</h2>
 <h3>4.1 Creazione e gestione dell'account</h3>
@@ -122,6 +134,8 @@ footer.site a { margin-right:1rem; }
 <p>Tracciare consensi e prese visione per dimostrare la conformità normativa.<br><strong>Base giuridica:</strong> obbligo legale (art. 6 §1 lett. c GDPR) e legittimo interesse.</p>
 <h3>4.5 Comunicazioni marketing via email (sospese durante la beta)</h3>
 <p>Per inviare aggiornamenti, novità o comunicazioni promozionali relative a PitLap. <strong>Questa finalità è attualmente sospesa: durante la beta chiusa nessuna email marketing viene inviata e il relativo opt-in non viene raccolto.</strong> Quando il marketing verrà attivato, sarà richiesto un consenso separato, specifico e revocabile in qualsiasi momento.<br><strong>Base giuridica (futura):</strong> consenso dell'interessato (art. 6 §1 lett. a GDPR).</p>
+<h3>4.3-bis Filtro automatico dei contenuti pubblicati</h3>
+<p>Impedire la pubblicazione di contenuti offensivi, sessualmente espliciti o riferiti a minori, tutelare gli altri utenti e mantenere l'idoneità del servizio a un pubblico che include minori di età pari o superiore a 14 anni. La conservazione temporanea dei tentativi bloccati serve a verificare la correttezza del filtro, a ridurre i blocchi errati e a individuare abusi ripetuti.<br><strong>Base giuridica:</strong> legittimo interesse del titolare e degli altri utenti (art. 6 §1 lett. f GDPR), con particolare riguardo alla protezione dei minori.</p>
 <h3>4.6 Gestione delle segnalazioni e assistenza</h3>
 <p>Per ricevere, analizzare e dare riscontro alle segnalazioni di malfunzionamento, ai suggerimenti e alle richieste di contatto inviate tramite la funzione "Invia feedback", nonché per correggere i difetti rilevati e migliorare il servizio.<br><strong>Base giuridica:</strong> legittimo interesse del titolare a garantire il corretto funzionamento e il miglioramento del servizio (art. 6 §1 lett. f GDPR); quando l'utente fornisce spontaneamente un recapito per essere ricontattato, il trattamento di tale recapito si fonda sul riscontro alla richiesta dell'interessato.</p>
 <hr>
@@ -170,6 +184,8 @@ footer.site a { margin-right:1rem; }
 <tr><td>Log tecnici</td><td>PitLap non conserva log applicativi propri. I log tecnici di piattaforma (accessi alle API, errori) sono conservati da Supabase per i periodi previsti dal piano del progetto</td></tr>
 <tr><td>Dati dei consensi</td><td>Per tutta la durata dell'account + il tempo necessario a dimostrare la conformità (almeno 5 anni a fini difensivi)</td></tr>
 <tr><td>Segnalazioni inviate tramite "Invia feedback"</td><td>24 mesi dalla ricezione, o fino alla chiusura della segnalazione se successiva</td></tr>
+<tr><td>Testo dei contenuti respinti dal filtro automatico</td><td>90 giorni dal tentativo, poi cancellazione automatica del testo</td></tr>
+<tr><td>Classificazione dei contenuti respinti (categoria, sezione, utente, data)</td><td>Conservata senza il testo, per finalità statistiche e di prevenzione degli abusi</td></tr>
 <tr><td>Dati di sessione (token)</td><td>Durata della validità del token di sessione Supabase</td></tr>
 </tbody></table></div>
 <hr>
@@ -204,13 +220,14 @@ footer.site a { margin-right:1rem; }
 <hr>
 <h2>13. Decisioni automatizzate e profilazione</h2>
 <p>PitLap non effettua processi decisionali automatizzati con effetti giuridici o analogamente significativi nei confronti dell'utente. Il sistema PitCoin è un indicatore di reputazione comunitaria basato su interazioni esplicite dell'utente, non su profilazione comportamentale automatizzata.</p>
+<p>Il filtro automatico dei contenuti descritto al punto 3.8 opera sul singolo testo inviato, confrontandolo con un elenco predefinito di termini: non costruisce profili dell'utente, non ne valuta aspetti della personalità e non produce effetti giuridici. Il suo unico effetto è il mancato inserimento di quel contenuto. L'utente può modificare il testo e riprovare, e può contestare un blocco che ritenga errato scrivendo ai contatti indicati al punto 1: la valutazione è svolta da una persona.</p>
 <p>Se in futuro venissero introdotti elementi di profilazione rilevante, questa sezione verrà aggiornata con le informazioni previste dall'art. 22 GDPR.</p>
 <hr>
 <h2>14. Aggiornamenti dell'informativa</h2>
 <p>La presente informativa può essere aggiornata nel tempo. Le modifiche rilevanti saranno comunicate agli utenti tramite avviso in-app o email, ove opportuno. Ogni versione riporta la data di efficacia e il numero di versione.</p>
 <p>Lo storico delle versioni è disponibile su richiesta scrivendo a beppe.apps@gmail.com.</p>
 <hr>
-<p><em>PitLap — pitlap.app</em><br><em>Versione: 1.2 — in vigore dal 2026-09-15</em><br><em>Ultimo aggiornamento: 2026-09-15</em></p>
+<p><em>PitLap — pitlap.app</em><br><em>Versione: 1.3 — in vigore dal 2026-09-19</em><br><em>Ultimo aggiornamento: 2026-09-19</em></p>
 </main>
 <footer class="site">
 <a href="/legal/privacy-policy.html">Privacy Policy</a>

@@ -157,11 +157,11 @@ class SpotDetailScreen extends ConsumerWidget {
                     runSpacing: 12,
                     children: [
                       FilledButton.icon(
-                        onPressed: () => canEditSpot
-                            ? context.go(
-                                '/submit-place?type=spot&spotSlug=${Uri.encodeComponent(spot.slug)}',
-                              )
-                            : context.go('/submit-place?type=spot'),
+                        // Anche chi non puo' editare parte dallo spot corrente:
+                        // senza spotSlug il form nasceva vuoto e creava un doppione.
+                        onPressed: () => context.go(
+                          '/submit-place?type=spot&spotSlug=${Uri.encodeComponent(spot.slug)}',
+                        ),
                         icon: Icon(
                           canEditSpot
                               ? Icons.edit_outlined

@@ -1,7 +1,7 @@
 # Informativa sul trattamento dei dati personali (Privacy Policy)
 
-**Versione: 1.2 — in vigore dal 2026-09-15**
-**Ultimo aggiornamento: 2026-09-15**
+**Versione: 1.3 — in vigore dal 2026-09-19**
+**Ultimo aggiornamento: 2026-09-19**
 
 ---
 
@@ -83,6 +83,32 @@ Dati raccolti tramite la funzione "Invia feedback", disponibile anche senza acco
 
 L'utente è invitato a non inserire nel testo libero del messaggio dati personali non necessari, propri o di terzi.
 
+### 3.8 Dati relativi al filtro automatico dei contenuti
+
+PitLap applica un controllo automatico sui testi inviati dagli utenti (commenti,
+descrizioni degli spot, proposte di modifica, nome pubblico del profilo) per
+impedire la pubblicazione di linguaggio volgare, bestemmie, contenuti sessuali
+espliciti, insulti discriminatori e riferimenti sessuali che coinvolgano minori.
+
+Il controllo confronta il testo con un elenco di termini ed espressioni
+predefinito, conservato all'interno del database di PitLap. **Non viene
+utilizzato alcun servizio di intelligenza artificiale esterno e nessun testo
+lascia l'infrastruttura del titolare per questa finalità.**
+
+Se il controllo rileva una corrispondenza, il contenuto **non viene pubblicato
+né conservato**: l'utente riceve un messaggio che lo invita a modificare il
+testo. Del tentativo bloccato viene registrato:
+
+- La categoria rilevata (es. linguaggio volgare, contenuto sessuale)
+- La sezione dell'applicazione e il campo interessati
+- L'identificativo utente tecnico, se l'utente è autenticato
+- La data e l'ora
+- **I primi 300 caratteri del testo respinto**, conservati per un massimo di 90
+  giorni e successivamente cancellati in modo automatico e irreversibile
+
+Trascorsi i 90 giorni restano le sole informazioni di classificazione, prive
+del testo originale.
+
 ---
 
 ## 4. Finalità del trattamento
@@ -101,6 +127,17 @@ Mostrare contenuti, gestire il profilo, il garage, i check-in, il sistema di fol
 
 Monitorare il corretto funzionamento, prevenire utilizzi impropri e proteggere l'integrità della piattaforma.
 **Base giuridica:** legittimo interesse del titolare (art. 6 §1 lett. f GDPR).
+
+### 4.3-bis Filtro automatico dei contenuti pubblicati
+
+Impedire la pubblicazione di contenuti offensivi, sessualmente espliciti o
+riferiti a minori, tutelare gli altri utenti e mantenere l'idoneità del
+servizio a un pubblico che include minori di età pari o superiore a 14 anni.
+La conservazione temporanea dei tentativi bloccati serve a verificare la
+correttezza del filtro, a ridurre i blocchi errati e a individuare abusi
+ripetuti.
+**Base giuridica:** legittimo interesse del titolare e degli altri utenti
+(art. 6 §1 lett. f GDPR), con particolare riguardo alla protezione dei minori.
 
 ### 4.4 Adempimenti documentali e di conformità
 
@@ -182,6 +219,8 @@ Il dominio di invio di PitLap è configurato su Resend nella regione **Irlanda (
 | Log tecnici | PitLap non conserva log applicativi propri. I log tecnici di piattaforma (accessi alle API, errori) sono conservati da Supabase per i periodi previsti dal piano del progetto |
 | Dati dei consensi | Per tutta la durata dell'account + il tempo necessario a dimostrare la conformità (almeno 5 anni a fini difensivi) |
 | Segnalazioni inviate tramite "Invia feedback" | 24 mesi dalla ricezione, o fino alla chiusura della segnalazione se successiva |
+| Testo dei contenuti respinti dal filtro automatico | 90 giorni dal tentativo, poi cancellazione automatica del testo |
+| Classificazione dei contenuti respinti (categoria, sezione, utente, data) | Conservata senza il testo, per finalità statistiche e di prevenzione degli abusi |
 | Dati di sessione (token) | Durata della validità del token di sessione Supabase |
 
 ---
@@ -231,6 +270,14 @@ L'utente ha inoltre il diritto di proporre **reclamo al Garante per la protezion
 
 PitLap non effettua processi decisionali automatizzati con effetti giuridici o analogamente significativi nei confronti dell'utente. Il sistema PitCoin è un indicatore di reputazione comunitaria basato su interazioni esplicite dell'utente, non su profilazione comportamentale automatizzata.
 
+Il filtro automatico dei contenuti descritto al punto 3.8 opera sul singolo
+testo inviato, confrontandolo con un elenco predefinito di termini: non
+costruisce profili dell'utente, non ne valuta aspetti della personalità e non
+produce effetti giuridici. Il suo unico effetto è il mancato inserimento di
+quel contenuto. L'utente può modificare il testo e riprovare, e può contestare
+un blocco che ritenga errato scrivendo ai contatti indicati al punto 1: la
+valutazione è svolta da una persona.
+
 Se in futuro venissero introdotti elementi di profilazione rilevante, questa sezione verrà aggiornata con le informazioni previste dall'art. 22 GDPR.
 
 ---
@@ -244,5 +291,5 @@ Lo storico delle versioni è disponibile su richiesta scrivendo a beppe.apps@gma
 ---
 
 *PitLap — pitlap.app*
-*Versione: 1.2 — in vigore dal 2026-09-15*
-*Ultimo aggiornamento: 2026-09-15*
+*Versione: 1.3 — in vigore dal 2026-09-19*
+*Ultimo aggiornamento: 2026-09-19*
