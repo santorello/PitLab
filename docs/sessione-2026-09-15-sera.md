@@ -215,3 +215,16 @@ Prossime fasi: 2 (mappa a pieno spazio), 3 (Profilo a schede, Garage compatto), 
   contano solo ciò che resta da fare.
 - Lista utenti: aggiunta la data di iscrizione (`created_at`) nella riga.
 - Feedback: pulsante "Rispondi" che apre il client di posta (mailto) con destinatario, oggetto e messaggio citato. L'invio dall'app richiede SMTP Resend, non ancora configurato.
+
+## Piste community + rivendica (19/09)
+- Delta `2026-09-19-piste-community-e-rivendica.sql` (**applicato su dev**, da eseguire su prod):
+  `tracks.website_url/hours/is_community`, tabella `track_claims` + RLS, RPC `admin_track_claims`,
+  `admin_resolve_track_claim` (approva → track_managers + is_community=false + ruolo track_organizer),
+  `admin_create_community_track` (submitted_by NULL → nessun auto-gestore e nessun PitCoin), dashboard con `track_claims`.
+- Scelta: scheda "Segnalata dalla community" vs "Gestita dal titolare"; niente stato pista sulle community.
+  Niente bollino generico "Verificato PitLap" (promette più di quanto si possa mantenere).
+- App: TrackDetail/TrackListItem con website/hours/is_community; scheda pista con orari, sito cliccabile,
+  striscia community + dialogo "Sei il gestore?"; card lista con etichetta; admin con sezione Rivendicazioni
+  e modulo "Nuova scheda community".
+- Provato su dev: creazione community (0 gestori, 0 PitCoin) → rivendica utente → auto-approvazione bloccata →
+  approvazione admin → gestore collegato, is_community=false, ruolo track_organizer.

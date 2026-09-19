@@ -110,6 +110,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     final pendingDeletions = pendingDeletionsAsync.asData?.value ?? const [];
     final reported = ref.watch(adminReportedCommentsProvider).asData?.value ??
         const <AdminReportedComment>[];
+    final claims = ref.watch(adminTrackClaimsProvider).asData?.value ??
+        const <AdminTrackClaim>[];
 
     // Sezioni per scheda. La panoramica sta in una schermata; le altre
     // scorrono dentro il loro riquadro, non trascinando tutta la pagina.
@@ -128,6 +130,17 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           ),
         ),
         _AdminSectionCard(
+          title: 'Rivendicazioni piste',
+          body:
+              'Utenti che dichiarano di gestire una pista segnalata dalla community. '
+              'Verifica tu prima di approvare: chi approvi diventa gestore della scheda.',
+          child: _AdminTrackClaimsSection(
+            claims: claims,
+            onApprove: (claim) => _resolveClaim(claim, approve: true),
+            onReject: (claim) => _resolveClaim(claim, approve: false),
+          ),
+        ),
+        _AdminSectionCard(
           title: 'Piste',
           body:
               'Lista completa: modifica stato approvazione, naviga all\'editor, elimina.',
@@ -136,6 +149,20 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             onApprove: (t) => _updateTrackApproval(t, 'approved'),
             onReject: (t) => _updateTrackApproval(t, 'rejected'),
             onDelete: (t) => _deleteTrack(t),
+          ),
+        ),
+        _AdminSectionCard(
+          title: 'Aggiungi pista segnalata dalla community',
+          body:
+              'Dati pubblici raccolti da te. La scheda nasce senza gestore, '
+              'senza stato pista e senza PitCoin per nessuno.',
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: FilledButton.icon(
+              onPressed: _openCommunityTrackDialog,
+              icon: const Icon(Icons.add_location_alt_outlined),
+              label: const Text('Nuova scheda community'),
+            ),
           ),
         ),
         _AdminSectionCard(
@@ -269,7 +296,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             current: _tab,
             badges: [
               0,
-              approvals.length + reported.length,
+              approvals.length + reported.length + claims.length,
               feedback.length + pendingDeletions.length,
               0,
             ],
@@ -351,6 +378,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       ref.invalidate(adminReportedCommentsProvider);
       ref.invalidate(adminPendingDeletionsProvider);
       ref.invalidate(adminSpotSuggestionsProvider);
+      ref.invalidate(adminTrackClaimsProvider);
       _showSnackBar(done);
     } catch (e) {
       _showSnackBar('Errore: $e');
@@ -409,6 +437,117 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             .markDeletionHandled(request.userId),
         'Richiesta segnata come gestita',
       );
+
+  Future<void> _resolveClaim(AdminTrackClaim claim, {required bool approve}) =>
+      _runAdminAction(
+        () => ref
+            .read(adminRepositoryProvider)!
+            .resolveTrackClaim(claim.id, approve: approve),
+        approve
+            ? '${claim.userName} è ora gestore di ${claim.trackName}'
+            : 'Richiesta rifiutata',
+      );
+
+  Future<void> _openCommunityTrackDialog() async {
+    final name = TextEditingController();
+    final city = TextEditingController();
+    final address = TextEditingController();
+    final coords = TextEditingController();
+    final website = TextEditingController();
+    final hours = TextEditingController();
+    final description = TextEditingController();
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => DialogControllerScope(
+        controllers: [name, city, address, coords, website, hours, description],
+        child: AlertDialog(
+          title: const Text('Nuova scheda community'),
+          content: SizedBox(
+            width: 460,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: name,
+                    decoration: const InputDecoration(labelText: 'Nome *'),
+                  ),
+                  TextField(
+                    controller: city,
+                    decoration: const InputDecoration(labelText: 'Città *'),
+                  ),
+                  TextField(
+                    controller: address,
+                    decoration: const InputDecoration(labelText: 'Indirizzo'),
+                  ),
+                  TextField(
+                    controller: coords,
+                    decoration: const InputDecoration(
+                      labelText: 'Coordinate (lat, lon)',
+                      hintText: '45.622246, 8.9596614',
+                    ),
+                  ),
+                  TextField(
+                    controller: website,
+                    decoration: const InputDecoration(labelText: 'Sito'),
+                  ),
+                  TextField(
+                    controller: hours,
+                    decoration: const InputDecoration(
+                      labelText: 'Orari',
+                      hintText: 'Domenica 10:30-18:00',
+                    ),
+                  ),
+                  TextField(
+                    controller: description,
+                    minLines: 2,
+                    maxLines: 3,
+                    decoration:
+                        const InputDecoration(labelText: 'Descrizione breve'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Annulla'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('Crea'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (confirmed != true) return;
+    if (name.text.trim().isEmpty || city.text.trim().isEmpty) {
+      _showSnackBar('Nome e città sono obbligatori');
+      return;
+    }
+    final parts = coords.text.split(',');
+    final lat = parts.length == 2 ? double.tryParse(parts[0].trim()) : null;
+    final lon = parts.length == 2 ? double.tryParse(parts[1].trim()) : null;
+
+    await _runAdminAction(
+      () => ref.read(adminRepositoryProvider)!.createCommunityTrack(
+            name: name.text.trim(),
+            city: city.text.trim(),
+            address: address.text.trim(),
+            latitude: lat,
+            longitude: lon,
+            website: website.text.trim(),
+            hours: hours.text.trim(),
+            shortDescription: description.text.trim(),
+          ),
+      'Scheda creata: ora è visibile come "segnalata dalla community"',
+    );
+    ref.invalidate(adminAllTracksProvider);
+    _invalidatePublicCaches();
+  }
 
   // ── Approvals ─────────────────────────────────────────────────────────────
 
@@ -1410,6 +1549,89 @@ class _AdminFeedbackSection extends StatelessWidget {
 }
 
 /// Commenti segnalati: nasconderli o respingere la segnalazione.
+class _AdminTrackClaimsSection extends StatelessWidget {
+  const _AdminTrackClaimsSection({
+    required this.claims,
+    required this.onApprove,
+    required this.onReject,
+  });
+
+  final List<AdminTrackClaim> claims;
+  final ValueChanged<AdminTrackClaim> onApprove;
+  final ValueChanged<AdminTrackClaim> onReject;
+
+  @override
+  Widget build(BuildContext context) {
+    if (claims.isEmpty) {
+      return Text(
+        'Nessuna rivendicazione in attesa.',
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.copyWith(color: AppColors.steel),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final claim in claims)
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceMuted,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.borderStrong),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${claim.userName} → ${claim.trackName}',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall
+                      ?.copyWith(fontWeight: FontWeight.w700),
+                ),
+                if (claim.message.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(claim.message),
+                ],
+                if (claim.contact.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Contatto: ${claim.contact}',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: AppColors.steel),
+                  ),
+                ],
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  alignment: WrapAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => onReject(claim),
+                      child: const Text('Rifiuta'),
+                    ),
+                    FilledButton.icon(
+                      onPressed: () => onApprove(claim),
+                      icon: const Icon(Icons.verified_outlined, size: 18),
+                      label: const Text('Approva: diventa gestore'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
 class _AdminReportedCommentsSection extends StatelessWidget {
   const _AdminReportedCommentsSection({
     required this.itemsAsync,

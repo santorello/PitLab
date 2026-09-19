@@ -17,6 +17,9 @@ class TrackDetail {
     required this.availableServiceKeys,
     this.categoryKeys = const [],
     this.imageUrl,
+    this.websiteUrl = '',
+    this.hours = '',
+    this.isCommunity = false,
   });
 
   final String id;
@@ -40,6 +43,16 @@ class TrackDetail {
 
   /// URL cover/copertina (tracks.image_url).
   final String? imageUrl;
+
+  /// Sito ufficiale della pista (tracks.website_url).
+  final String websiteUrl;
+
+  /// Orari in testo libero (tracks.hours).
+  final String hours;
+
+  /// Scheda segnalata dalla community, nessun gestore l'ha ancora rivendicata.
+  /// Niente stato pista: quel dato lo conosce solo chi la gestisce.
+  final bool isCommunity;
 
   factory TrackDetail.fromMap(
     Map<String, dynamic> map, {
@@ -74,6 +87,9 @@ class TrackDetail {
       latitude: (map['latitude'] as num?)?.toDouble(),
       longitude: (map['longitude'] as num?)?.toDouble(),
       externalMapUrl: map['external_map_url'] as String? ?? '',
+      websiteUrl: map['website_url'] as String? ?? '',
+      hours: map['hours'] as String? ?? '',
+      isCommunity: map['is_community'] as bool? ?? false,
       status: statusMap is Map<String, dynamic>
           ? statusMap['status'] as String? ?? 'unknown'
           : 'unknown',

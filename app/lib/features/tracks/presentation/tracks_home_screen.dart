@@ -205,6 +205,7 @@ class _TracksHomeScreenState extends ConsumerState<TracksHomeScreen> {
                               serviceLabels: track.serviceLabels,
                               categoryKeys: track.categoryKeys,
                               imageUrl: track.imageUrl,
+                              isCommunity: track.isCommunity,
                               note: track.statusMessage.isNotEmpty
                                   ? track.statusMessage
                                   : track.shortDescription,
@@ -629,6 +630,7 @@ class _TrackCardV3 extends ConsumerWidget {
     required this.imageUrl,
     required this.note,
     required this.onOpen,
+    this.isCommunity = false,
   });
 
   final String trackId;
@@ -643,6 +645,9 @@ class _TrackCardV3 extends ConsumerWidget {
   final String? imageUrl;
   final String note;
   final VoidCallback onOpen;
+
+  /// Scheda senza gestore: niente stato pista, etichetta esplicita.
+  final bool isCommunity;
 
   /// Converte una category key in label display-friendly.
   /// Usa l10n per le 4 categorie principali, capitalizza le altre.
@@ -740,7 +745,14 @@ class _TrackCardV3 extends ConsumerWidget {
     final signals = <Widget>[
       CardStatRow(
         stats: [
-          CardStat(dotColor: statusColor, text: statusLabel, textColor: statusColor),
+          if (isCommunity)
+            const CardStat(
+              icon: Icons.groups_outlined,
+              text: 'Segnalata dalla community',
+            )
+          else
+            CardStat(
+                dotColor: statusColor, text: statusLabel, textColor: statusColor),
           CardStat(icon: Icons.group_outlined, text: arrivalSummaryLabel),
           if (disciplineText.isNotEmpty)
             CardStat(icon: Icons.flag_outlined, text: disciplineText),

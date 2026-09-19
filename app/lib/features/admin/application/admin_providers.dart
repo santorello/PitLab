@@ -8,6 +8,20 @@ import '../../auth/application/auth_providers.dart';
 
 // ─── Record types ────────────────────────────────────────────────────────────
 
+/// Richiesta di un utente che dichiara di gestire una pista community.
+class AdminTrackClaim {
+  const AdminTrackClaim(this.raw);
+
+  final Map<String, dynamic> raw;
+
+  String get id => raw['id'] as String? ?? '';
+  String get trackName => raw['track_name'] as String? ?? '';
+  String get trackSlug => raw['track_slug'] as String? ?? '';
+  String get userName => raw['user_name'] as String? ?? 'Utente';
+  String get message => raw['message'] as String? ?? '';
+  String get contact => raw['contact'] as String? ?? '';
+}
+
 /// Commento segnalato ancora da gestire (RPC `admin_reported_comments`).
 class AdminReportedComment {
   const AdminReportedComment(this.raw);
@@ -242,6 +256,43 @@ class AdminRepository {
         'p_id': id,
         'p_approve': approve,
         'p_notes': notes,
+      });
+
+  Future<List<AdminTrackClaim>> fetchTrackClaims() async {
+    final rows = await _client.rpc('admin_track_claims');
+    return ((rows as List?) ?? const [])
+        .whereType<Map>()
+        .map((row) => AdminTrackClaim(row.cast<String, dynamic>()))
+        .toList();
+  }
+
+  Future<void> resolveTrackClaim(String claimId, {required bool approve}) =>
+      _client.rpc('admin_resolve_track_claim',
+          params: {'p_claim_id': claimId, 'p_approve': approve});
+
+  /// Scheda "segnalata dalla community": nasce senza proprietario, quindi non
+  /// assegna gestori né PitCoin a nessuno.
+  Future<void> createCommunityTrack({
+    required String name,
+    required String city,
+    String? address,
+    double? latitude,
+    double? longitude,
+    String? website,
+    String? hours,
+    String? shortDescription,
+    String? mapUrl,
+  }) =>
+      _client.rpc('admin_create_community_track', params: {
+        'p_name': name,
+        'p_city': city,
+        'p_address': address,
+        'p_latitude': latitude,
+        'p_longitude': longitude,
+        'p_website': website,
+        'p_hours': hours,
+        'p_short_description': shortDescription,
+        'p_map_url': mapUrl,
       });
 
   Future<AdminDashboard?> fetchDashboard() async {
@@ -589,6 +640,14 @@ final adminDashboardProvider = FutureProvider<AdminDashboard?>((ref) async {
   final role = ref.watch(effectiveUserRoleProvider);
   if (repository == null || role != 'admin') return null;
   return repository.fetchDashboard();
+});
+
+final adminTrackClaimsProvider =
+    FutureProvider<List<AdminTrackClaim>>((ref) async {
+  final repository = ref.watch(adminRepositoryProvider);
+  final role = ref.watch(effectiveUserRoleProvider);
+  if (repository == null || role != 'admin') return const [];
+  return repository.fetchTrackClaims();
 });
 
 final adminReportedCommentsProvider =

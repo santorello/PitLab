@@ -11,6 +11,7 @@ class TrackListItem {
     this.categoryKeys = const [],
     this.serviceLabels = const [],
     this.imageUrl,
+    this.isCommunity = false,
   });
 
   final String id;
@@ -23,6 +24,9 @@ class TrackListItem {
   final int availableServiceCount;
   final List<String> serviceLabels;
   final String? imageUrl;
+
+  /// Scheda segnalata dalla community (nessun gestore l'ha rivendicata).
+  final bool isCommunity;
 
   /// Chiavi categoria reali da track_category_links → track_categories.key
   /// Es. ['buggy'], ['mini_z'], ['scaler', 'bashing']
@@ -67,6 +71,7 @@ class TrackListItem {
       name: map['name'] as String? ?? '',
       city: map['city'] as String? ?? '',
       shortDescription: map['short_description'] as String? ?? '',
+      isCommunity: map['is_community'] as bool? ?? false,
       status: statusMap is Map<String, dynamic>
           ? statusMap['status'] as String? ?? 'unknown'
           : 'unknown',

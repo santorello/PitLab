@@ -14,6 +14,7 @@ import '../../../shared/models/track_arrival_summary.dart';
 import '../../../shared/models/track_detail.dart';
 import '../../../shared/models/track_weather_day.dart';
 import '../../../shared/models/today_arrival_status.dart';
+import '../../../shared/widgets/dialog_controller_scope.dart';
 import '../../../shared/utils/share_entity.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../comments/presentation/comments_section.dart';
@@ -245,13 +246,18 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                               ),
                             ],
                             const SizedBox(height: 16),
-                            _HeroStatusStrip(
-                              statusLabel: statusLabel,
-                              statusColor: statusColor,
-                              statusMessage: track.statusMessage.isNotEmpty
-                                  ? track.statusMessage
-                                  : l10n.trackStatusUpdated,
-                            ),
+                            if (track.isCommunity)
+                              _CommunityStrip(
+                                onClaim: () => _openClaimDialog(track),
+                              )
+                            else
+                              _HeroStatusStrip(
+                                statusLabel: statusLabel,
+                                statusColor: statusColor,
+                                statusMessage: track.statusMessage.isNotEmpty
+                                    ? track.statusMessage
+                                    : l10n.trackStatusUpdated,
+                              ),
                             SizedBox(height: isPhone ? 10 : 14),
                             Wrap(
                               spacing: isPhone ? 6 : 10,
@@ -264,6 +270,23 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                   value: _heroPresenceValue(context, todayArrivalSummary),
                                   color: AppColors.signalOrange,
                                 ),
+                                if (track.hours.isNotEmpty)
+                                  _HeroQuickFact(
+                                    compact: isPhone,
+                                    icon: Icons.schedule_outlined,
+                                    label: 'Orari',
+                                    value: track.hours,
+                                    color: AppColors.wetBlue,
+                                  ),
+                                if (track.websiteUrl.isNotEmpty)
+                                  _HeroQuickFact(
+                                    compact: isPhone,
+                                    icon: Icons.language_outlined,
+                                    label: 'Sito',
+                                    value: _hostOf(track.websiteUrl),
+                                    color: AppColors.wetBlue,
+                                    onTap: () => _openUrl(track.websiteUrl),
+                                  ),
                                 if (weatherDays.isNotEmpty)
                                   _HeroQuickFact(
                                     compact: isPhone,
@@ -406,6 +429,97 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
         ),
       ),
     );
+  }
+
+  static String _hostOf(String url) {
+    final host = Uri.tryParse(url)?.host ?? '';
+    return host.isEmpty ? url : host.replaceFirst('www.', '');
+  }
+
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.tryParse(url.startsWith('http') ? url : 'https://$url');
+    if (uri == null) return;
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  /// Rivendica di una scheda community: la richiesta finisce nella coda admin,
+  /// nessun automatismo assegna la pista da solo.
+  Future<void> _openClaimDialog(TrackDetail track) async {
+    final user = ref.read(currentUserProvider);
+    final messenger = ScaffoldMessenger.of(context);
+    if (user == null) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Accedi per rivendicare la scheda.')),
+      );
+      return;
+    }
+    final messageController = TextEditingController();
+    final contactController = TextEditingController(text: user.email ?? '');
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => DialogControllerScope(
+        controllers: [messageController, contactController],
+        child: AlertDialog(
+          title: Text('Rivendica ${track.name}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Verifichiamo a mano che tu gestisca davvero questa pista, '
+                'poi la scheda passa sotto il tuo controllo.',
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: contactController,
+                decoration: const InputDecoration(
+                  labelText: 'Come ti ricontattiamo (email o telefono)',
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: messageController,
+                minLines: 2,
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  labelText: 'Due righe su di te e sulla pista',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Annulla'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('Invia richiesta'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (confirmed != true) return;
+
+    final client = ref.read(authClientProvider);
+    if (client == null) return;
+    try {
+      await client.from('track_claims').insert({
+        'track_id': track.id,
+        'user_id': user.id,
+        'message': messageController.text.trim(),
+        'contact': contactController.text.trim(),
+      });
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Richiesta inviata: ti ricontattiamo per la verifica.'),
+        ),
+      );
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('Richiesta non inviata: $e')),
+      );
+    }
   }
 
   static String _statusLabel(BuildContext context, String status) {
@@ -1499,6 +1613,7 @@ class _HeroQuickFact extends StatelessWidget {
     required this.value,
     required this.color,
     this.compact = false,
+    this.onTap,
   });
 
   final IconData icon;
@@ -1506,12 +1621,25 @@ class _HeroQuickFact extends StatelessWidget {
   final String value;
   final Color color;
 
+  /// Se valorizzato la pillola diventa cliccabile (es. il sito della pista).
+  final VoidCallback? onTap;
+
   /// Telefono: pillola su una riga (icona + valore), senza etichetta e senza
   /// larghezza minima, cosi' ne stanno due o tre per riga.
   final bool compact;
 
   @override
   Widget build(BuildContext context) {
+    final fact = _buildFact(context);
+    if (onTap == null) return fact;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.pill),
+      child: fact,
+    );
+  }
+
+  Widget _buildFact(BuildContext context) {
     if (compact) {
       return Tooltip(
         message: label,
@@ -1647,3 +1775,40 @@ class _HeroIconAction extends StatelessWidget {
   }
 }
 
+/// Striscia mostrata al posto dello stato pista sulle schede senza gestore.
+class _CommunityStrip extends StatelessWidget {
+  const _CommunityStrip({required this.onClaim});
+
+  final VoidCallback onClaim;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: Colors.white24),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.groups_outlined, size: 18, color: Colors.white70),
+          const SizedBox(width: 10),
+          const Expanded(
+            child: Text(
+              'Segnalata dalla community · dati non confermati dal gestore',
+              style: TextStyle(color: Colors.white, fontSize: 13),
+            ),
+          ),
+          TextButton(
+            onPressed: onClaim,
+            child: const Text(
+              'Sei il gestore?',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

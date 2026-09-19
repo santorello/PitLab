@@ -36,6 +36,7 @@ class SupabaseTracksRepository implements TracksRepository {
             city,
             short_description,
             image_url,
+            is_community,
             track_status_current(status, message),
             track_services(is_available, service_types(label_it, label_en)),
             track_category_links(track_categories(key))
@@ -132,6 +133,9 @@ class SupabaseTracksRepository implements TracksRepository {
             latitude,
             longitude,
             external_map_url,
+            website_url,
+            hours,
+            is_community,
             image_url,
             track_status_current(status, message),
             track_services(
@@ -178,6 +182,9 @@ class SupabaseTracksRepository implements TracksRepository {
             latitude,
             longitude,
             external_map_url,
+            website_url,
+            hours,
+            is_community,
             image_url,
             track_status_current(status, message),
             track_services(
@@ -240,6 +247,9 @@ class SupabaseTracksRepository implements TracksRepository {
             latitude,
             longitude,
             external_map_url,
+            website_url,
+            hours,
+            is_community,
             image_url,
             track_status_current(status, message),
             track_services(
