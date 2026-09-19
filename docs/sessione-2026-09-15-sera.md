@@ -200,3 +200,16 @@ Prossime fasi: 2 (mappa a pieno spazio), 3 (Profilo a schede, Garage compatto), 
 - Test: `admin_dashboard_test.dart` (una sola chiamata, parsing, caso non-admin) al posto di `admin_counts_test.dart`.
 - Mockup di riferimento: artifact "PitLap Control Room — mockup admin", variante C.
 - Fase 2 (da fare): colonne "letto/gestito" su feedback, esito su entity_comment_reports, chiusura richieste cancellazione. Fase 3: attivi 7gg da pitcoin_transactions.awarded_at, regola definitiva "contenuti da sistemare".
+
+## Control room fase 2 (19/09)
+- Delta `2026-09-19-admin-fase2-gestito.sql` (**applicato su dev**, da eseguire su prod; sostituisce admin_dashboard del 18/09):
+  colonne `feedback.handled_at/handled_by`, `entity_comments.reports_cleared_at`, `profiles.deletion_handled_at`;
+  RPC `admin_mark_feedback_handled`, `admin_resolve_comment_report(hide)`, `admin_mark_deletion_handled`, `admin_reported_comments`;
+  `admin_pending_account_deletions` salta le gestite; dashboard conta solo il non gestito.
+- **BUG trovato e corretto (P2 della review, peggiore del previsto):** `guard_comment_moderation_columns` ripristinava
+  `reported_count` per chiunque non fosse admin, quindi anche per `report_comment()` → nessuna segnalazione arrivava mai
+  in coda, il contatore restava 0 per sempre. Ora il contatore può cambiare solo se coincide con le righe di
+  `entity_comment_reports`; provato su dev (segnalazione utente = 1, gonfiaggio manuale bloccato).
+- App: nuova sezione **Moderazione** (scheda Contenuti) con "Nascondi commento" / "Respingi segnalazione";
+  pulsante "Segna come letto" sui feedback; "Segna gestita" sulle richieste di cancellazione. I pallini delle schede
+  contano solo ciò che resta da fare.

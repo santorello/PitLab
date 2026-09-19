@@ -8,6 +8,21 @@ import '../../auth/application/auth_providers.dart';
 
 // ─── Record types ────────────────────────────────────────────────────────────
 
+/// Commento segnalato ancora da gestire (RPC `admin_reported_comments`).
+class AdminReportedComment {
+  const AdminReportedComment(this.raw);
+
+  final Map<String, dynamic> raw;
+
+  String get id => raw['id'] as String? ?? '';
+  String get body => raw['body'] as String? ?? '';
+  String get author => raw['author'] as String? ?? 'Utente';
+  String get entityType => raw['entity_type'] as String? ?? '';
+  int get reportedCount => (raw['reported_count'] as num?)?.toInt() ?? 0;
+  List<String> get reasons =>
+      ((raw['reasons'] as List?) ?? const []).whereType<String>().toList();
+}
+
 class AdminDashboard {
   const AdminDashboard(this.raw);
 
@@ -172,6 +187,24 @@ class AdminRepository {
 
   // COUNT lato server: scaricare tutte le righe per contarle era anche
   // sbagliato oltre il limite di righe di PostgREST (1000 per default).
+  Future<void> markFeedbackHandled(String id) =>
+      _client.rpc('admin_mark_feedback_handled', params: {'p_id': id});
+
+  Future<void> resolveCommentReport(String commentId, {required bool hide}) =>
+      _client.rpc('admin_resolve_comment_report',
+          params: {'p_comment_id': commentId, 'p_hide': hide});
+
+  Future<void> markDeletionHandled(String userId) =>
+      _client.rpc('admin_mark_deletion_handled', params: {'p_user_id': userId});
+
+  Future<List<AdminReportedComment>> fetchReportedComments() async {
+    final rows = await _client.rpc('admin_reported_comments');
+    return ((rows as List?) ?? const [])
+        .whereType<Map>()
+        .map((row) => AdminReportedComment(row.cast<String, dynamic>()))
+        .toList();
+  }
+
   Future<AdminDashboard?> fetchDashboard() async {
     final data = await _client.rpc('admin_dashboard');
     if (data is! Map) return null;
@@ -519,6 +552,14 @@ final adminDashboardProvider = FutureProvider<AdminDashboard?>((ref) async {
   return repository.fetchDashboard();
 });
 
+final adminReportedCommentsProvider =
+    FutureProvider<List<AdminReportedComment>>((ref) async {
+  final repository = ref.watch(adminRepositoryProvider);
+  final role = ref.watch(effectiveUserRoleProvider);
+  if (repository == null || role != 'admin') return const [];
+  return repository.fetchReportedComments();
+});
+
 final adminTrackCategoriesProvider =
     FutureProvider<List<AdminTrackCategoryRecord>>((ref) async {
       final repository = ref.watch(adminRepositoryProvider);
@@ -774,6 +815,7 @@ final adminFeedbackProvider =
   final rows = await client
       .from('feedback')
       .select('id, message, contact_email, page, user_id, created_at')
+      .isFilter('handled_at', null)
       .order('created_at', ascending: false)
       .limit(200);
 

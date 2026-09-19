@@ -107,6 +107,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     }
 
     final pendingDeletions = pendingDeletionsAsync.asData?.value ?? const [];
+    final reported = ref.watch(adminReportedCommentsProvider).asData?.value ??
+        const <AdminReportedComment>[];
 
     // Sezioni per scheda. La panoramica sta in una schermata; le altre
     // scorrono dentro il loro riquadro, non trascinando tutta la pagina.
@@ -148,6 +150,15 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           ),
         ),
         _AdminSectionCard(
+          title: 'Moderazione',
+          body: 'Commenti segnalati dagli utenti e ancora da gestire.',
+          child: _AdminReportedCommentsSection(
+            itemsAsync: ref.watch(adminReportedCommentsProvider),
+            onHide: (item) => _resolveReport(item, hide: true),
+            onDismiss: (item) => _resolveReport(item, hide: false),
+          ),
+        ),
+        _AdminSectionCard(
           title: 'Eventi',
           // Il controllo di visibilità esiste solo per gli eventi ufficiali
           // (tabella `events`): quelli della community si possono solo eliminare.
@@ -181,13 +192,17 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
               'mano dalla dashboard Supabase.',
           child: _AdminDeletionRequestsSection(
             requestsAsync: pendingDeletionsAsync,
+            onHandled: _markDeletionHandled,
           ),
         ),
         _AdminSectionCard(
           title: 'Feedback utenti',
           body:
               'Messaggi inviati dagli utenti (anche guest). Visibili solo a te.',
-          child: _AdminFeedbackSection(feedbackAsync: feedbackAsync),
+          child: _AdminFeedbackSection(
+            feedbackAsync: feedbackAsync,
+            onHandled: _markFeedbackHandled,
+          ),
         ),
       ],
       // 3 · Impostazioni
@@ -196,8 +211,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           title: 'Categorie pista',
           body: 'Le categorie alimentano card e filtri senza hardcode.',
           child: _TrackCategoriesSection(
-            title: 'Label categorie pista',
-            body: 'Le categorie alimentano card e filtri senza hardcode.',
+            title: '',
+            body: '',
             controller: _trackLabelController,
             addLabel: 'Nuova categoria',
             actionLabel: 'Aggiungi',
@@ -210,8 +225,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           title: 'Servizi negozio',
           body: 'Tag usati in card e dettaglio negozio.',
           child: _EditableTagSection(
-            title: 'Label servizi negozio',
-            body: 'Tag usati in card e dettaglio negozio.',
+            title: '',
+            body: '',
             controller: _shopLabelController,
             items: _shopServiceLabels,
             addLabel: 'Nuova label negozio',
@@ -241,7 +256,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             current: _tab,
             badges: [
               0,
-              approvals.length,
+              approvals.length + reported.length,
               feedback.length + pendingDeletions.length,
               0,
             ],
@@ -310,6 +325,44 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     ref.invalidate(publicBuildsProvider);
     ref.invalidate(publicProfilesProvider);
   }
+
+  // ── Fase 2: segnare come gestito ──────────────────────────────────────────
+
+  Future<void> _runAdminAction(Future<void> Function() action, String done) async {
+    final repository = ref.read(adminRepositoryProvider);
+    if (repository == null) return;
+    try {
+      await action();
+      ref.invalidate(adminDashboardProvider);
+      ref.invalidate(adminFeedbackProvider);
+      ref.invalidate(adminReportedCommentsProvider);
+      ref.invalidate(adminPendingDeletionsProvider);
+      _showSnackBar(done);
+    } catch (e) {
+      _showSnackBar('Errore: $e');
+    }
+  }
+
+  Future<void> _markFeedbackHandled(AdminFeedbackRecord item) => _runAdminAction(
+        () => ref.read(adminRepositoryProvider)!.markFeedbackHandled(item.id),
+        'Feedback segnato come letto',
+      );
+
+  Future<void> _resolveReport(AdminReportedComment item, {required bool hide}) =>
+      _runAdminAction(
+        () => ref
+            .read(adminRepositoryProvider)!
+            .resolveCommentReport(item.id, hide: hide),
+        hide ? 'Commento nascosto' : 'Segnalazione respinta',
+      );
+
+  Future<void> _markDeletionHandled(AdminDeletionRequest request) =>
+      _runAdminAction(
+        () => ref
+            .read(adminRepositoryProvider)!
+            .markDeletionHandled(request.userId),
+        'Richiesta segnata come gestita',
+      );
 
   // ── Approvals ─────────────────────────────────────────────────────────────
 
@@ -1205,9 +1258,13 @@ class _AdminEventsSection extends StatelessWidget {
 // ─── Shared entity row (tracks + shops) ──────────────────────────────────────
 
 class _AdminFeedbackSection extends StatelessWidget {
-  const _AdminFeedbackSection({required this.feedbackAsync});
+  const _AdminFeedbackSection({
+    required this.feedbackAsync,
+    required this.onHandled,
+  });
 
   final AsyncValue<List<AdminFeedbackRecord>> feedbackAsync;
+  final ValueChanged<AdminFeedbackRecord> onHandled;
 
   static String _fmt(DateTime d) {
     final l = d.toLocal();
@@ -1226,7 +1283,7 @@ class _AdminFeedbackSection extends StatelessWidget {
       data: (items) {
         if (items.isEmpty) {
           return Text(
-            'Nessun feedback ricevuto.',
+            'Nessun feedback da leggere.',
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium
@@ -1266,8 +1323,106 @@ class _AdminFeedbackSection extends StatelessWidget {
                             .bodySmall
                             ?.copyWith(color: AppColors.steel),
                       ),
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton.icon(
+                          onPressed: () => onHandled(f),
+                          icon: const Icon(Icons.check, size: 18),
+                          label: const Text('Segna come letto'),
+                        ),
+                      ),
                     ],
                   ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Commenti segnalati: nasconderli o respingere la segnalazione.
+class _AdminReportedCommentsSection extends StatelessWidget {
+  const _AdminReportedCommentsSection({
+    required this.itemsAsync,
+    required this.onHide,
+    required this.onDismiss,
+  });
+
+  final AsyncValue<List<AdminReportedComment>> itemsAsync;
+  final ValueChanged<AdminReportedComment> onHide;
+  final ValueChanged<AdminReportedComment> onDismiss;
+
+  @override
+  Widget build(BuildContext context) {
+    return itemsAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Text('Errore nel caricamento segnalazioni: $e'),
+      data: (items) {
+        if (items.isEmpty) {
+          return Text(
+            'Nessuna segnalazione da gestire.',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.steel),
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (final item in items)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEF6EC),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFF3D5AE)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.body,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(color: AppColors.graphite),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${item.author} · ${item.reportedCount} '
+                      '${item.reportedCount == 1 ? 'segnalazione' : 'segnalazioni'}'
+                      '${item.reasons.isEmpty ? '' : ' · ${item.reasons.join(', ')}'}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.steel),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      alignment: WrapAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => onDismiss(item),
+                          child: const Text('Respingi segnalazione'),
+                        ),
+                        FilledButton.icon(
+                          onPressed: () => onHide(item),
+                          icon: const Icon(Icons.visibility_off_outlined, size: 18),
+                          label: const Text('Nascondi commento'),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
           ],
@@ -1649,15 +1804,19 @@ class _TrackCategoriesSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 6),
-        Text(
-          body,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: AppColors.steel,
+        // Titolo e descrizione li mette la card della sezione: qui si
+        // ripetevano identici (scheda Impostazioni).
+        if (title.isNotEmpty) ...[
+          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 6),
+          Text(
+            body,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.steel,
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
+          const SizedBox(height: 12),
+        ],
         Row(
           children: [
             Expanded(
@@ -1742,15 +1901,19 @@ class _EditableTagSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 6),
-        Text(
-          body,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: AppColors.steel,
+        // Titolo e descrizione li mette la card della sezione: qui si
+        // ripetevano identici (scheda Impostazioni).
+        if (title.isNotEmpty) ...[
+          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 6),
+          Text(
+            body,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.steel,
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
+          const SizedBox(height: 12),
+        ],
         Row(
           children: [
             Expanded(
@@ -1794,7 +1957,12 @@ class _EditableTagSection extends StatelessWidget {
 }
 
 class _AdminDeletionRequestsSection extends StatelessWidget {
-  const _AdminDeletionRequestsSection({required this.requestsAsync});
+  const _AdminDeletionRequestsSection({
+    required this.requestsAsync,
+    required this.onHandled,
+  });
+
+  final ValueChanged<AdminDeletionRequest> onHandled;
 
   final AsyncValue<List<AdminDeletionRequest>> requestsAsync;
 
@@ -1874,6 +2042,11 @@ class _AdminDeletionRequestsSection extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
+                    const SizedBox(width: 8),
+                    TextButton(
+                      onPressed: () => onHandled(request),
+                      child: const Text('Segna gestita'),
+                    ),
                   ],
                 ),
               );
