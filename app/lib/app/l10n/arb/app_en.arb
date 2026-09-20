@@ -90,6 +90,7 @@
   "weatherIndoorRegularNote": "Regular session",
   "weatherIndoorWarningNote": "Traffic and humidity",
   "weatherLiveBadge": "Live weather",
+  "weatherLoading": "Loading the forecast...",
   "weatherUnavailable": "Forecast not available right now.",
   "weatherMockBadge": "Local fallback",
   "weatherApiStableDay": "Stable, high of {temp}°C",

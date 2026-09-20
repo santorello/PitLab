@@ -90,6 +90,7 @@
   "weatherIndoorRegularNote": "Sessione regolare",
   "weatherIndoorWarningNote": "Traffico e umidità",
   "weatherLiveBadge": "Meteo live",
+  "weatherLoading": "Sto caricando le previsioni...",
   "weatherUnavailable": "Previsioni non disponibili al momento.",
   "weatherMockBadge": "Fallback locale",
   "weatherApiStableDay": "Stabile, max {temp}°C",

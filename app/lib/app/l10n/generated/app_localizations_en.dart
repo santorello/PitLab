@@ -277,6 +277,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weatherLiveBadge => 'Live weather';
 
   @override
+  String get weatherLoading => 'Loading the forecast...';
+
+  @override
   String get weatherUnavailable => 'Forecast not available right now.';
 
   @override

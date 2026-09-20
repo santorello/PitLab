@@ -407,7 +407,10 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
-              _WeatherVerdictCard(days: weatherDays),
+              _WeatherVerdictCard(
+                days: weatherDays,
+                loading: weatherForecastAsync.isLoading,
+              ),
               const SizedBox(height: AppSpacing.lg),
               _TodayAtTrackCard(
                 key: _todayKey,
@@ -1256,11 +1259,16 @@ class _ArrivalOptionTile extends StatelessWidget {
 }
 
 class _WeatherVerdictCard extends StatelessWidget {
-  const _WeatherVerdictCard({required this.days});
+  const _WeatherVerdictCard({required this.days, this.loading = false});
 
   /// Vuota quando Open-Meteo non ha risposto o la pista non ha coordinate.
   /// In quel caso la scheda lo dice, invece di mostrare previsioni inventate.
   final List<_WeatherDay> days;
+
+  /// Mentre Open-Meteo risponde la lista e' vuota come quando non ci sono
+  /// previsioni: senza distinguere i due casi la scheda diceva "non
+  /// disponibili" anche quando stava solo caricando.
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -1349,11 +1357,25 @@ class _WeatherVerdictCard extends StatelessWidget {
             ),
             SizedBox(height: isPhone ? AppSpacing.md : AppSpacing.xl),
             if (days.isEmpty)
-              Text(
-                l10n.weatherUnavailable,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.steel,
-                ),
+              Row(
+                children: [
+                  if (loading) ...[
+                    const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    const SizedBox(width: 10),
+                  ],
+                  Flexible(
+                    child: Text(
+                      loading ? l10n.weatherLoading : l10n.weatherUnavailable,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.steel,
+                      ),
+                    ),
+                  ),
+                ],
               )
             else if (isPhone)
               // Telefono: i tre giorni affiancati in una sola riga.
@@ -1637,7 +1659,9 @@ class _HeroQuickFact extends StatelessWidget {
               Flexible(
                 child: Text(
                   value,
-                  maxLines: 1,
+                  // Gli orari di certe piste sono lunghi (estivo + indoor):
+                  // su una riga sola finivano tagliati a meta' frase.
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: Colors.white,

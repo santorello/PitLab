@@ -596,6 +596,12 @@ abstract class AppLocalizations {
   /// **'Live weather'**
   String get weatherLiveBadge;
 
+  /// No description provided for @weatherLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading the forecast...'**
+  String get weatherLoading;
+
   /// No description provided for @weatherUnavailable.
   ///
   /// In en, this message translates to:
