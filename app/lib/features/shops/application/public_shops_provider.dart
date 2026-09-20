@@ -26,6 +26,7 @@ class PublicShop {
     this.hours = '',
     this.contacts = '',
     this.notes = '',
+    this.isCommunity = false,
   });
 
   final String id;
@@ -47,6 +48,9 @@ class PublicShop {
   final String hours;
   final String contacts;
   final String notes;
+
+  /// Scheda censita da PitLap e non ancora rivendicata dal titolare.
+  final bool isCommunity;
 
   factory PublicShop.fromMap(Map<String, dynamic> map) {
     List<String> parseStringList(dynamic value) {
@@ -76,6 +80,7 @@ class PublicShop {
       hours:            map['hours']             as String? ?? '',
       contacts:         map['contacts']          as String? ?? '',
       notes:            map['notes']             as String? ?? '',
+      isCommunity:      map['is_community']      as bool?   ?? false,
     );
   }
 }
@@ -85,7 +90,7 @@ class PublicShop {
 const _shopSelectFields =
     'id, slug, name, city, short_description, subtitle, organization_name, '
     'image_url, gallery_images, website_url, phone, address, latitude, longitude, external_map_url, '
-    'service_labels, hours, contacts, notes';
+    'service_labels, hours, contacts, notes, is_community';
 
 class PublicShopsRepository {
   const PublicShopsRepository(this._client);

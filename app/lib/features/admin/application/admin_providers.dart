@@ -15,8 +15,12 @@ class AdminTrackClaim {
   final Map<String, dynamic> raw;
 
   String get id => raw['id'] as String? ?? '';
-  String get trackName => raw['track_name'] as String? ?? '';
-  String get trackSlug => raw['track_slug'] as String? ?? '';
+  // Stessa forma per piste e negozi: la RPC cambia solo il prefisso delle chiavi.
+  String get trackName =>
+      raw['track_name'] as String? ?? raw['shop_name'] as String? ?? '';
+  String get trackSlug =>
+      raw['track_slug'] as String? ?? raw['shop_slug'] as String? ?? '';
+  bool get isShop => raw.containsKey('shop_id');
   String get userName => raw['user_name'] as String? ?? 'Utente';
   String get message => raw['message'] as String? ?? '';
   String get contact => raw['contact'] as String? ?? '';
@@ -81,6 +85,8 @@ class AdminDashboard {
   int get todoTotal =>
       todo('pending_tracks') +
       todo('pending_shops') +
+      todo('track_claims') +
+      todo('shop_claims') +
       todo('reported_comments') +
       todo('feedback') +
       todo('deletion_requests') +
@@ -268,6 +274,18 @@ class AdminRepository {
 
   Future<void> resolveTrackClaim(String claimId, {required bool approve}) =>
       _client.rpc('admin_resolve_track_claim',
+          params: {'p_claim_id': claimId, 'p_approve': approve});
+
+  Future<List<AdminTrackClaim>> fetchShopClaims() async {
+    final rows = await _client.rpc('admin_shop_claims');
+    return ((rows as List?) ?? const [])
+        .whereType<Map>()
+        .map((row) => AdminTrackClaim(row.cast<String, dynamic>()))
+        .toList();
+  }
+
+  Future<void> resolveShopClaim(String claimId, {required bool approve}) =>
+      _client.rpc('admin_resolve_shop_claim',
           params: {'p_claim_id': claimId, 'p_approve': approve});
 
   /// Scheda "segnalata dalla community": nasce senza proprietario, quindi non
@@ -650,6 +668,14 @@ final adminTrackClaimsProvider =
   final role = ref.watch(effectiveUserRoleProvider);
   if (repository == null || role != 'admin') return const [];
   return repository.fetchTrackClaims();
+});
+
+final adminShopClaimsProvider =
+    FutureProvider<List<AdminTrackClaim>>((ref) async {
+  final repository = ref.watch(adminRepositoryProvider);
+  final role = ref.watch(effectiveUserRoleProvider);
+  if (repository == null || role != 'admin') return const [];
+  return repository.fetchShopClaims();
 });
 
 final adminReportedCommentsProvider =

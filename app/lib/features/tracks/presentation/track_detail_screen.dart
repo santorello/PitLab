@@ -14,6 +14,7 @@ import '../../../shared/models/track_arrival_summary.dart';
 import '../../../shared/models/track_detail.dart';
 import '../../../shared/models/track_weather_day.dart';
 import '../../../shared/models/today_arrival_status.dart';
+import '../../../shared/widgets/community_claim_strip.dart';
 import '../../../shared/widgets/dialog_controller_scope.dart';
 import '../../../shared/widgets/weather_visuals.dart';
 import '../../../shared/utils/share_entity.dart';
@@ -248,7 +249,8 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                             ],
                             const SizedBox(height: 16),
                             if (track.isCommunity)
-                              _CommunityStrip(
+                              CommunityClaimStrip(
+                                onDark: true,
                                 onClaim: () => _openClaimDialog(track),
                               )
                             else
@@ -1753,39 +1755,3 @@ class _HeroIconAction extends StatelessWidget {
 }
 
 /// Striscia mostrata al posto dello stato pista sulle schede senza gestore.
-class _CommunityStrip extends StatelessWidget {
-  const _CommunityStrip({required this.onClaim});
-
-  final VoidCallback onClaim;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white10,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: Colors.white24),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.groups_outlined, size: 18, color: Colors.white70),
-          const SizedBox(width: 10),
-          const Expanded(
-            child: Text(
-              'Segnalata dalla community · dati non confermati dal gestore',
-              style: TextStyle(color: Colors.white, fontSize: 13),
-            ),
-          ),
-          TextButton(
-            onPressed: onClaim,
-            child: const Text(
-              'Sei il gestore?',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

@@ -112,6 +112,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         const <AdminReportedComment>[];
     final claims = ref.watch(adminTrackClaimsProvider).asData?.value ??
         const <AdminTrackClaim>[];
+    final shopClaims = ref.watch(adminShopClaimsProvider).asData?.value ??
+        const <AdminTrackClaim>[];
 
     // Sezioni per scheda. La panoramica sta in una schermata; le altre
     // scorrono dentro il loro riquadro, non trascinando tutta la pagina.
@@ -136,6 +138,17 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
               'Verifica tu prima di approvare: chi approvi diventa gestore della scheda.',
           child: _AdminTrackClaimsSection(
             claims: claims,
+            onApprove: (claim) => _resolveClaim(claim, approve: true),
+            onReject: (claim) => _resolveClaim(claim, approve: false),
+          ),
+        ),
+        _AdminSectionCard(
+          title: 'Rivendicazioni negozi',
+          body:
+              'Titolari che dichiarano di gestire un negozio segnalato dalla community. '
+              'Stessa verifica delle piste: chi approvi diventa gestore della scheda.',
+          child: _AdminTrackClaimsSection(
+            claims: shopClaims,
             onApprove: (claim) => _resolveClaim(claim, approve: true),
             onReject: (claim) => _resolveClaim(claim, approve: false),
           ),
@@ -379,6 +392,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       ref.invalidate(adminPendingDeletionsProvider);
       ref.invalidate(adminSpotSuggestionsProvider);
       ref.invalidate(adminTrackClaimsProvider);
+      ref.invalidate(adminShopClaimsProvider);
       _showSnackBar(done);
     } catch (e) {
       _showSnackBar('Errore: $e');
@@ -440,9 +454,13 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
 
   Future<void> _resolveClaim(AdminTrackClaim claim, {required bool approve}) =>
       _runAdminAction(
-        () => ref
-            .read(adminRepositoryProvider)!
-            .resolveTrackClaim(claim.id, approve: approve),
+        () => claim.isShop
+            ? ref
+                .read(adminRepositoryProvider)!
+                .resolveShopClaim(claim.id, approve: approve)
+            : ref
+                .read(adminRepositoryProvider)!
+                .resolveTrackClaim(claim.id, approve: approve),
         approve
             ? '${claim.userName} è ora gestore di ${claim.trackName}'
             : 'Richiesta rifiutata',

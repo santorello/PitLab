@@ -11,6 +11,8 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/utils/share_entity.dart';
 import '../../../shared/widgets/adaptive_image.dart';
+import '../../../shared/widgets/community_claim_strip.dart';
+import '../../../shared/widgets/dialog_controller_scope.dart';
 import '../../../shared/widgets/external_links_section.dart';
 import '../../comments/presentation/comments_section.dart';
 import '../application/public_shops_provider.dart';
@@ -92,6 +94,18 @@ class _ShopDetailBody extends ConsumerWidget {
           l10n: l10n,
           ref: ref,
         ),
+
+        if (shop.isCommunity) ...[
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            child: CommunityClaimStrip(
+              label: 'Segnalato dalla community · dati non confermati dal titolare',
+              action: 'Sei il titolare?',
+              onClaim: () => _openShopClaimDialog(context, ref, shop),
+            ),
+          ),
+        ],
 
         const SizedBox(height: 16),
 
@@ -885,6 +899,91 @@ class _EmptyShopState extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+
+/// Rivendica di una scheda negozio censita dalla community.
+/// Specchio di _openClaimDialog in track_detail_screen.dart.
+Future<void> _openShopClaimDialog(
+  BuildContext context,
+  WidgetRef ref,
+  PublicShop shop,
+) async {
+  final user = ref.read(currentUserProvider);
+  final messenger = ScaffoldMessenger.of(context);
+  if (user == null) {
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Accedi per rivendicare la scheda.')),
+    );
+    return;
+  }
+  final messageController = TextEditingController();
+  final contactController = TextEditingController(text: user.email ?? '');
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => DialogControllerScope(
+      controllers: [messageController, contactController],
+      child: AlertDialog(
+        title: Text('Rivendica ${shop.name}'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Verifichiamo a mano che tu gestisca davvero questo negozio, '
+              'poi la scheda passa sotto il tuo controllo.',
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: contactController,
+              decoration: const InputDecoration(
+                labelText: 'Come ti ricontattiamo (email o telefono)',
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: messageController,
+              minLines: 2,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                labelText: 'Due righe su di te e sul negozio',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Annulla'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Invia richiesta'),
+          ),
+        ],
+      ),
+    ),
+  );
+  if (confirmed != true) return;
+
+  final client = ref.read(authClientProvider);
+  if (client == null) return;
+  try {
+    await client.from('shop_claims').insert({
+      'shop_id': shop.id,
+      'user_id': user.id,
+      'message': messageController.text.trim(),
+      'contact': contactController.text.trim(),
+    });
+    messenger.showSnackBar(
+      const SnackBar(
+        content: Text('Richiesta inviata: ti ricontattiamo per la verifica.'),
+      ),
+    );
+  } catch (e) {
+    messenger.showSnackBar(
+      SnackBar(content: Text('Richiesta non inviata: $e')),
     );
   }
 }

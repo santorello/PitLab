@@ -279,6 +279,11 @@ class _TodoList extends StatelessWidget {
         urgent: data.todo('oldest_pending_days') >= 2,
       ),
       _TodoRow(
+        count: data.todo('track_claims') + data.todo('shop_claims'),
+        title: 'Rivendicazioni da verificare',
+        detail: 'Chi approvi diventa gestore della scheda',
+      ),
+      _TodoRow(
         count: data.todo('reported_comments'),
         title: 'Commenti segnalati',
         detail: 'Da moderare nella sezione Moderazione',
