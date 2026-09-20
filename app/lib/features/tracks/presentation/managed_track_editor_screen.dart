@@ -6,6 +6,7 @@ import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/models/track_detail.dart';
+import '../../../shared/widgets/cover_image_field.dart';
 import '../../../shared/widgets/external_links_section.dart';
 import '../../auth/application/auth_providers.dart';
 import '../application/track_taxonomy_option.dart';
@@ -140,13 +141,11 @@ class _ManagedTrackEditorScreenState
                       ),
                     ),
                     const SizedBox(height: 12),
-                    TextField(
+                    CoverImageField(
                       controller: _coverImageUrlController,
-                      onChanged: (_) => setState(() {}),
-                      decoration: const InputDecoration(
-                        labelText: 'URL immagine di copertina',
-                        hintText: 'https://...',
-                      ),
+                      entityType: 'tracks',
+                      progressLabel: 'Preparazione copertina pista',
+                      onUploaded: (_) => setState(() {}),
                     ),
                     const SizedBox(height: 12),
                     TextField(

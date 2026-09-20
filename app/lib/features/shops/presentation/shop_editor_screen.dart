@@ -12,6 +12,7 @@ import '../../../shared/media/media_upload_service.dart';
 import '../../../shared/media/media_upload_state.dart';
 import '../../../shared/utils/local_image_data_url.dart';
 import '../../../shared/widgets/adaptive_image.dart';
+import '../../../shared/widgets/cover_image_field.dart';
 import '../../../shared/widgets/external_links_section.dart';
 import '../../../shared/widgets/image_transfer_progress_card.dart';
 import '../../auth/application/auth_providers.dart';
@@ -46,9 +47,7 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
   late final TextEditingController _hoursController;
   late final TextEditingController _notesController;
   bool _hydrated = false;
-  bool _uploadingCover = false;
   bool _uploadingGallery = false;
-  MediaUploadBatchState? _coverTransferState;
   MediaUploadBatchState? _galleryTransferState;
   String _localCoverImage = '';
   List<String> _localGalleryImages = const [];
@@ -302,116 +301,14 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const SizedBox(height: 10),
-                    TextField(
+                    CoverImageField(
                       controller: _imageUrlController,
-                      onChanged: (_) => setState(() {}),
-                      decoration: InputDecoration(
-                        labelText: l10n.shopEditImageUrlLabel,
-                        hintText: 'https://...',
-                      ),
+                      entityType: 'shops',
+                      label: l10n.shopEditImageUrlLabel,
+                      uploadLabel: l10n.shopImageUploadAction,
+                      progressLabel: 'Preparazione cover negozio',
+                      onUploaded: (_) => setState(() => _localCoverImage = ''),
                     ),
-                    const SizedBox(height: 10),
-                    OutlinedButton.icon(
-                      onPressed: () async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        final uploadService = ref.read(mediaUploadServiceProvider);
-                        final userId = ref.read(effectiveUserIdProvider);
-                        if (uploadService == null || userId == null) {
-                          messenger.showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Devi essere autenticato per caricare immagini.',
-                              ),
-                            ),
-                          );
-                          return;
-                        }
-                        final uploadController = MediaUploadController(
-                          totalItems: 1,
-                          initialStageLabel: 'Sto preparando la cover negozio',
-                        );
-                        setState(() {
-                          _uploadingCover = true;
-                          _coverTransferState = uploadController.snapshot;
-                        });
-                        final picked = await FilePicker.platform.pickFiles(
-                          type: FileType.image,
-                          withData: true,
-                        );
-                        final bytes = picked?.files.single.bytes;
-                        if (bytes == null) {
-                          if (mounted) {
-                            setState(() {
-                              _uploadingCover = false;
-                              _coverTransferState = null;
-                            });
-                          }
-                          return;
-                        }
-                        try {
-                          final result = await uploadService.uploadImage(
-                            bytes: bytes,
-                            userId: userId,
-                            entityType: 'shops',
-                            filePrefix: 'cover',
-                            onProgress: (stage, progress) {
-                              if (!mounted) return;
-                              uploadController.setStageLabel(
-                                mediaUploadStageLabel(context, stage),
-                              );
-                              uploadController.updateItem(
-                                index: 0,
-                                stage: stage,
-                                progress: progress,
-                              );
-                              setState(() {
-                                _coverTransferState = uploadController.snapshot;
-                              });
-                            },
-                          );
-                          if (!mounted) return;
-                          uploadController.markDone(0);
-                          setState(() {
-                            _uploadingCover = false;
-                            _coverTransferState = null;
-                            _localCoverImage = '';
-                            _imageUrlController.text = result.publicUrl;
-                          });
-                        } on MediaUploadException catch (e) {
-                          if (!mounted) return;
-                          uploadController.markError(0);
-                          setState(() {
-                            _uploadingCover = false;
-                            _coverTransferState = uploadController.snapshot;
-                          });
-                          messenger.showSnackBar(
-                            SnackBar(content: Text(e.message)),
-                          );
-                        } catch (e) {
-                          if (!mounted) return;
-                          uploadController.markError(0);
-                          setState(() {
-                            _uploadingCover = false;
-                            _coverTransferState = uploadController.snapshot;
-                          });
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: Text('Errore caricamento cover: $e'),
-                            ),
-                          );
-                        }
-                      },
-                      icon: const Icon(Icons.upload_file_outlined),
-                      label: Text(l10n.shopImageUploadAction),
-                    ),
-                    if (_uploadingCover) ...[
-                      const SizedBox(height: 10),
-                      ImageTransferProgressCard(
-                        label: 'Preparazione cover negozio',
-                        batchState: _coverTransferState,
-                        icon: Icons.image_outlined,
-                      ),
-                    ],
                     const SizedBox(height: 20),
 
                     // Galleria
