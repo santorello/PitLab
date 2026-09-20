@@ -33,6 +33,7 @@ import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/card_stat_row.dart';
 import '../../../shared/widgets/place_card.dart';
 import '../../auth/application/auth_providers.dart';
+import '../application/track_taxonomy_option.dart';
 import '../application/tracks_providers.dart';
 import 'tracks_home_filters.dart';
 
@@ -67,6 +68,19 @@ class _TracksHomeScreenState extends ConsumerState<TracksHomeScreen> {
       data: (tracks) => extractTrackCities(tracks),
       orElse: () => const <String>[],
     );
+    // I filtri erano quattro chip scritte a mano (buggy, mini-z, indoor,
+    // outdoor): le categorie nuove non comparivano e "outdoor" non esiste
+    // nemmeno in tabella, quindi non filtrava nulla. Ora le chip sono le
+    // categorie realmente usate dalle piste caricate, nell'ordine della
+    // tassonomia.
+    final usedCategoryKeys = tracksAsync.maybeWhen(
+      data: (tracks) => tracks.expand((t) => t.categoryKeys).toSet(),
+      orElse: () => const <String>{},
+    );
+    final categoryOptions = ref.watch(trackCategoryOptionsProvider).maybeWhen(
+      data: (options) => options,
+      orElse: () => const <TrackTaxonomyOption>[],
+    ).where((o) => usedCategoryKeys.contains(o.key)).toList();
 
     return ContentScaffold(
       title: l10n.tracksTitle,
@@ -143,26 +157,12 @@ class _TracksHomeScreenState extends ConsumerState<TracksHomeScreen> {
             spacing: 10,
             runSpacing: 10,
             children: [
-              _FilterChipV2(
-                label: l10n.filterBuggy,
-                selected: _activeFilter == 'buggy',
-                onSelected: () => _toggleFilter('buggy'),
-              ),
-              _FilterChipV2(
-                label: l10n.filterMiniZ,
-                selected: _activeFilter == 'mini_z',
-                onSelected: () => _toggleFilter('mini_z'),
-              ),
-              _FilterChipV2(
-                label: l10n.filterIndoor,
-                selected: _activeFilter == 'indoor',
-                onSelected: () => _toggleFilter('indoor'),
-              ),
-              _FilterChipV2(
-                label: l10n.filterOutdoor,
-                selected: _activeFilter == 'outdoor',
-                onSelected: () => _toggleFilter('outdoor'),
-              ),
+              for (final option in categoryOptions)
+                _FilterChipV2(
+                  label: option.label,
+                  selected: _activeFilter == option.key,
+                  onSelected: () => _toggleFilter(option.key),
+                ),
             ],
           ),
           const SizedBox(height: 24),
