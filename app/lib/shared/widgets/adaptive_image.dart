@@ -50,6 +50,11 @@ class AdaptiveImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
+      // Le copertine ospitate su siti terzi (schede "segnalate dalla community")
+      // non mandano header CORS: su web il fetch dei byte fallisce e la card
+      // resta grigia. Con fallback Flutter ripiega su un tag <img>, che i
+      // browser mostrano senza CORS. Su mobile non cambia nulla.
+      webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
       cacheWidth: 1200,
       filterQuality: FilterQuality.medium,
       errorBuilder: (context, error, stackTrace) => fallback,
