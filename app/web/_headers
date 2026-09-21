@@ -22,3 +22,13 @@
   Cache-Control: public, max-age=604800
 /canvaskit/*
   Cache-Control: public, max-age=604800
+
+# Sicurezza per tutte le pagine (audit 2026-09-22).
+# - nessuno puo' incorniciare PitLap in un iframe (clickjacking sulle azioni admin)
+# - il browser ricorda per un anno di usare solo HTTPS
+# Una CSP completa per Flutter web (canvaskit da gstatic, wasm, immagini da siti
+# terzi) va progettata a parte: qui si blocca solo l'incorniciamento.
+/*
+  X-Frame-Options: DENY
+  Content-Security-Policy: frame-ancestors 'none'
+  Strict-Transport-Security: max-age=31536000
