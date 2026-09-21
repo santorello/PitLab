@@ -80,7 +80,8 @@ class _TracksHomeScreenState extends ConsumerState<TracksHomeScreen> {
     final categoryOptions = ref.watch(trackCategoryOptionsProvider).maybeWhen(
       data: (options) => options,
       orElse: () => const <TrackTaxonomyOption>[],
-    ).where((o) => usedCategoryKeys.contains(o.key)).toList();
+    ).where((o) => usedCategoryKeys.contains(o.key)).toList()
+      ..sort((a, b) => a.label.toLowerCase().compareTo(b.label.toLowerCase()));
 
     return ContentScaffold(
       title: l10n.tracksTitle,
