@@ -558,7 +558,7 @@ extension on AppScaffold {
       normalizedLocation = '/shops';
     } else if (path.startsWith('/event/')) {
       normalizedLocation = '/events';
-    } else if (path.startsWith('/builds')) {
+    } else if (path.startsWith('/builds') || path.startsWith('/build/')) {
       // FR-28: le build pubbliche appartengono al mondo Garage.
       normalizedLocation = '/garage';
     } else if (path.startsWith('/profiles') || path.startsWith('/u/')) {

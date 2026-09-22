@@ -62,3 +62,16 @@ String? moderationMessage(Object error, {bool italian = true}) {
       return '$base. Edit your text and try again.';
   }
 }
+
+/// Messaggio per il blocco dei limiti di frequenza (trigger `enforce_rate_limit`,
+/// delta 2026-09-23-limiti-frequenza). null se l'errore e' un altro.
+String? rateLimitMessage(Object error, {bool italian = true}) {
+  final text = error.toString();
+  if (!text.contains('rate_limited') &&
+      !text.contains('Troppe azioni in poco tempo')) {
+    return null;
+  }
+  return italian
+      ? 'Troppe azioni in poco tempo: riprova tra qualche minuto.'
+      : 'Too many actions in a short time: please try again in a few minutes.';
+}

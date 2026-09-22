@@ -20,7 +20,7 @@ const String kPublicBaseUrl = 'https://pitlap.app';
 ///   shop    -> /shop/:slug
 ///   event   -> /event/:eventId
 ///   spot    -> /spot/:slug
-///   user_build -> /builds   (nessuna pagina dettaglio build dedicata; link alla lista)
+///   user_build -> /build/:id  (pagina dettaglio build, 23/09/2026)
 ///   community_event -> /event/:id  (stesso path degli eventi pubblici)
 String buildEntityLink(String entityType, String entityId) {
   final base = _resolveBase();
@@ -30,7 +30,7 @@ String buildEntityLink(String entityType, String entityId) {
     'event' => '/event/$entityId',
     'community_event' => '/event/$entityId',
     'spot' => '/spot/$entityId',
-    'user_build' => '/builds',
+    'user_build' => '/build/$entityId',
     _ => '/',
   };
   return '$base$path';

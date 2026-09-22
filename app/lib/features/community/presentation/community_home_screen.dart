@@ -823,7 +823,9 @@ class _BuildOfWeekSection extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.sm),
         InkWell(
-          onTap: () => context.push('/builds'),
+          onTap: () => context.push(
+            build.id.isNotEmpty ? '/build/${build.id}' : '/builds',
+          ),
           borderRadius: BorderRadius.circular(AppRadius.xl),
           child: Container(
             clipBehavior: Clip.antiAlias,

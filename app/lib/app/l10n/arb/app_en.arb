@@ -647,7 +647,7 @@
   "eventsCreateDialogTitle": "Create a new event",
   "eventsCreateTitleLabel": "Event title",
   "eventsCreateLocationLabel": "Location",
-  "eventsCreateVenueLabel": "Venue / track / shop",
+  "eventsCreateVenueLabel": "Spot / track / shop",
   "eventsCreateNoteLabel": "Short note",
   "eventsCreateImageAction": "Upload event photo",
   "eventsCreateImageLoaded": "Event photo ready",

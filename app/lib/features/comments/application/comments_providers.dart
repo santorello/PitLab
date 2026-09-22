@@ -114,6 +114,8 @@ class CommentsNotifier extends AsyncNotifier<List<EntityComment>> {
       });
       return null;
     } catch (e, st) {
+      final limited = rateLimitMessage(e);
+      if (limited != null) return limited;
       final blocked = moderationMessage(e);
       // Un commento respinto dal filtro non e' un guasto: non va nei report,
       // ma va tracciato per capire se i termini sono troppo aggressivi.

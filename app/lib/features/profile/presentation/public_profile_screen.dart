@@ -358,7 +358,10 @@ class _BuildCard extends StatelessWidget {
     final hasImage = entry.imageUrls.isNotEmpty;
 
     return Card(
-      child: Padding(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: entry.id.isEmpty ? null : () => context.push('/build/${entry.id}'),
+        child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -408,6 +411,7 @@ class _BuildCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

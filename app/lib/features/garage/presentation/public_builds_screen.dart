@@ -142,12 +142,10 @@ class _BuildMarketplaceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final canOpenAuthor = listing.author?.hasPublicProfile == true;
 
     return InkWell(
-      onTap: canOpenAuthor
-          ? () => context.push('/u/${listing.author!.publicSlug}')
-          : null,
+      // La card apre la pagina della build (autore, like, commenti).
+      onTap: () => context.push('/build/${listing.id}'),
       borderRadius: BorderRadius.circular(18),
       child: Ink(
         decoration: BoxDecoration(
@@ -171,11 +169,18 @@ class _BuildMarketplaceCard extends StatelessWidget {
                       fit: BoxFit.cover,
                       fallback: const _BuildImageFallback(),
                     ),
-                    const Positioned(
-                      left: 14,
-                      top: 14,
-                      child: _BuildBadge(),
-                    ),
+                    if (listing.imageUrls.length > 1)
+                      Positioned(
+                        right: 14,
+                        top: 14,
+                        child: _PhotoCountBadge(count: listing.imageUrls.length),
+                      ),
+                    if (listing.likeCount > 0)
+                      Positioned(
+                        left: 14,
+                        bottom: 14,
+                        child: _LikeCountBadge(count: listing.likeCount),
+                      ),
                   ],
                 ),
               ),
@@ -209,12 +214,6 @@ class _BuildMarketplaceCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (canOpenAuthor)
-                        const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 14,
-                          color: AppColors.signalOrange,
-                        ),
                     ],
                   ),
                   if (listing.meta.trim().isNotEmpty) ...[
@@ -290,8 +289,36 @@ class _AuthorAvatar extends StatelessWidget {
   }
 }
 
-class _BuildBadge extends StatelessWidget {
-  const _BuildBadge();
+class _PhotoCountBadge extends StatelessWidget {
+  const _PhotoCountBadge({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return _OverlayPill(
+      icon: Icons.collections_outlined,
+      label: '$count',
+    );
+  }
+}
+
+class _LikeCountBadge extends StatelessWidget {
+  const _LikeCountBadge({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return _OverlayPill(icon: Icons.favorite, label: '$count');
+  }
+}
+
+class _OverlayPill extends StatelessWidget {
+  const _OverlayPill({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
@@ -300,14 +327,21 @@ class _BuildBadge extends StatelessWidget {
         color: Colors.black.withAlpha(150),
         borderRadius: BorderRadius.circular(999),
       ),
-      child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        child: Text(
-          'build pubblica',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w800,
-          ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: Colors.white),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
         ),
       ),
     );

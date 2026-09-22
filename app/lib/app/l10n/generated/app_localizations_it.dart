@@ -1913,7 +1913,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get eventsCreateLocationLabel => 'Luogo';
 
   @override
-  String get eventsCreateVenueLabel => 'Luogo / pista / negozio';
+  String get eventsCreateVenueLabel => 'Spot / pista / negozio';
 
   @override
   String get eventsCreateNoteLabel => 'Nota rapida';

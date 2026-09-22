@@ -1912,7 +1912,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsCreateLocationLabel => 'Location';
 
   @override
-  String get eventsCreateVenueLabel => 'Venue / track / shop';
+  String get eventsCreateVenueLabel => 'Spot / track / shop';
 
   @override
   String get eventsCreateNoteLabel => 'Short note';

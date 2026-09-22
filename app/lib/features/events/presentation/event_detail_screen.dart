@@ -8,6 +8,7 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/utils/share_entity.dart';
 import '../../../shared/widgets/adaptive_image.dart';
+import '../../../shared/widgets/fullscreen_gallery.dart';
 import '../../comments/presentation/comments_section.dart';
 import '../../profile/application/profile_hub_providers.dart';
 import '../application/public_events_provider.dart';
@@ -271,40 +272,8 @@ Future<void> _openGallery(
   BuildContext context,
   List<String> images,
   int initialIndex,
-) async {
-  final controller = PageController(initialPage: initialIndex);
-  await showDialog<void>(
-    context: context,
-    builder: (dialogContext) => Dialog.fullscreen(
-      backgroundColor: Colors.black,
-      child: Stack(
-        children: [
-          PageView.builder(
-            controller: controller,
-            itemCount: images.length,
-            itemBuilder: (context, index) => InteractiveViewer(
-              child: Center(
-                child: AdaptiveImage(
-                  source: images[index],
-                  fit: BoxFit.contain,
-                  fallback: const ColoredBox(color: Colors.black),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 20,
-            right: 20,
-            child: IconButton.filledTonal(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              icon: const Icon(Icons.close),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
+) =>
+    openFullscreenGallery(context, images, initialIndex: initialIndex);
 
 class _ResolvedEvent {
   const _ResolvedEvent({

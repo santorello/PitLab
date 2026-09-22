@@ -230,6 +230,40 @@ class _SpotMedia extends StatelessWidget {
               ),
             ),
           ),
+          // Feedback modellista: se lo spot ha un video, si vede gia' dalla card.
+          if ((spot.videoUrl ?? '').trim().isNotEmpty)
+            Positioned(
+              left: 12,
+              bottom: 12,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.62),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.play_circle_fill,
+                        size: 18,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        _localeText(context, it: 'Video', en: 'Video'),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

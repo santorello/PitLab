@@ -12,6 +12,7 @@ import '../../features/discovery/presentation/nearby_screen.dart';
 import '../../features/events/presentation/event_detail_screen.dart';
 import '../../features/events/presentation/events_screen.dart';
 import '../../features/garage/presentation/garage_screen.dart';
+import '../../features/garage/presentation/build_detail_screen.dart';
 import '../../features/garage/presentation/public_builds_screen.dart';
 import '../../features/legal/presentation/legal_document_screen.dart';
 import '../../features/manager/presentation/manager_screen.dart';
@@ -238,6 +239,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/builds',
             name: 'public-builds',
             builder: (context, state) => const PublicBuildsScreen(),
+          ),
+          GoRoute(
+            path: '/build/:buildId',
+            name: 'build-detail',
+            builder: (context, state) =>
+                BuildDetailScreen(buildId: state.pathParameters['buildId']!),
           ),
           GoRoute(
             path: '/profile',

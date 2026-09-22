@@ -3455,7 +3455,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventsCreateVenueLabel.
   ///
   /// In en, this message translates to:
-  /// **'Venue / track / shop'**
+  /// **'Spot / track / shop'**
   String get eventsCreateVenueLabel;
 
   /// No description provided for @eventsCreateNoteLabel.
