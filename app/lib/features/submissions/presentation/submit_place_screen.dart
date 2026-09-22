@@ -14,6 +14,7 @@ import '../../../shared/media/media_upload_controller.dart';
 import '../../../shared/media/media_upload_labels.dart';
 import '../../../shared/media/media_upload_service.dart';
 import '../../../shared/media/media_upload_state.dart';
+import '../../../shared/places/duplicate_place_check.dart';
 import '../../../shared/places/place_search_service.dart';
 import '../../../shared/places/place_selection.dart';
 import '../../../shared/utils/local_image_data_url.dart';
@@ -582,6 +583,52 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
     );
   }
 
+  /// Controllo duplicati prima di un nuovo inserimento (task 18).
+  /// true = si prosegue col salvataggio.
+  Future<bool> _confirmNotDuplicate(
+    BuildContext context, {
+    required String kind,
+    required String name,
+    required String city,
+  }) async {
+    final matches = await findSimilarPlaces(
+      ref.read(supabaseClientProvider),
+      kind: kind,
+      name: name,
+      city: city,
+      latitude: _latitude,
+      longitude: _longitude,
+    );
+    if (matches.isEmpty) return true;
+    if (!context.mounted) return false;
+    final decision = await showDuplicatePlaceDialog(context, matches);
+    if (!context.mounted) return false;
+    switch (decision) {
+      case DuplicateProceed():
+        return true;
+      case DuplicateOpenExisting(:final place):
+        final route = place.route;
+        if (route != null) {
+          GoRouter.of(context).go(route);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                _localeText(
+                  context,
+                  it: 'Questo luogo e\' gia\' stato proposto ed e\' in approvazione.',
+                  en: 'This place has already been submitted and is pending review.',
+                ),
+              ),
+            ),
+          );
+        }
+        return false;
+      case DuplicateCancel():
+        return false;
+    }
+  }
+
   Future<void> _submit(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
@@ -694,6 +741,15 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
           if (typed.isEmpty) _addressController.text = place.label;
         }
       }
+      if (!isEditingSpot &&
+          !await _confirmNotDuplicate(
+            context,
+            kind: 'spot',
+            name: name,
+            city: city,
+          )) {
+        return;
+      }
       final slug = existingSpot?.slug ?? SpotCatalog.createSlug(name, city);
       final customSpot = SpotEntry(
         slug: slug,
@@ -763,6 +819,15 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                 _pickedImages.first.startsWith('http')
             ? _pickedImages.first
             : null;
+        if (!await _confirmNotDuplicate(
+          context,
+          kind: 'track',
+          name: name,
+          city: city,
+        )) {
+          return;
+        }
+        if (!context.mounted) return;
         final track = SubmittedTrack(
           id: '',
           slug: SpotCatalog.createSlug(name, city),

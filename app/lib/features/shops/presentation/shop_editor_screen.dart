@@ -15,7 +15,9 @@ import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/cover_image_field.dart';
 import '../../../shared/widgets/external_links_section.dart';
 import '../../../shared/widgets/image_transfer_progress_card.dart';
+import '../../../shared/places/duplicate_place_check.dart';
 import '../../auth/application/auth_providers.dart';
+import '../../tracks/application/tracks_providers.dart' show supabaseClientProvider;
 import '../application/shop_permissions_providers.dart';
 import '../application/shop_editor_providers.dart';
 
@@ -151,6 +153,31 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
     }
     _localGalleryImages = localGallery;
     _galleryController.text = externalGallery.join('\n');
+  }
+
+  /// Controllo duplicati sui nuovi negozi (task 18). true = si prosegue.
+  /// Il form negozio non ha coordinate: confronto per nome nella stessa citta'.
+  Future<bool> _confirmNewShop(BuildContext context) async {
+    final matches = await findSimilarPlaces(
+      ref.read(supabaseClientProvider),
+      kind: 'shop',
+      name: _nameController.text,
+      city: _cityController.text,
+    );
+    if (matches.isEmpty) return true;
+    if (!context.mounted) return false;
+    final decision = await showDuplicatePlaceDialog(context, matches);
+    if (!context.mounted) return false;
+    switch (decision) {
+      case DuplicateProceed():
+        return true;
+      case DuplicateOpenExisting(:final place):
+        final route = place.route;
+        if (route != null) GoRouter.of(context).go(route);
+        return false;
+      case DuplicateCancel():
+        return false;
+    }
   }
 
   @override
@@ -527,6 +554,10 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                           onPressed: () async {
                             final messenger = ScaffoldMessenger.of(context);
                             final router = GoRouter.of(context);
+                            if (widget.isCreating &&
+                                !await _confirmNewShop(context)) {
+                              return;
+                            }
                             // effectiveUserIdProvider: in impersonazione il negozio
                             // viene attributito all'utente osservato, non all'admin.
                             final userId = ref.read(effectiveUserIdProvider) ?? '';
@@ -599,6 +630,7 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                             onPressed: () async {
                               final messenger = ScaffoldMessenger.of(context);
                               final router = GoRouter.of(context);
+                              if (!await _confirmNewShop(context)) return;
                               // effectiveUserIdProvider: in impersonazione il negozio
                               // viene attributito all'utente osservato, non all'admin.
                               final userId =
