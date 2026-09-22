@@ -1,0 +1,99 @@
+name: Supabase backup settimanale
+
+# Esporta il database di PROD ogni domenica e lo conserva come artifact
+# cifrato per 30 giorni. Il piano Free di Supabase non offre backup
+# scaricabili: questa e' la rete di sicurezza.
+#
+# Secret da creare in GitHub (Settings > Secrets and variables > Actions):
+#   SUPABASE_DB_URL      stringa "Session pooler" (porta 5432) da Supabase >
+#                        Connect. I runner GitHub non hanno IPv6: la
+#                        connessione diretta db.<ref>.supabase.co non funziona.
+#   BACKUP_PASSPHRASE    frase lunga a piacere, conservala in un posto sicuro:
+#                        senza di lei il backup non si apre.
+#
+# Ripristino (sul tuo PC):
+#   gpg -d pitlap-prod-AAAA-MM-GG.tar.gz.gpg | tar xz
+#   psql "<url del db di destinazione>" -f roles.sql -f schema.sql -f data.sql
+# Provare il ripristino su dev, mai direttamente su prod.
+
+on:
+  schedule:
+    - cron: "40 2 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check required secrets
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          test -n "$SUPABASE_DB_URL" || { echo "Missing GitHub secret: SUPABASE_DB_URL"; exit 2; }
+          test -n "$BACKUP_PASSPHRASE" || { echo "Missing GitHub secret: BACKUP_PASSPHRASE"; exit 2; }
+
+      # pg_dump deve essere >= della versione del server (Postgres 17).
+      - name: Install PostgreSQL 17 client
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
+          /usr/lib/postgresql/17/bin/pg_dump --version
+
+      - name: Dump
+        env:
+          DB: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          BIN=/usr/lib/postgresql/17/bin
+          mkdir dump
+          # Schemi applicativi: public (dati PitLap), auth (utenti), storage (metadati file).
+          # I file veri del bucket non sono inclusi: vanno salvati a parte.
+          $BIN/pg_dump "$DB" --schema-only --no-owner --no-privileges \
+            --schema=public > dump/schema.sql
+          $BIN/pg_dump "$DB" --data-only --no-owner \
+            --schema=public --schema=auth --schema=storage \
+            --exclude-table=auth.sessions --exclude-table=auth.refresh_tokens \
+            --exclude-table=auth.audit_log_entries --exclude-table=auth.flow_state \
+            > dump/data.sql
+          $BIN/pg_dumpall --dbname="$DB" --roles-only --no-role-passwords 2>/dev/null \
+            | grep -vE '^(CREATE|ALTER) ROLE (postgres|supabase_|authenticator|pgbouncer|anon|authenticated|service_role|dashboard_user|pgsodium)' \
+            > dump/roles.sql || true
+          wc -c dump/*
+          test -s dump/schema.sql && test -s dump/data.sql
+
+      # Il dump contiene dati personali: cifrato prima di diventare artifact.
+      - name: Encrypt
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          NAME="pitlap-prod-$(date -u +%F).tar.gz.gpg"
+          tar czf - dump | gpg --batch --yes --symmetric --cipher-algo AES256 \
+            --passphrase "$BACKUP_PASSPHRASE" -o "$NAME"
+          rm -rf dump
+          echo "NAME=$NAME" >> "$GITHUB_ENV"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.NAME }}
+          path: ${{ env.NAME }}
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Notify owner on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: gh issue create --repo "${{ github.repository }}" --title "Supabase backup failed" --body "Il backup settimanale di PitLap e' fallito. Run $RUN_URL" --assignee "${{ github.repository_owner }}"
