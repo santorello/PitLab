@@ -750,6 +750,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
           )) {
         return;
       }
+      if (!context.mounted) return;
       final slug = existingSpot?.slug ?? SpotCatalog.createSlug(name, city);
       final customSpot = SpotEntry(
         slug: slug,
