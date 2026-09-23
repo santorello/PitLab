@@ -10,6 +10,7 @@ import '../../../shared/utils/share_entity.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/fullscreen_gallery.dart';
 import '../../comments/presentation/comments_section.dart';
+import '../../garage/presentation/builds_seen_here.dart';
 import '../../profile/application/profile_hub_providers.dart';
 import '../application/public_events_provider.dart';
 
@@ -258,6 +259,7 @@ class EventDetailScreen extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.xl),
           // Commenti sull'evento (entityType 'event', id UUID).
+          BuildsSeenHere(entityType: 'event', entityId: eventId),
           CommentsSection(
             entityType: 'event',
             entityId: eventId,

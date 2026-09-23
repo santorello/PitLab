@@ -9,6 +9,7 @@ import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/fullscreen_gallery.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../comments/presentation/comments_section.dart';
+import '../application/build_links_provider.dart';
 import '../application/public_builds_provider.dart';
 
 /// Pagina di una build pubblica: galleria stile Instagram, like, commenti.
@@ -120,6 +121,8 @@ class _BuildDetail extends ConsumerWidget {
                     const SizedBox(height: 8),
                     Text(listing.meta.trim(), style: theme.textTheme.bodyLarge),
                   ],
+                  const SizedBox(height: 16),
+                  _BuildPlaces(listing: listing),
                   if (listing.specs.isNotEmpty) ...[
                     const SizedBox(height: 16),
                     Text(
@@ -306,6 +309,173 @@ class _Unavailable extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+/// "Dove gira": luoghi collegati alla build. Il proprietario li aggiunge e
+/// li toglie; tutti gli altri li vedono e li aprono.
+class _BuildPlaces extends ConsumerWidget {
+  const _BuildPlaces({required this.listing});
+
+  final PublicBuildListing listing;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final linksAsync = ref.watch(buildLinksProvider(listing.id));
+    final userId = ref.watch(currentUserProvider)?.id;
+    final isOwner = userId != null && userId == listing.ownerId;
+    final links = linksAsync.value ?? const <LinkTarget>[];
+    if (!isOwner && links.isEmpty) return const SizedBox.shrink();
+
+    Future<void> remove(LinkTarget t) async {
+      final messenger = ScaffoldMessenger.of(context);
+      final error =
+          await ref.read(buildLinksProvider(listing.id).notifier).remove(t);
+      if (error != null) {
+        messenger.showSnackBar(SnackBar(content: Text(error)));
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Dove gira',
+          style: Theme.of(context)
+              .textTheme
+              .titleSmall
+              ?.copyWith(fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final t in links)
+              InputChip(
+                avatar: Icon(_linkIcon(t.entityType), size: 18),
+                label: Text(t.name),
+                tooltip: '${t.kindLabel} · ${t.city}',
+                onPressed: () => context.push(t.route),
+                onDeleted: isOwner ? () => remove(t) : null,
+                deleteButtonTooltipMessage: 'Scollega',
+              ),
+            if (isOwner)
+              ActionChip(
+                avatar: const Icon(Icons.add_location_alt_outlined, size: 18),
+                label: Text(links.isEmpty
+                    ? 'Collega una pista, un negozio, uno spot o un evento'
+                    : 'Collega un luogo'),
+                onPressed: () => _openLinkPicker(context, ref, listing.id),
+              ),
+          ],
+        ),
+        if (isOwner && links.isEmpty) ...[
+          const SizedBox(height: 6),
+          Text(
+            'La build comparira\' tra le "Build viste qui" della scheda.',
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: AppColors.steel),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+IconData _linkIcon(String type) => switch (type) {
+      'track' => Icons.flag_outlined,
+      'shop' => Icons.storefront_outlined,
+      'spot' => Icons.location_on_outlined,
+      _ => Icons.event_outlined,
+    };
+
+Future<void> _openLinkPicker(
+  BuildContext context,
+  WidgetRef ref,
+  String buildId,
+) async {
+  final picked = await showDialog<LinkTarget>(
+    context: context,
+    builder: (_) => const _LinkPickerDialog(),
+  );
+  if (picked == null || !context.mounted) return;
+  final messenger = ScaffoldMessenger.of(context);
+  final error = await ref.read(buildLinksProvider(buildId).notifier).add(picked);
+  messenger.showSnackBar(SnackBar(
+    content: Text(error ?? 'Collegata a ${picked.name}.'),
+  ));
+}
+
+class _LinkPickerDialog extends ConsumerStatefulWidget {
+  const _LinkPickerDialog();
+
+  @override
+  ConsumerState<_LinkPickerDialog> createState() => _LinkPickerDialogState();
+}
+
+class _LinkPickerDialogState extends ConsumerState<_LinkPickerDialog> {
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final results = ref.watch(linkTargetSearchProvider(_query));
+    return AlertDialog(
+      title: const Text('Dove gira questa build?'),
+      content: SizedBox(
+        width: 440,
+        height: 380,
+        child: Column(
+          children: [
+            TextField(
+              autofocus: true,
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                hintText: 'Nome di pista, negozio, spot, evento o citta\'',
+              ),
+              onChanged: (v) => setState(() => _query = v),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: _query.trim().length < 2
+                  ? const Center(child: Text('Scrivi almeno 2 lettere.'))
+                  : results.when(
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (_, _) =>
+                          const Center(child: Text('Ricerca non riuscita.')),
+                      data: (items) => items.isEmpty
+                          ? const Center(child: Text('Nessun luogo trovato.'))
+                          : ListView.builder(
+                              itemCount: items.length,
+                              itemBuilder: (context, i) {
+                                final t = items[i];
+                                return ListTile(
+                                  leading: Icon(_linkIcon(t.entityType)),
+                                  title: Text(t.name),
+                                  subtitle: Text(
+                                    [t.kindLabel, if (t.city.isNotEmpty) t.city]
+                                        .join(' · '),
+                                  ),
+                                  onTap: () => Navigator.of(context).pop(t),
+                                );
+                              },
+                            ),
+                    ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+        ),
+      ],
     );
   }
 }

@@ -20,6 +20,7 @@ import '../../../shared/widgets/weather_visuals.dart';
 import '../../../shared/utils/share_entity.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../comments/presentation/comments_section.dart';
+import '../../garage/presentation/builds_seen_here.dart';
 import '../application/tracks_providers.dart';
 
 class TrackDetailScreen extends ConsumerStatefulWidget {
@@ -421,6 +422,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
               // Commenti: solo per piste già pubblicate su Supabase (UUID).
               if (isPublishedTrackId(track.id)) ...[
                 const SizedBox(height: AppSpacing.lg),
+                BuildsSeenHere(entityType: 'track', entityId: track.id),
                 CommentsSection(
                   entityType: 'track',
                   entityId: track.id,

@@ -13,6 +13,7 @@ import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/fullscreen_gallery.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../comments/presentation/comments_section.dart';
+import '../../garage/presentation/builds_seen_here.dart';
 import '../application/spots_providers.dart';
 import '../domain/spot_catalog.dart';
 import '../domain/spot_tags.dart';
@@ -418,6 +419,7 @@ class SpotDetailScreen extends ConsumerWidget {
           // Commenti: solo per spot già persistiti su Supabase (id UUID).
           if (spot.id != null) ...[
             const SizedBox(height: AppSpacing.xl),
+            BuildsSeenHere(entityType: 'spot', entityId: spot.id!),
             CommentsSection(
               entityType: 'spot',
               entityId: spot.id!,

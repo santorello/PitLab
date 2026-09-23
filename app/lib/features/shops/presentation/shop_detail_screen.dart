@@ -15,6 +15,7 @@ import '../../../shared/widgets/community_claim_strip.dart';
 import '../../../shared/widgets/dialog_controller_scope.dart';
 import '../../../shared/widgets/external_links_section.dart';
 import '../../comments/presentation/comments_section.dart';
+import '../../garage/presentation/builds_seen_here.dart';
 import '../application/public_shops_provider.dart';
 import '../application/shop_follows_providers.dart';
 import '../application/shop_permissions_providers.dart';
@@ -176,6 +177,7 @@ class _ShopDetailBody extends ConsumerWidget {
         const SizedBox(height: 16),
 
         // Sezione commenti (shop.id è UUID dal DB).
+        BuildsSeenHere(entityType: 'shop', entityId: shop.id),
         CommentsSection(
           entityType: 'shop',
           entityId: shop.id,

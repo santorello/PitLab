@@ -680,6 +680,13 @@ class _BuildCard extends StatelessWidget {
             spacing: AppSpacing.md,
             runSpacing: AppSpacing.md,
             children: [
+              // Pagina pubblica: like, commenti e "Dove gira" (collegamenti).
+              if (userBuild.isPublic && userBuild.id.isNotEmpty)
+                FilledButton.icon(
+                  onPressed: () => context.push('/build/${userBuild.id}'),
+                  icon: const Icon(Icons.open_in_new),
+                  label: const Text('Pagina e luoghi'),
+                ),
               OutlinedButton.icon(
                 onPressed: onEdit,
                 icon: const Icon(Icons.edit_outlined),
