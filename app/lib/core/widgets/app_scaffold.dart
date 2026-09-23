@@ -17,9 +17,9 @@ class AppScaffold extends ConsumerStatefulWidget {
 
   final Widget child;
 
-  // Navigazione "A" (23/09/2026): Piste, Spot, Negozi, Vicino a te e Mappa
-  // stanno dentro Esplora (schede in cima, vedi _ExploreTabs); le build hanno
-  // una voce propria. Le rotte di prima restano tutte valide.
+  // Navigazione (23/09/2026): Esplora e' la mappa a tutto schermo con elenco
+  // (ExploreMapScreen); le build hanno una voce propria. Le rotte di prima
+  // (/tracks, /spots, /shops, /nearby, /spots/map) restano valide.
   static const _destinations = <_Destination>[
     _Destination(
       labelKey: 'home',
@@ -31,7 +31,7 @@ class AppScaffold extends ConsumerStatefulWidget {
       labelKey: 'explore',
       labelFallback: 'Esplora',
       icon: Icons.explore_outlined,
-      location: '/tracks',
+      location: '/explore',
     ),
     _Destination(
       labelKey: 'builds',
@@ -220,7 +220,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
             Expanded(
               child: _ScaffoldBodyWithImpersonationBanner(
                 impersonation: impersonation,
-                child: _withExploreTabs(location, widget.child),
+                child: widget.child,
               ),
             ),
           ],
@@ -232,7 +232,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
       appBar: const _MobileTopBar(),
       body: _ScaffoldBodyWithImpersonationBanner(
         impersonation: impersonation,
-        child: _withExploreTabs(location, widget.child),
+        child: widget.child,
       ),
       bottomNavigationBar: _MobileNavigationBar(
         destinations: visibleDestinations,
@@ -529,12 +529,13 @@ extension on AppScaffold {
     final uri = Uri.tryParse(location);
     final path = uri?.path ?? location;
     var normalizedLocation = path;
-    if (isExplorePath(path) ||
+    if (const {'/explore', '/tracks', '/spots', '/spots/map', '/shops', '/nearby'}
+            .contains(path) ||
         path.startsWith('/track/') ||
         path.startsWith('/spot/') ||
         path.startsWith('/shop/') ||
         path == '/submit-place') {
-      normalizedLocation = '/tracks';
+      normalizedLocation = '/explore';
     } else if (path.startsWith('/event/')) {
       normalizedLocation = '/events';
     } else if (path.startsWith('/build/')) {
@@ -588,70 +589,5 @@ class _Destination {
   final String location;
 }
 
-// ── Esplora ─────────────────────────────────────────────────────────────────
-
-const _exploreTabs = <({String path, String it, String en, IconData icon})>[
-  (path: '/tracks', it: 'Piste', en: 'Tracks', icon: Icons.flag_outlined),
-  (path: '/spots', it: 'Spot', en: 'Spots', icon: Icons.location_pin),
-  (path: '/shops', it: 'Negozi', en: 'Shops', icon: Icons.storefront_outlined),
-  (path: '/nearby', it: 'Vicino a te', en: 'Nearby', icon: Icons.near_me_outlined),
-  // Mappa unica di piste, spot, negozi ed eventi: e' la strada verso la
-  // proposta B (mappa al centro) senza rifare niente.
-  (path: '/spots/map', it: 'Mappa', en: 'Map', icon: Icons.map_outlined),
-];
-
-/// Le liste che vivono dentro Esplora (non le schede di dettaglio).
-bool isExplorePath(String path) =>
-    _exploreTabs.any((tab) => tab.path == path);
-
 String _exploreLabel(BuildContext context) =>
     Localizations.localeOf(context).languageCode == 'it' ? 'Esplora' : 'Explore';
-
-Widget _withExploreTabs(String location, Widget child) {
-  final path = Uri.tryParse(location)?.path ?? location;
-  if (!isExplorePath(path)) return child;
-  return Column(
-    children: [
-      _ExploreTabs(currentPath: path),
-      Expanded(child: child),
-    ],
-  );
-}
-
-// ponytail: le schede cambiano rotta (context.go), quindi i filtri di una
-// lista si azzerano passando all'altra, come succedeva gia' con la barra.
-// Tenerli vivi richiede un contenitore con IndexedStack: solo se serve.
-class _ExploreTabs extends StatelessWidget {
-  const _ExploreTabs({required this.currentPath});
-
-  final String currentPath;
-
-  @override
-  Widget build(BuildContext context) {
-    final isIt = Localizations.localeOf(context).languageCode == 'it';
-    return Material(
-      color: AppColors.warmWhite,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
-        child: Row(
-          children: [
-            for (final tab in _exploreTabs)
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: ChoiceChip(
-                  avatar: Icon(tab.icon, size: 18),
-                  label: Text(isIt ? tab.it : tab.en),
-                  selected: tab.path == currentPath,
-                  showCheckmark: false,
-                  onSelected: (_) {
-                    if (tab.path != currentPath) context.go(tab.path);
-                  },
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}

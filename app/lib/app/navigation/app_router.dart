@@ -25,7 +25,7 @@ import '../../features/shops/presentation/shop_detail_screen.dart';
 import '../../features/shops/presentation/shop_editor_screen.dart';
 import '../../features/shops/presentation/shops_screen.dart';
 import '../../features/spots/presentation/spot_detail_screen.dart';
-import '../../features/spots/presentation/spots_map_screen.dart';
+import '../../features/discovery/presentation/explore_map_screen.dart';
 import '../../features/spots/presentation/spots_screen.dart';
 import '../../features/submissions/presentation/submit_place_screen.dart';
 import '../../features/tracks/presentation/track_detail_screen.dart';
@@ -164,6 +164,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const TracksHomeScreen(),
           ),
           GoRoute(
+            path: '/explore',
+            name: 'explore',
+            builder: (context, state) => const ExploreMapScreen(),
+          ),
+          GoRoute(
             path: '/nearby',
             name: 'nearby',
             builder: (context, state) => const NearbyScreen(),
@@ -176,7 +181,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/spots/map',
             name: 'spots-map',
-            builder: (context, state) => const SpotsMapScreen(),
+            builder: (context, state) => const ExploreMapScreen(),
           ),
           GoRoute(
             path: '/spot/:slug',
