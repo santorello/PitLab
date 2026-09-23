@@ -20,11 +20,12 @@ class BuildsSeenHere extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final builds = ref
-            .watch(buildsSeenHereProvider(
-                (entityType: entityType, entityId: entityId)))
-            .value ??
-        const [];
+    final async = ref.watch(
+        buildsSeenHereProvider((entityType: entityType, entityId: entityId)));
+    if (async.hasError) {
+      debugPrint('[BuildsSeenHere] $entityType/$entityId: ${async.error}');
+    }
+    final builds = async.value ?? const [];
     if (builds.isEmpty) return const SizedBox.shrink();
     final theme = Theme.of(context);
 

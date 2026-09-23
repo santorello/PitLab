@@ -156,8 +156,13 @@ final linkTargetSearchProvider = FutureProvider.autoDispose
 typedef LinkedEntity = ({String entityType, String entityId});
 
 /// Build pubbliche collegate a un luogo ("Build viste qui"), piu' recenti prima.
-final buildsSeenHereProvider = FutureProvider.autoDispose
-    .family<List<PublicBuildListing>, LinkedEntity>((ref, entity) async {
+// Niente autoDispose: la striscia sta in fondo a pagine con ListView, che
+// smonta e rimonta i figli mentre si scorre; con autoDispose la richiesta
+// ripartiva da capo a ogni passaggio e la striscia non arrivava mai
+// (collaudo 23/09). Si aggiorna con invalidate quando si collega un luogo.
+final buildsSeenHereProvider =
+    FutureProvider.family<List<PublicBuildListing>, LinkedEntity>(
+        (ref, entity) async {
   final client = ref.watch(supabaseClientProvider);
   if (client == null || entity.entityId.isEmpty) return const [];
   final links = await client
