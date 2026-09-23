@@ -10,10 +10,16 @@ name: Supabase backup settimanale
 #                        connessione diretta db.<ref>.supabase.co non funziona.
 #   BACKUP_PASSPHRASE    frase lunga a piacere, conservala in un posto sicuro:
 #                        senza di lei il backup non si apre.
+# Facoltativi, per salvare anche i file del bucket "media"
+# (Supabase > Storage > S3 Connection):
+#   SUPABASE_S3_ENDPOINT  es. https://<ref>.storage.supabase.co/storage/v1/s3
+#   SUPABASE_S3_REGION    la regione indicata nella stessa pagina
+#   SUPABASE_S3_KEY_ID / SUPABASE_S3_SECRET  la chiave di accesso generata li'
 #
 # Ripristino (sul tuo PC):
 #   gpg -d pitlap-prod-AAAA-MM-GG.tar.gz.gpg | tar xz
 #   psql "<url del db di destinazione>" -f roles.sql -f schema.sql -f data.sql
+#   i file in media/ si ricaricano nel bucket con aws s3 sync (o dal dashboard)
 # Provare il ripristino su dev, mai direttamente su prod.
 
 on:
@@ -57,8 +63,10 @@ jobs:
           BIN=/usr/lib/postgresql/17/bin
           mkdir dump
           # Schemi applicativi: public (dati PitLap), auth (utenti), storage (metadati file).
-          # I file veri del bucket non sono inclusi: vanno salvati a parte.
-          $BIN/pg_dump "$DB" --schema-only --no-owner --no-privileges \
+          # I file del bucket li scarica il passo "Media" qui sotto.
+          # Senza --no-privileges: le GRANT servono al ripristino (dal 30/10/2026
+          # Supabase non le concede piu' in automatico alle tabelle nuove).
+          $BIN/pg_dump "$DB" --schema-only --no-owner \
             --schema=public > dump/schema.sql
           $BIN/pg_dump "$DB" --data-only --no-owner \
             --schema=public --schema=auth --schema=storage \
@@ -70,6 +78,24 @@ jobs:
             > dump/roles.sql || true
           wc -c dump/*
           test -s dump/schema.sql && test -s dump/data.sql
+
+      # File del bucket via accesso S3 di Supabase (Storage > S3 Connection).
+      # Facoltativo: senza i secret il passo viene saltato e il backup resta solo DB.
+      # ponytail: copia completa ogni settimana; oltre qualche centinaio di MB
+      # passare a una copia incrementale (rclone sul PC o bucket R2).
+      - name: Media
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.SUPABASE_S3_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SUPABASE_S3_SECRET }}
+          AWS_DEFAULT_REGION: ${{ secrets.SUPABASE_S3_REGION }}
+          S3_ENDPOINT: ${{ secrets.SUPABASE_S3_ENDPOINT }}
+        run: |
+          set -euo pipefail
+          if [ -z "$S3_ENDPOINT" ] || [ -z "$AWS_ACCESS_KEY_ID" ]; then
+            echo "Secret S3 assenti: media saltati"; exit 0
+          fi
+          aws s3 sync s3://media dump/media --endpoint-url "$S3_ENDPOINT" --only-show-errors
+          echo "File media: $(find dump/media -type f | wc -l)"
 
       # Il dump contiene dati personali: cifrato prima di diventare artifact.
       - name: Encrypt
