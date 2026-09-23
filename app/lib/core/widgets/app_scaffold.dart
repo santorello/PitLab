@@ -17,6 +17,9 @@ class AppScaffold extends ConsumerStatefulWidget {
 
   final Widget child;
 
+  // Navigazione "A" (23/09/2026): Piste, Spot, Negozi, Vicino a te e Mappa
+  // stanno dentro Esplora (schede in cima, vedi _ExploreTabs); le build hanno
+  // una voce propria. Le rotte di prima restano tutte valide.
   static const _destinations = <_Destination>[
     _Destination(
       labelKey: 'home',
@@ -25,16 +28,16 @@ class AppScaffold extends ConsumerStatefulWidget {
       location: '/',
     ),
     _Destination(
-      labelKey: 'tracks',
-      labelFallback: 'Piste',
-      icon: Icons.flag_outlined,
+      labelKey: 'explore',
+      labelFallback: 'Esplora',
+      icon: Icons.explore_outlined,
       location: '/tracks',
     ),
     _Destination(
-      labelKey: 'spots',
-      labelFallback: 'Spots',
-      icon: Icons.location_pin,
-      location: '/spots',
+      labelKey: 'builds',
+      labelFallback: 'Build',
+      icon: Icons.precision_manufacturing_outlined,
+      location: '/builds',
     ),
     _Destination(
       labelKey: 'events',
@@ -42,37 +45,25 @@ class AppScaffold extends ConsumerStatefulWidget {
       icon: Icons.event_outlined,
       location: '/events',
     ),
-    // Dopo Eventi: su telefono le prime 4 voci (Home, Piste, Spot, Eventi)
-    // restano in barra, questa finisce in "Altro".
+    // Su telefono le prime 4 voci stanno in barra, queste finiscono in "Altro"
+    // (il profilo e' raggiungibile anche dal pulsante in alto).
     _Destination(
-      labelKey: 'nearby',
-      labelFallback: 'Nearby',
-      icon: Icons.explore_outlined,
-      location: '/nearby',
+      labelKey: 'profile',
+      labelFallback: 'Profile',
+      icon: Icons.person_outline,
+      location: '/profile',
     ),
     _Destination(
-      labelKey: 'shops',
-      labelFallback: 'Shops',
-      icon: Icons.storefront_outlined,
-      location: '/shops',
+      labelKey: 'garage',
+      labelFallback: 'Garage',
+      icon: Icons.garage_outlined,
+      location: '/garage',
     ),
     _Destination(
       labelKey: 'manager',
       labelFallback: 'Manager',
       icon: Icons.tune_outlined,
       location: '/manager',
-    ),
-    _Destination(
-      labelKey: 'garage',
-      labelFallback: 'Garage',
-      icon: Icons.precision_manufacturing_outlined,
-      location: '/garage',
-    ),
-    _Destination(
-      labelKey: 'profile',
-      labelFallback: 'Profile',
-      icon: Icons.person_outline,
-      location: '/profile',
     ),
   ];
   static const _adminDestination = _Destination(
@@ -229,7 +220,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
             Expanded(
               child: _ScaffoldBodyWithImpersonationBanner(
                 impersonation: impersonation,
-                child: widget.child,
+                child: _withExploreTabs(location, widget.child),
               ),
             ),
           ],
@@ -241,7 +232,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
       appBar: const _MobileTopBar(),
       body: _ScaffoldBodyWithImpersonationBanner(
         impersonation: impersonation,
-        child: widget.child,
+        child: _withExploreTabs(location, widget.child),
       ),
       bottomNavigationBar: _MobileNavigationBar(
         destinations: visibleDestinations,
@@ -538,29 +529,16 @@ extension on AppScaffold {
     final uri = Uri.tryParse(location);
     final path = uri?.path ?? location;
     var normalizedLocation = path;
-    if (path.startsWith('/track/')) {
+    if (isExplorePath(path) ||
+        path.startsWith('/track/') ||
+        path.startsWith('/spot/') ||
+        path.startsWith('/shop/') ||
+        path == '/submit-place') {
       normalizedLocation = '/tracks';
-    } else if (path.startsWith('/spot/')) {
-      normalizedLocation = '/spots';
-    } else if (path == '/submit-place') {
-      switch (uri?.queryParameters['type']) {
-        case 'spot':
-          normalizedLocation = '/spots';
-          break;
-        case 'shop':
-          normalizedLocation = '/shops';
-          break;
-        default:
-          normalizedLocation = '/tracks';
-          break;
-      }
-    } else if (path.startsWith('/shop/')) {
-      normalizedLocation = '/shops';
     } else if (path.startsWith('/event/')) {
       normalizedLocation = '/events';
-    } else if (path.startsWith('/builds') || path.startsWith('/build/')) {
-      // FR-28: le build pubbliche appartengono al mondo Garage.
-      normalizedLocation = '/garage';
+    } else if (path.startsWith('/build/')) {
+      normalizedLocation = '/builds';
     } else if (path.startsWith('/profiles') || path.startsWith('/u/')) {
       // FR-28: elenco/profilo pubblico → voce Profilo.
       normalizedLocation = '/profile';
@@ -580,6 +558,8 @@ extension on AppScaffold {
     final l10n = AppLocalizations.of(context)!;
     return switch (item.labelKey) {
       'home' => 'Home',
+      'explore' => _exploreLabel(context),
+      'builds' => 'Build',
       'tracks' => l10n.tracksTitle,
       'nearby' => l10n.nearbyTitle,
       'spots' => l10n.spotsTitle,
@@ -606,4 +586,72 @@ class _Destination {
   final String labelFallback;
   final IconData icon;
   final String location;
+}
+
+// ── Esplora ─────────────────────────────────────────────────────────────────
+
+const _exploreTabs = <({String path, String it, String en, IconData icon})>[
+  (path: '/tracks', it: 'Piste', en: 'Tracks', icon: Icons.flag_outlined),
+  (path: '/spots', it: 'Spot', en: 'Spots', icon: Icons.location_pin),
+  (path: '/shops', it: 'Negozi', en: 'Shops', icon: Icons.storefront_outlined),
+  (path: '/nearby', it: 'Vicino a te', en: 'Nearby', icon: Icons.near_me_outlined),
+  // Mappa unica di piste, spot, negozi ed eventi: e' la strada verso la
+  // proposta B (mappa al centro) senza rifare niente.
+  (path: '/spots/map', it: 'Mappa', en: 'Map', icon: Icons.map_outlined),
+];
+
+/// Le liste che vivono dentro Esplora (non le schede di dettaglio).
+bool isExplorePath(String path) =>
+    _exploreTabs.any((tab) => tab.path == path);
+
+String _exploreLabel(BuildContext context) =>
+    Localizations.localeOf(context).languageCode == 'it' ? 'Esplora' : 'Explore';
+
+Widget _withExploreTabs(String location, Widget child) {
+  final path = Uri.tryParse(location)?.path ?? location;
+  if (!isExplorePath(path)) return child;
+  return Column(
+    children: [
+      _ExploreTabs(currentPath: path),
+      Expanded(child: child),
+    ],
+  );
+}
+
+// ponytail: le schede cambiano rotta (context.go), quindi i filtri di una
+// lista si azzerano passando all'altra, come succedeva gia' con la barra.
+// Tenerli vivi richiede un contenitore con IndexedStack: solo se serve.
+class _ExploreTabs extends StatelessWidget {
+  const _ExploreTabs({required this.currentPath});
+
+  final String currentPath;
+
+  @override
+  Widget build(BuildContext context) {
+    final isIt = Localizations.localeOf(context).languageCode == 'it';
+    return Material(
+      color: AppColors.warmWhite,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+        child: Row(
+          children: [
+            for (final tab in _exploreTabs)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ChoiceChip(
+                  avatar: Icon(tab.icon, size: 18),
+                  label: Text(isIt ? tab.it : tab.en),
+                  selected: tab.path == currentPath,
+                  showCheckmark: false,
+                  onSelected: (_) {
+                    if (tab.path != currentPath) context.go(tab.path);
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 }

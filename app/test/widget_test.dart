@@ -12,8 +12,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text('Piste').evaluate().isNotEmpty ||
-          find.text('Tracks').evaluate().isNotEmpty,
+      find.text('Esplora').evaluate().isNotEmpty ||
+          find.text('Explore').evaluate().isNotEmpty,
       isTrue,
     );
     expect(find.byType(ProviderScope), findsOneWidget);
