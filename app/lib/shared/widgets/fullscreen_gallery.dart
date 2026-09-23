@@ -229,7 +229,9 @@ class _ZoomableImageState extends State<_ZoomableImage> {
         transformationController: _transform,
         minScale: 1,
         maxScale: 5,
-        child: Center(
+        // SizedBox.expand: senza vincoli stretti l'immagine resta alla sua
+        // misura originale (piccola) invece di riempire lo schermo.
+        child: SizedBox.expand(
           child: AdaptiveImage(
             source: widget.source,
             fit: BoxFit.contain,
