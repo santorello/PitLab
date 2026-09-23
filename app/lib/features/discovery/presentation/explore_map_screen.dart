@@ -190,10 +190,14 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
       _map.move(places.first.point, 12);
       return;
     }
-    _map.fitCamera(CameraFit.coordinates(
+    // fitCamera spostava la camera ma le tessere restavano quelle dello zoom
+    // precedente, sgranate, fino al primo trascinamento (collaudo 23/09);
+    // con move() lo stesso inquadramento carica le tessere giuste.
+    final fitted = CameraFit.coordinates(
       coordinates: [for (final p in places) p.point],
       padding: const EdgeInsets.all(56),
-    ));
+    ).fit(_map.camera);
+    _map.move(fitted.center, fitted.zoom);
   }
 
   Future<void> _locate() async {
