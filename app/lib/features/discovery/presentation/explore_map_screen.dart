@@ -289,6 +289,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                         _refit = true;
                       }),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
+                      wrap: true,
                     ),
                     _ListHeader(label: countLabel),
                     Expanded(
@@ -580,8 +581,10 @@ class _Filters extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.padding = EdgeInsets.zero,
+    this.wrap = false,
   });
 
+  final bool wrap;
   final _Kind? value;
   final ValueChanged<_Kind?> onChanged;
   final EdgeInsets padding;
@@ -611,18 +614,24 @@ class _Filters extends StatelessWidget {
       );
     }
 
+    final chips = [
+      chip('Tutto', null),
+      chip('Piste', _Kind.track),
+      chip('Spot', _Kind.spot),
+      chip('Negozi', _Kind.shop),
+      chip('Eventi', _Kind.event),
+    ];
+    // Nella colonna PC i filtri vanno a capo invece di nascondersi a destra.
+    if (wrap) {
+      return Padding(
+        padding: padding,
+        child: Wrap(runSpacing: 6, children: chips),
+      );
+    }
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: padding,
-      child: Row(
-        children: [
-          chip('Tutto', null),
-          chip('Piste', _Kind.track),
-          chip('Spot', _Kind.spot),
-          chip('Negozi', _Kind.shop),
-          chip('Eventi', _Kind.event),
-        ],
-      ),
+      child: Row(children: chips),
     );
   }
 }
