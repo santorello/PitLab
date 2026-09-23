@@ -85,6 +85,8 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
   double _zoom = 8.2;
   LatLng _center = const LatLng(45.46, 9.19); // Milano
   bool _fitted = false;
+  // Dopo un cambio di filtro o ricerca la mappa inquadra i risultati.
+  bool _refit = false;
   bool _locating = false;
 
   @override
@@ -242,6 +244,13 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
       });
     }
 
+    if (_refit && visible.isNotEmpty) {
+      _refit = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _fit(visible);
+      });
+    }
+
     final map = _buildMap(visible);
     final countLabel = _countLabel(visible.length);
 
@@ -262,13 +271,19 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                       child: _SearchField(
                         controller: _search,
-                        onChanged: (v) => setState(() => _query = v),
+                        onChanged: (v) => setState(() {
+                          _query = v;
+                          _refit = true;
+                        }),
                         flat: true,
                       ),
                     ),
                     _Filters(
                       value: _filter,
-                      onChanged: (k) => setState(() => _filter = k),
+                      onChanged: (k) => setState(() {
+                        _filter = k;
+                        _refit = true;
+                      }),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                     ),
                     _ListHeader(label: countLabel),
@@ -332,16 +347,24 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
               children: [
                 _SearchField(
                   controller: _search,
-                  onChanged: (v) => setState(() => _query = v),
+                  onChanged: (v) => setState(() {
+                          _query = v;
+                          _refit = true;
+                        }),
                 ),
                 const SizedBox(height: 8),
                 _Filters(
                   value: _filter,
-                  onChanged: (k) => setState(() => _filter = k),
+                  onChanged: (k) => setState(() {
+                        _filter = k;
+                        _refit = true;
+                      }),
                 ),
               ],
             ),
           ),
+          // Con la scheda aperta i pulsanti starebbero sotto la scheda.
+          if (selected == null)
           Positioned(
             right: 12,
             bottom: peekPx + 12,
@@ -429,9 +452,12 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
     final groups = _cluster(visible);
     return FlutterMap(
       mapController: _map,
+      // Valori iniziali COSTANTI: passare _center/_zoom (che cambiano a ogni
+      // movimento) fa ripartire la camera iniziale a ogni rebuild e le
+      // tessere restavano grigie dopo fit e tocco sui gruppi (collaudo 23/09).
       options: MapOptions(
-        initialCenter: _center,
-        initialZoom: _zoom,
+        initialCenter: const LatLng(45.46, 9.19),
+        initialZoom: 8.2,
         minZoom: 4,
         maxZoom: 18,
         onTap: (_, _) => setState(() => _selectedKey = null),
