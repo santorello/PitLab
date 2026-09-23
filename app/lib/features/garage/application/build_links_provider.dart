@@ -79,7 +79,7 @@ class BuildLinksNotifier extends AsyncNotifier<List<LinkTarget>> {
     // Stesso ordine dei collegamenti; un luogo sparito (es. cancellato) si salta.
     return [
       for (final row in links.whereType<Map>())
-        if (byKey['${row['entity_type']}:${row['entity_id']}'] case final t?) t,
+        ?byKey['${row['entity_type']}:${row['entity_id']}'],
     ];
   }
 
