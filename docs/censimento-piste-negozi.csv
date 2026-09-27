@@ -1,24 +1,24 @@
 tipo,nome,citta,provincia,indirizzo,lat,lon,sito,telefono,stato,note
-pista,New Track Baruccana Offroad,Seveso,MB,"Via della Roggia",45.6465667,9.1578846,https://pistaoffroadrc.it/,+39 347 793 6565,censita,copertina drone dal sito del club
+pista,New Track Baruccana Offroad,Seveso,MB,Via della Roggia,45.6465667,9.1578846,https://pistaoffroadrc.it/,+39 347 793 6565,censita,copertina drone dal sito del club
 pista,Trial Attack Racing Team,Rescaldina,MI,,,,,,censita,inserita da Giuseppe
-pista,Pista MelzoRC,Melzo,MI,"Via Primo Maggio 31",45.4920616,9.4072942,https://www.pistamelzo.com/,+39 366 1535845,lotto 02,senza copertina
-pista,S.R.B. OffRoad,Nembro,BG,"Via Luigi Carrara 49",45.7484441,9.7778444,https://www.srboffroad.it/,+39 340 477 0604,lotto 02,orari non pubblicati
-pista,Nitro Buggy Genzone,Genzone,PV,"Via Garibaldi 39",45.1821666,9.3440223,http://nitrobuggygenzone.altervista.org/,+39 331 1397659,lotto 02,orari non pubblicati
-pista,Crazy Club Modellismo,Varallo Pombia,NO,"Via Selvigia 23",45.6659365,8.638368,https://www.crazyclubmodellismo.com/,+39 347 836 2283,SCARTATA,Google la da chiusa temporaneamente
-negozio,Milan Model Modellismo,Novate Milanese,MI,"Via Cascina del Sole 20",45.532806,9.1421261,https://www.modellismomilano.it/,+39 02 23054659,lotto 02,ha una pista off road propria
-negozio,Modellismo Varesino,Castronno,VA,"Via Lombardia 6",45.7539262,8.8098737,https://www.modellismovaresino.it/,+39 0332 892467,lotto 02,
-negozio,Team Model di Alberto Poli,Corsico,MI,"Via Giuseppe Garibaldi 47",45.4307376,9.1085735,https://www.teammodel.it/,+39 02 45100439,lotto 02,orari non pubblicati
-negozio,Modellismo Fioroni,Casarile,MI,"Via Vincenzo Monti 4",45.3136507,9.1050938,https://www.modellismofioroni.com/,+39 02 90096362,lotto 02,orari non pubblicati
-negozio,Modeltecnic,Lissone,MB,"Via Martiri della Liberta 74/C",45.6191571,9.2463739,https://www.modeltecnic.it/,+39 039 4669028,lotto 02,vivo su Maps 41 recensioni
-negozio,Jonathan Modellismo,Sesto San Giovanni,MI,"Via Jannozzi 52",,,https://shop.jonathan.it/,+39 02 4947 8907,DA DECIDERE,Google lo da chiuso definitivamente
-negozio,Jonathan Modellismo,Mogliano Veneto,TV,"Via Pra dei Roveri 4/A",,,https://shop.jonathan.it/,+39 041 590 2993,DA DECIDERE,fuori Lombardia ma attivo
-pista,Miniautodromo di Leno,Leno,BS,"Via O. Rosai",45.3746026,10.2097665,https://www.lenorc.it/,+39 333 8099012,lotto 03,on_road + 5 servizi + copertina aerea
-pista,Aero Club Aeromodellisti Bergamo,Grassobbio,BG,"Campo di volo",45.646156,9.7342793,https://www.aeromodellistiaecbg.eu/,+39 347 604 8020,lotto 03,categoria volo; orari estivi e invernali completi
-pista,Campo Volo Ali Azzurre,Cermenate,CO,"Via Caio Plinio 29",45.7138661,9.0899765,https://www.aliazzurre.it/,,lotto 03,categoria volo; nessun telefono pubblico
-pista,G.A.B.E. Brianza Est,Busnago,MB,"Cascina Corte Anna",45.6100,9.4785,http://www.gabebusnago.it/,,lotto 03,coordinate pubblicate dal club stesso
-pista,Campo Volo GAM ASD,Desio,MB,"Via Giorgio Ambrosoli",45.5995476,9.2133547,https://www.gamasd.it/,+39 377 174 9502,lotto 03,sede a Cusano Milanino, campo a Desio
-pista,Gruppo Falchi Bergamo,Zanica,BG,"Sede Via F.lli Calvi 3; campo ex SS573",,,https://www.gruppofalchi.com/,,lotto 03,SENZA COORDINATE: il campo non ha una scheda Maps
-pista,ZRING Mini-Z,Malnate,VA,"Via Morandi (non confermato)",,,https://zring.club/,,SCARTATA,nessuna scheda Maps e nessuna attivita dopo gennaio 2024
+pista,Pista MelzoRC,Melzo,MI,Via Primo Maggio 31,45.4920616,9.4072942,https://www.pistamelzo.com/,+39 366 1535845,lotto 02,senza copertina
+pista,S.R.B. OffRoad,Nembro,BG,Via Luigi Carrara 49,45.7484441,9.7778444,https://www.srboffroad.it/,+39 340 477 0604,lotto 02,orari non pubblicati
+pista,Nitro Buggy Genzone,Genzone,PV,Via Garibaldi 39,45.1821666,9.3440223,http://nitrobuggygenzone.altervista.org/,+39 331 1397659,lotto 02,orari non pubblicati
+pista,Crazy Club Modellismo,Varallo Pombia,NO,Via Selvigia 23,45.6659365,8.638368,https://www.crazyclubmodellismo.com/,+39 347 836 2283,SCARTATA,Google la da chiusa temporaneamente
+negozio,Milan Model Modellismo,Novate Milanese,MI,Via Cascina del Sole 20,45.532806,9.1421261,https://www.modellismomilano.it/,+39 02 23054659,lotto 02,ha una pista off road propria
+negozio,Modellismo Varesino,Castronno,VA,Via Lombardia 6,45.7539262,8.8098737,https://www.modellismovaresino.it/,+39 0332 892467,lotto 02,
+negozio,Team Model di Alberto Poli,Corsico,MI,Via Giuseppe Garibaldi 47,45.4307376,9.1085735,https://www.teammodel.it/,+39 02 45100439,lotto 02,orari non pubblicati
+negozio,Modellismo Fioroni,Casarile,MI,Via Vincenzo Monti 4,45.3136507,9.1050938,https://www.modellismofioroni.com/,+39 02 90096362,lotto 02,orari non pubblicati
+negozio,Modeltecnic,Lissone,MB,Via Martiri della Liberta 74/C,45.6191571,9.2463739,https://www.modeltecnic.it/,+39 039 4669028,lotto 02,vivo su Maps 41 recensioni
+negozio,Jonathan Modellismo,Sesto San Giovanni,MI,Via Jannozzi 52,,,https://shop.jonathan.it/,+39 02 4947 8907,DA DECIDERE,Google lo da chiuso definitivamente
+negozio,Jonathan Modellismo,Mogliano Veneto,TV,Via Pra dei Roveri 4/A,,,https://shop.jonathan.it/,+39 041 590 2993,DA DECIDERE,fuori Lombardia ma attivo
+pista,Miniautodromo di Leno,Leno,BS,Via O. Rosai,45.3746026,10.2097665,https://www.lenorc.it/,+39 333 8099012,lotto 03,on_road + 5 servizi + copertina aerea
+pista,Aero Club Aeromodellisti Bergamo,Grassobbio,BG,Campo di volo,45.646156,9.7342793,https://www.aeromodellistiaecbg.eu/,+39 347 604 8020,lotto 03,categoria volo; orari estivi e invernali completi
+pista,Campo Volo Ali Azzurre,Cermenate,CO,Via Caio Plinio 29,45.7138661,9.0899765,https://www.aliazzurre.it/,,lotto 03,categoria volo; nessun telefono pubblico
+pista,G.A.B.E. Brianza Est,Busnago,MB,Cascina Corte Anna,45.6100,9.4785,http://www.gabebusnago.it/,,lotto 03,coordinate pubblicate dal club stesso
+pista,Campo Volo GAM ASD,Desio,MB,Via Giorgio Ambrosoli,45.5995476,9.2133547,https://www.gamasd.it/,+39 377 174 9502,lotto 03,sede a Cusano Milanino, campo a Desio
+pista,Gruppo Falchi Bergamo,Zanica,BG,Sede Via F.lli Calvi 3; campo ex SS573,,,https://www.gruppofalchi.com/,,lotto 03,SENZA COORDINATE: il campo non ha una scheda Maps
+pista,ZRING Mini-Z,Malnate,VA,Via Morandi (non confermato),,,https://zring.club/,,SCARTATA,nessuna scheda Maps e nessuna attivita dopo gennaio 2024
 pista,My Mini4WD World,Segrate,MI,,,,https://www.mymini4wdworld.it/,+39 347 0521763,SCARTATA,organizzatore di gare senza sede fissa: non e una pista
 pista,Mini4wd Garage Franciacorta,Rovato,BS,,,,,,SCARTATA,gare in sedi diverse ogni volta
 pista,Wonderland,Pavia,PV,,,,,,SCARTATA,negozio chiuso
@@ -29,36 +29,125 @@ pista,Gruppo Aeromodellisti Valceresio,Arcisate,VA,,,,,,SCARTATA,nessuna traccia
 pista,AVA Aeromodellisti Varese,Castiglione Olona,VA,,,,,,SCARTATA,dati segnaposto nelle uniche fonti trovate
 pista,Aeroteam Novara,Novara,NO,,,,,,SCARTATA,sito ufficiale non raggiungibile e dati insufficienti
 pista,Il Tempio delle Mini4WD,Malalbergo,BO,"Via Minghetti 15/L, Altedo",44.6763086,11.4881905,https://iltempiodellemini4wd.it/,+39 388 6288884,lotto 04,mini4wd+indoor; fuori Lombardia ma richiesto; nessuna foto della pista (solo gif del layout)
-pista,Toys World,Sant'Angelo Lodigiano,LO,"Piazza Lorenzo Perosi 10",45.2326088,9.4098063,http://www.toysworld.it/,+39 0371 90688,lotto 04,mini4wd; la pista risulta da fonti datate e da mini4wditalia.it: da confermare col negozio
-pista,Brianza Slot Club,Villasanta,MB,"Via Alfonso La Marmora 7",45.6021703,9.3101616,http://www.brianzaslotclub.it/,+39 347 923 1125,lotto 04,slot+indoor; copertina foto della sala
-pista,Fermodellisti Greco-Pirelli Milano,Milano,MI,"Via Staro 1",45.4886033,9.2371839,https://associazionefgpm.wixsite.com/fgpmilano,,lotto 04,treni; copertina plastico (ridimensionata dal CDN Wix)
-pista,Nuova G.A.M.E.S. Segrate,Segrate,MI,"Viale Europa 428",45.4930013,9.3036574,https://www.nuovagamesegrate.com/,+39 347 2638315,lotto 04,on_road touring/F1/GT3; copertina aerea della curva
-pista,RC Off Road Volandia,Somma Lombardo,VA,"Via per Tornavento 15",45.6303782,8.7052529,https://www.facebook.com/RCVolandia/,,lotto 04,attiva (post di questa settimana); nessuna categoria dichiarata alla lettera
+pista,Toys World,Sant'Angelo Lodigiano,LO,Piazza Lorenzo Perosi 10,45.2326088,9.4098063,http://www.toysworld.it/,+39 0371 90688,lotto 04,mini4wd; la pista risulta da fonti datate e da mini4wditalia.it: da confermare col negozio
+pista,Brianza Slot Club,Villasanta,MB,Via Alfonso La Marmora 7,45.6021703,9.3101616,http://www.brianzaslotclub.it/,+39 347 923 1125,lotto 04,slot+indoor; copertina foto della sala
+pista,Fermodellisti Greco-Pirelli Milano,Milano,MI,Via Staro 1,45.4886033,9.2371839,https://associazionefgpm.wixsite.com/fgpmilano,,lotto 04,treni; copertina plastico (ridimensionata dal CDN Wix)
+pista,Nuova G.A.M.E.S. Segrate,Segrate,MI,Viale Europa 428,45.4930013,9.3036574,https://www.nuovagamesegrate.com/,+39 347 2638315,lotto 04,on_road touring/F1/GT3; copertina aerea della curva
+pista,RC Off Road Volandia,Somma Lombardo,VA,Via per Tornavento 15,45.6303782,8.7052529,https://www.facebook.com/RCVolandia/,,lotto 04,attiva (post di questa settimana); nessuna categoria dichiarata alla lettera
 pista,(nuova pista Mini4WD),Paderno Dugnano,MI,,,,,,DA TROVARE,non compare su Maps, web o mini4wditalia: serve il nome dall'utente
-pista,SottoFrutta Mini4WD,Muggio,MB,"Via Federico Confalonieri 49B",45.5781751,9.2281185,,,NON INSERITA,club privato: confermato dall'utente, resta fuori
-pista,Toys in Fabula (club),Cinisello Balsamo,MI,"Via Carlo Martinelli 37",45.551312,9.2187815,https://www.toysinfabula.it/,340 828 4505,lotto 04b,mini4wd confermata dall'utente; probabilmente e' il posto 'nuovo vicino a Paderno'
+pista,SottoFrutta Mini4WD,Muggio,MB,Via Federico Confalonieri 49B,45.5781751,9.2281185,,,NON INSERITA,club privato: confermato dall'utente, resta fuori
+pista,Toys in Fabula (club),Cinisello Balsamo,MI,Via Carlo Martinelli 37,45.551312,9.2187815,https://www.toysinfabula.it/,340 828 4505,lotto 04b,mini4wd confermata dall'utente; probabilmente e' il posto 'nuovo vicino a Paderno'
 pista,Too Drift,Calolziocorte / Curno,LC,,,,https://toodrift.com/,,SCARTATA,sito fermo al 2017 dice Calolziocorte, Maps dice Curno: fonti in conflitto
-pista,Milano Slot,Milano,MI,"Via del Ricordo 43",45.5095539,9.2407073,http://www.milanoslot.it/,,SCARTATA,ultima attivita' sul sito nel 2022
-pista,Rc Vedano,Vedano al Lambro,MB,"Via Alfieri 32",,,http://www.rcvedano.it/,,SCARTATA,senza gestione, futuro incerto dopo giugno 2026 (recensione Maps)
-pista,Model Club Mantova - Circuito Matteo Priori,Mantova,MN,"Strada del Trincerone 7d",45.1352824,10.782744,https://www.pistadimantova.it/,+39 339 4099430,lotto 05,on_road + 4 servizi + copertina aerea 820px; orari non pubblicati
-pista,Miniautodromo Stradivari,Cremona,CR,"All'uscita del casello autostradale",45.1369417,10.0693985,https://www.circuitostradivari.it/,,lotto 05,on_road + 5 servizi + copertina aerea 886px; pin Maps ~130 m a sud del tracciato; nessun telefono pubblico
-pista,Milan Model Mini Off-Road,Novate Milanese,MI,"Via Cascina del Sole 6",45.5324215,9.1418414,https://www.modellismomilano.it/,+39 02 23054659,lotto 05,pista del negozio Milan Model; buggy; senza copertina (solo banner con scritte)
-negozio,Modellismo Sant'Alessandro,Bergamo,BG,"Via San Pio X 15",45.6927925,9.7086843,https://www.modelsantalessandro.com/,+39 035 210127,lotto 05,copertina vetrina; orari dal sito (Maps diverge sul giovedi)
-negozio,Modelberg,Bergamo,BG,"Via G.B. Moroni 38",45.6917185,9.6630657,https://www.modelberg.it/,+39 035 248442,lotto 05,senza copertina: nessuna foto del negozio sul sito
-negozio,ASI Model,Desenzano del Garda,BS,"Via Ettore De Andreis 41",45.4688152,10.5271106,https://www.asimodel.it/,+39 030 912 1578,lotto 05,senza copertina: sul sito solo un fotogramma video generico; Maps da' un altro numero (030 337 8567)
-negozio,Officina Fantastica,Lecco,LC,"Via Azzone Visconti 74",,,https://www.officinafantastica.it/,,SCARTATA,Google la da chiusa definitivamente
+pista,Milano Slot,Milano,MI,Via del Ricordo 43,45.5095539,9.2407073,http://www.milanoslot.it/,,SCARTATA,ultima attivita' sul sito nel 2022
+pista,Rc Vedano,Vedano al Lambro,MB,Via Alfieri 32,,,http://www.rcvedano.it/,,SCARTATA,senza gestione, futuro incerto dopo giugno 2026 (recensione Maps)
+pista,Model Club Mantova - Circuito Matteo Priori,Mantova,MN,Strada del Trincerone 7d,45.1352824,10.782744,https://www.pistadimantova.it/,+39 339 4099430,lotto 05,on_road + 4 servizi + copertina aerea 820px; orari non pubblicati
+pista,Miniautodromo Stradivari,Cremona,CR,All'uscita del casello autostradale,45.1369417,10.0693985,https://www.circuitostradivari.it/,,lotto 05,on_road + 5 servizi + copertina aerea 886px; pin Maps ~130 m a sud del tracciato; nessun telefono pubblico
+pista,Milan Model Mini Off-Road,Novate Milanese,MI,Via Cascina del Sole 6,45.5324215,9.1418414,https://www.modellismomilano.it/,+39 02 23054659,lotto 05,pista del negozio Milan Model; buggy; senza copertina (solo banner con scritte)
+negozio,Modellismo Sant'Alessandro,Bergamo,BG,Via San Pio X 15,45.6927925,9.7086843,https://www.modelsantalessandro.com/,+39 035 210127,lotto 05,copertina vetrina; orari dal sito (Maps diverge sul giovedi)
+negozio,Modelberg,Bergamo,BG,Via G.B. Moroni 38,45.6917185,9.6630657,https://www.modelberg.it/,+39 035 248442,lotto 05,senza copertina: nessuna foto del negozio sul sito
+negozio,ASI Model,Desenzano del Garda,BS,Via Ettore De Andreis 41,45.4688152,10.5271106,https://www.asimodel.it/,+39 030 912 1578,lotto 05,senza copertina: sul sito solo un fotogramma video generico; Maps da' un altro numero (030 337 8567)
+negozio,Officina Fantastica,Lecco,LC,Via Azzone Visconti 74,,,https://www.officinafantastica.it/,,SCARTATA,Google la da chiusa definitivamente
 pista,Volo Club Lecco,Monte Marenzo,LC,,,,https://www.voloclublecco.it/,,SCARTATA,aviosuperficie per aerei veri non modellismo
-pista,Ibex Park,Villanova d'Asti,AT,"Strada Mezzaluna 17",,,https://www.ibexpark.com/,+39 338 4421984,CANDIDATA,scaler e rally 1/10 su prenotazione; Piemonte: da decidere con l'utente
-pista,VL Distribution pista esterna,Cannobio,VB,"Via Ponte Ballerino 11",,,https://modellismovl.com/,+39 339 718 3309,CANDIDATA,negozio con pista modulare esterna e percorso scaler; Piemonte: da decidere con l'utente
-pista,Pista RC Crespi,Brembate,BG,"Via Pista Crespi 115 (Crespi d'Adda)",45.5983619,9.5396556,https://www.facebook.com/PistaRcCrespi/,,lotto 06,buggy+rally; attiva 2026 (calendario gare FB); solo email; niente orari ne copertina (foto solo su Facebook)
-pista,HB Racing ASD,Trezzo sull'Adda,MI,"Via Fernando Santi 3A",,,https://www.hobbymedia.it/78920/,,SCARTATA,Google la da chiusa definitivamente; al suo posto vale Pista RC Crespi a 2 km
-pista,Crazy Road Model Club,Zelo Buon Persico,LO,"Via XX Settembre",,,,,SCARTATA,chiusa: confermato da Giuseppe il 22/09/2026; resta solo come voce storica nei video
+pista,Ibex Park,Villanova d'Asti,AT,Strada Mezzaluna 17,,,https://www.ibexpark.com/,+39 338 4421984,CANDIDATA,scaler e rally 1/10 su prenotazione; Piemonte: da decidere con l'utente
+pista,VL Distribution pista esterna,Cannobio,VB,Via Ponte Ballerino 11,,,https://modellismovl.com/,+39 339 718 3309,CANDIDATA,negozio con pista modulare esterna e percorso scaler; Piemonte: da decidere con l'utente
+pista,Pista RC Crespi,Brembate,BG,Via Pista Crespi 115 (Crespi d'Adda),45.5983619,9.5396556,https://www.facebook.com/PistaRcCrespi/,,lotto 06,buggy+rally; attiva 2026 (calendario gare FB); solo email; niente orari ne copertina (foto solo su Facebook)
+pista,HB Racing ASD,Trezzo sull'Adda,MI,Via Fernando Santi 3A,,,https://www.hobbymedia.it/78920/,,SCARTATA,Google la da chiusa definitivamente; al suo posto vale Pista RC Crespi a 2 km
+pista,Crazy Road Model Club,Zelo Buon Persico,LO,Via XX Settembre,,,,,SCARTATA,chiusa: confermato da Giuseppe il 22/09/2026; resta solo come voce storica nei video
 pista,Mini Racing Ghisi,Rho,MI,,,,,,DA DECIDERE,solo video 2014-2016; nessuna conferma recente ne coordinate
-spot,Santuario della Madonna del Sangue - Re,Re,VB,"Via Locarno 4",46.1302841,8.5450207,,,lotto 06b,spot drone; accesso permission; copertina da fotogramma del video di Giuseppe
-spot,Camping Hermitage - Craveggia,Craveggia,VB,"Via Melezzo Siberia 43",46.1370356,8.4787674,https://www.campinghermitage.com/,,lotto 06b,spot drone; struttura privata: serve consenso gestore
-spot,Tabiano Castello - panorama drone,Salsomaggiore Terme,PR,"Via Castello",44.7921554,10.0240814,,,lotto 06b,spot drone; luogo privato: decollo da punto lecito
-spot,Spiaggia di Varcaro - drone,Monte Sant'Angelo,FG,"Localita Varcaro frazione Macchia",41.6631326,15.9905322,,,lotto 06b,spot drone estivo; area costiera con concessioni
+spot,Santuario della Madonna del Sangue - Re,Re,VB,Via Locarno 4,46.1302841,8.5450207,,,lotto 06b,spot drone; accesso permission; copertina da fotogramma del video di Giuseppe
+spot,Camping Hermitage - Craveggia,Craveggia,VB,Via Melezzo Siberia 43,46.1370356,8.4787674,https://www.campinghermitage.com/,,lotto 06b,spot drone; struttura privata: serve consenso gestore
+spot,Tabiano Castello - panorama drone,Salsomaggiore Terme,PR,Via Castello,44.7921554,10.0240814,,,lotto 06b,spot drone; luogo privato: decollo da punto lecito
+spot,Spiaggia di Varcaro - drone,Monte Sant'Angelo,FG,Localita Varcaro frazione Macchia,41.6631326,15.9905322,,,lotto 06b,spot drone estivo; area costiera con concessioni
 spot,Parco delle Groane - area scaler,Da identificare,MI/MB/CO,,,,,,DA TROVARE,serve il punto del percorso dal video NkNnu0OQ8wc
-spot,Area Forum di Assago - drift RC,Assago,MI,"Area Unipol Forum",45.4013593,9.1423018,,,DA DECIDERE,6 video di drift; piazzale privato: serve il punto esatto e l'ok all'uso
+spot,Area Forum di Assago - drift RC,Assago,MI,Area Unipol Forum,45.4013593,9.1423018,,,DA DECIDERE,6 video di drift; piazzale privato: serve il punto esatto e l'ok all'uso
 spot,Cava di Verbania - area RC,Verbania,VB,,,,,,DA TROVARE,3 video bashing/drift; cava e proprieta da identificare
-pista,RCM Mini Racing Ghisi,Rho,MI,"Via Emilio Scheibler 3",,,,,SCARTATA,Google la da chiusa definitivamente; sito rcmnew.com non risponde
+pista,RCM Mini Racing Ghisi,Rho,MI,Via Emilio Scheibler 3,,,,,SCARTATA,Google la da chiusa definitivamente; sito rcmnew.com non risponde
+negozio,AMT Modellismo Torino,Torino,TO,"Via Madama Cristina, 118, 10126",45.0453546,7.6736315,https://www.amtmodellismo.com,011 663 4629,lotto 10,pubblicato su prod 2026-09-27 come amt-modellismo-torino
+negozio,Adria Model,Portogruaro,VE,"Viale Pordenone, 65, 30026",45.7958136,12.8191934,https://www.adriamodel.com,0421 71841,lotto 07,pubblicato su prod 2026-09-27 come adria-model-portogruaro
+negozio,Al Giocattolo,Imola,BO,"Via Aldrovandi, 16, 40026",44.3522756,11.7151643,https://www.algiocattolo.it,0542 35070,lotto 11,pubblicato su prod 2026-09-27 come al-giocattolo-imola
+negozio,Albert Model,Brescia,BS,"Via XX Settembre, 4, 25122",45.5343406,10.2130689,https://www.albertmodel.com,030 296416,lotto 08,pubblicato su prod 2026-09-27 come albert-model-brescia
+negozio,Astromodel Sas,Genova,GE,"Via del Campasso, 16, 16151",44.4209039,8.8908272,https://www.astromodel.it,010 246 4555,lotto 11,pubblicato su prod 2026-09-27 come astromodel-genova
+negozio,Big Shop - Model Treno,Verona,VR,"Piazza San Zeno, 8, 37123",45.4425154,10.9781625,,045 591834,lotto 09,pubblicato su prod 2026-09-27 come big-shop-model-treno-verona
+negozio,Biz Model Distribution S.r.l.,Novara,NO,"Corte degli Speziali, 6, 28100",45.4252599,8.6121001,https://www.bizmodel.it,0321 033187,NON PUBBLICATA,"match Maps dubbio: distributore, non il negozio EliShop"
+negozio,Brama,Perugia,PG,"Via Giuseppe Minottini, 9, 06129",43.0852968,12.3661529,https://www.bramashop.com,075 500 2971,lotto 12,pubblicato su prod 2026-09-27 come brama-perugia
+negozio,Bsm Modellismo,Eraclea,VE,"Via Triestina Bassa, 179, 30020",45.6184154,12.7260206,https://www.bsmmodellismo.com,370 343 7641,lotto 07,pubblicato su prod 2026-09-27 come bsm-modellismo-eraclea
+negozio,CM MODELLISMO,Roma,RM,"Via Gaetano Astolfi, 73, 00149",41.8627852,12.4580316,https://www.cmmodellismo.it,06 558 2696,lotto 13,pubblicato su prod 2026-09-27 come cm-modellismo-roma
+negozio,CMB Centro Modellistica Barese,Bari,BA,"Via Enrico Toti, 12, 70125",41.1134445,16.8729514,https://www.centromodellisticabarese.com,366 639 3655,lotto 13,pubblicato su prod 2026-09-27 come cmb-centro-modellistica-barese-bari
+negozio,Caputo Modellismo,Napoli,NA,"Via Francesco Cilea, 82, 80127",40.8432756,14.2231045,https://www.caputomodellismo.it,081 578 1227,lotto 13,pubblicato su prod 2026-09-27 come caputo-modellismo-napoli
+negozio,Car's Show Modellismo Brugherio,Brugherio,MB,"Via Tre Re, 21, 20861",45.546554,9.2976492,,335 598 5799,lotto 08,pubblicato su prod 2026-09-27 come car-s-show-modellismo-brugherio
+negozio,Cdf Modellismo,Catania,CT,"Via Firenze, 15, 95129",37.5168657,15.0979606,https://www.cdfmodellismo.net,095 383654,lotto 14,pubblicato su prod 2026-09-27 come cdf-modellismo-catania
+negozio,Centro Model,Villasmundo,SR,"Via Vittorio Emanuele, 196, 96010",37.2518232,15.0887424,https://www.centromodel.it,334 193 5780,lotto 14,pubblicato su prod 2026-09-27 come centro-model-villasmundo
+negozio,D.P Modellismo,Roma,RM,"Via Tiburtina, 1421, 00131",41.9390358,12.6255171,https://dpmodellismo.it,06 9522 7632,lotto 13,pubblicato su prod 2026-09-27 come d-p-modellismo-roma
+negozio,Dominio,Vicenza,VI,"Via Gorizia, 1A, 36100",45.5451819,11.5413316,https://www.dominiox.com,0444 326362,lotto 08,pubblicato su prod 2026-09-27 come dominio-vicenza
+negozio,Dreoni Giocattoli,Firenze,FI,"Piazza delle Cure, 7r, 50133",43.7872043,11.2696197,https://shop.dreoni.it,055 614 6760,lotto 12,pubblicato su prod 2026-09-27 come dreoni-giocattoli-firenze
+negozio,Electronic Dreams sas,Fornacette,PI,"Via Tosco Romagnola Ovest, 55, 56012",43.6687628,10.593579,https://www.electronicdreams.it,0587 710642,lotto 12,pubblicato su prod 2026-09-27 come electronic-dreams-fornacette
+negozio,Emporio 45 Model,Città di Castello,PG,"Via Borgo di Sotto, 3, 06012",43.456957,12.2401161,,075 855 5921,lotto 12,pubblicato su prod 2026-09-27 come emporio-45-model-citta-di-castello
+negozio,Fontana treni,Pisa,PI,"Via Chiassatello, 73, 56121",43.7071682,10.3830956,https://www.fontanatreni.com,050 531481,lotto 12,pubblicato su prod 2026-09-27 come fontana-treni-pisa
+negozio,Formula Shop Model,Pesaro,PU,"Via Cristina Belgioioso, 96, 61122",43.8963088,12.9102498,https://www.formulashopmodel.it,0721 456146,lotto 11,pubblicato su prod 2026-09-27 come formula-shop-model-pesaro
+negozio,Free Model,Ravenna,RA,"V.le Leon Battista Alberti, 76, 48124",44.399744,12.186906,,0544 407272,lotto 11,pubblicato su prod 2026-09-27 come free-model-ravenna
+negozio,G.P. Modellismo di Pierini Gabriele,Siena,SI,"Via Molise, 15, 53100",43.3431106,11.3107777,https://www.vario-helicopter.biz,,lotto 12,pubblicato su prod 2026-09-27 come g-p-modellismo-siena
+negozio,General Modelling,Reggio Emilia,RE,"Via Enrico Manzini, 1, 42121",44.7043243,10.631238,https://www.generalmodelling.it,0522 271720,lotto 10,pubblicato su prod 2026-09-27 come general-modelling-reggio-emilia
+negozio,Granda Models Cuneo - G.M.C.,Cuneo,CN,"Via Luigi Einaudi, 10, 12100",44.3786531,7.5353611,https://www.grandamodels.it,320 644 9265,lotto 11,pubblicato su prod 2026-09-27 come granda-models-cuneo
+negozio,H0 modellismo,Piacenza,PC,"Via Luigi Pirandello, 41, 29121",45.0470792,9.659583,https://www.h0modellismo.it,347 741 7726,lotto 09,pubblicato su prod 2026-09-27 come h0-modellismo-piacenza
+negozio,Hobbitalia 2 sas di Federico Barthel & C.,Firenze,FI,"Via degli Artisti, 11d/e, 50132",43.78056,11.269311,https://www.hobbitalia2.it,055 553 5499,lotto 12,pubblicato su prod 2026-09-27 come hobbitalia-2-firenze
+negozio,Hobby Modellismo Villanova Di Castenaso,Villanova,BO,"Via Bruno Tosarelli, 340/C, 40055",44.4988249,11.4280564,https://www.hobbymodellismo.com,051 605 3717,lotto 10,pubblicato su prod 2026-09-27 come hobby-modellismo-villanova-di-castenaso
+negozio,Hobby Modellismo e Giocattoli,Messina,ME,"Via Nino Bixio, 117, 98123",38.1835562,15.5518174,,340 289 3209,lotto 14,pubblicato su prod 2026-09-27 come hobby-modellismo-e-giocattoli-messina
+negozio,Hobby Point,Bussolengo,VR,"Via degli Scaligeri, 4, 37012",45.4668499,10.8512063,https://www.hobbypoint.shop,045 670 2887,lotto 08,pubblicato su prod 2026-09-27 come hobby-point-bussolengo
+negozio,ISACCO ...i treni,Torino,TO,"C.so Vittorio Emanuele II, 36, 10123",45.0610216,7.6844088,https://www.isaccoitreni.com,011 817 8485,lotto 09,pubblicato su prod 2026-09-27 come isacco-i-treni-torino
+negozio,Ideal Model,Catania,CT,"Via Vincenzo Giuffrida, 107, 95127",37.5206867,15.0912348,,095 246 4029,lotto 14,pubblicato su prod 2026-09-27 come ideal-model-catania
+negozio,Il Principe Del Mare,Milano,MI,"Corso Ventidue Marzo, 48, 20137",45.4620629,9.2222005,https://ilprincipedelmare.it,02 7012 8513,lotto 09,pubblicato su prod 2026-09-27 come il-principe-del-mare-milano
+negozio,Jonny Modellismo,Pinerolo,TO,"Via del Pino, 25, 10064",44.8862794,7.3318801,https://www.jonnymodellismo.it,348 893 6915,lotto 10,pubblicato su prod 2026-09-27 come jonny-modellismo-pinerolo
+negozio,L'Aquilone,Torino,TO,"Via Val della Torre, 106/C, 10149",45.0960363,7.6517808,https://www.automodelliaquilone.com,011 455 9518,lotto 09,pubblicato su prod 2026-09-27 come l-aquilone-torino
+negozio,La Casa del Modellismo,Cesate,MI,"Vicolo Villette, 6, 20031",45.5925625,9.0784738,https://www.lacasadelmodellismo.com,333 542 8929,lotto 07,pubblicato su prod 2026-09-27 come la-casa-del-modellismo-cesate
+negozio,La Littorina,Venezia,VE,"Via Della Sortita, 9, 30175",45.4775404,12.2231902,https://www.littorina.it,329 626 8039,lotto 08,pubblicato su prod 2026-09-27 come la-littorina-venezia
+negozio,La Modellistica del Carroccio,Legnano,MI,"Via Sant'Ambrogio, 4, 20025",45.5932381,8.9173933,https://www.lamodellistica.it,0331 547632,lotto 07,pubblicato su prod 2026-09-27 come la-modellistica-del-carroccio-legnano
+negozio,Labirinto Shop,Modena,MO,"Via Giuseppe Maria Bondigli, 112, 41124",44.6378474,10.9132843,https://labirintoshop.it,059 350634,lotto 10,pubblicato su prod 2026-09-27 come labirinto-shop-modena
+negozio,Mail Model,Sanremo,IM,"Viale Carducci, 28, 18038",43.8156388,7.7638022,https://www.mailmodel.it,0184 591462,lotto 12,pubblicato su prod 2026-09-27 come mail-model-sanremo
+negozio,Mantovani Modellismo,Como,CO,"Via Vittorio Emanuele II, 74, 22100",45.8103176,9.0843885,https://www.mantovanimodellismo.com,031 268458,lotto 07,pubblicato su prod 2026-09-27 come mantovani-modellismo-como
+negozio,Marklin Shop Di Umberto Rossi,Bologna,BO,"Via Valdossola, 1, 40134",44.4970648,11.3180598,https://www.marklinshop.it,051 614 0193,lotto 10,pubblicato su prod 2026-09-27 come marklin-shop-bologna
+negozio,Mary S.A.S. Di Asaro Francesco & C.,Cagliari,CA,"Viale Trieste, 23, 09123",39.2177443,9.1078865,,070 663329,lotto 13,pubblicato su prod 2026-09-27 come mary-modellismo-cagliari
+negozio,Mdmodel Snc di Gaudenzi & C,Nichelino,TO,"Via Cuneo, 55, 10042",45.0042998,7.6622446,https://www.mdmodelshop.com,011 605 6688,lotto 10,pubblicato su prod 2026-09-27 come mdmodel-nichelino
+negozio,Mini Eliso,Pozzuolo del Friuli,UD,"Via degli Orti, 19/A, 33050",45.9831978,13.1961774,https://www.minieliso.com,0432 665388,lotto 07,pubblicato su prod 2026-09-27 come mini-eliso-pozzuolo-del-friuli
+negozio,Model Giochi,Lucca,LU,"Via Nicola Barbantini, 48, 55100",43.8457227,10.5188108,https://www.modelgiochilucca.it,328 218 8042,lotto 11,pubblicato su prod 2026-09-27 come model-giochi-lucca
+negozio,Model Kit Planet Modellismo Cagliari,Cagliari,CA,"Via Giuseppe Abba, 37, 09129",39.2172505,9.1200372,,347 623 2331,lotto 14,pubblicato su prod 2026-09-27 come model-kit-planet-cagliari
+negozio,Model Marris modellismo & Lego,Montale,MO,"V. Vandelli, 2/f, 41051",44.5790379,10.909296,https://www.modelmarris.com,059 530462,lotto 10,pubblicato su prod 2026-09-27 come model-marris-montale
+negozio,Modellismo Bartoli Severi Giovanni,Reggio nell'Emilia,RE,"Via dell'Abbadessa, 2/D, 42121",44.6976025,10.6351621,https://www.modellismobartoli.it,0522 430934,lotto 10,pubblicato su prod 2026-09-27 come modellismo-bartoli-reggio-emilia
+negozio,Modellismo Doneda,Cesenatico,FC,"Viale G. Carducci, 133/F, 47042",44.1972103,12.4088051,https://www.modellismodoneda.it,0547 673404,lotto 11,pubblicato su prod 2026-09-27 come modellismo-doneda-cesenatico
+negozio,Modellismo E Hobbystica di Renzetti Vincenzo,Pescara,PE,"V. Colle Innamorati, 7/5, 65125",42.4649404,14.1815707,https://www.vrmodellismo.it,351 884 5358,lotto 12,pubblicato su prod 2026-09-27 come modellismo-e-hobbystica-pescara
+negozio,Modellismo Edomodel,Bologna,BO,"Via Bentini Genuzio, 63/C, 40128",44.5480357,11.356932,https://www.edomodel.com,051 704090,lotto 10,pubblicato su prod 2026-09-27 come edomodel-bologna
+negozio,Modellismo F. Baracca,Monza,MB,"Via Francesco Baracca, 17, 20900",45.5905838,9.2843828,https://www.modellismobaracca.com,039 365259,lotto 08,pubblicato su prod 2026-09-27 come modellismo-baracca-monza
+negozio,Modellismo Ferroviario Portigliatti,Torino,TO,"Via dell'Industria, 4, 10144",45.0796452,7.6677182,https://www.portigliatti.it,011 484678,lotto 09,pubblicato su prod 2026-09-27 come modellismo-portigliatti-torino
+negozio,Modellismo Marily Di Semeria Monica,Ventimiglia,IM,"Via Aprosio, 23, 18039",43.7918094,7.6078019,,0184 352512,lotto 12,pubblicato su prod 2026-09-27 come modellismo-marily-ventimiglia
+negozio,Modellismo Negri Giordano,Capriate San Gervasio,BG,"Via XXV Aprile, 24, 24042",45.612366,9.5293338,https://www.modellismonegri.com,02 909 1536,lotto 07,pubblicato su prod 2026-09-27 come modellismo-negri-capriate-san-gervasio
+negozio,Modellismo Polo,Torino,TO,"Via Vittorio Asinari di Bernezzo, 82 B, 10146",45.0794323,7.630118,https://www.modellismopolo.it,011 715329,lotto 09,pubblicato su prod 2026-09-27 come modellismo-polo-torino
+negozio,Modellismo Riccione Di Angelini Chiara,Riccione,RN,"Viale Giuseppe Verdi, 16, 47838",44.0114727,12.6463765,https://www.omnimodellismo.it,0541 647369,lotto 11,pubblicato su prod 2026-09-27 come modellismo-riccione-riccione
+negozio,Modellismo Rossi,Roma,RM,"Largo Leonardo Da Vinci, 2a, 00145",41.8569944,12.4811182,https://www.modellismorossi.it,06 541 7302,lotto 13,pubblicato su prod 2026-09-27 come modellismo-rossi-roma
+negozio,Modellismo Santomartino Marco,Napoli,NA,"Corso Secondigliano, 512, 80144",40.8951353,14.2588421,https://www.modellismosantomartino.it,081 238 4093,lotto 13,pubblicato su prod 2026-09-27 come modellismo-santomartino-napoli
+negozio,Modelstorming,Villa Raspa,PE,"Via Italia, 26, 65010",42.457365,14.192011,https://modelstorming.sumupstore.com,085 291191,lotto 13,pubblicato su prod 2026-09-27 come modelstorming-villa-raspa
+negozio,Modeltecnica Sas - Modellismo,Milano,MI,"Via Privata delle Primule, 1, 20146",45.4508519,9.1386715,https://www.modeltecnica.shop,02 6601 6179,lotto 09,pubblicato su prod 2026-09-27 come modeltecnica-milano
+negozio,Modeltoy Melzo,Melzo,MI,"Via Cristoforo Colombo, 8, 20066",45.497331,9.4167379,https://www.modeltoy.it,02 9572 2991,lotto 08,pubblicato su prod 2026-09-27 come modeltoy-melzo
+negozio,Pieri Model,Milano,MI,"Via Ugo Betti, 50, 20151",45.4931169,9.1110902,https://www.pierimodel.com,348 313 0266,lotto 08,pubblicato su prod 2026-09-27 come pieri-model-racing-milano
+negozio,Pieroni Modellismo,Viareggio,LU,"Largo Risorgimento, 5, 55049",43.8693868,10.2568218,https://www.pieronimodellismo.it,0584 340016,lotto 11,pubblicato su prod 2026-09-27 come pieroni-modellismo-viareggio
+negozio,RcPro - ONLINE STORE,Cremona,CR,"SOLO MAGAZZINO - NO PUNTO VENDITA, Via Sant'Ambrogio, 6, 26100",45.1471412,10.0110688,https://www.rcpro.it,345 857 8855,NON PUBBLICATA,"solo online, nessun punto vendita"
+negozio,RoCri Modellismo,Roma,RM,"Via Bari, 2, 00161",41.9105743,12.5137818,https://www.rocrimodellismo.com,06 4423 0455,lotto 13,pubblicato su prod 2026-09-27 come rocri-modellismo-roma
+negozio,Robotown,Roma,RM,"Via di Acilia, 196, 00125",41.7775893,12.3684759,https://www.robotown.it,06 8936 4215,lotto 13,pubblicato su prod 2026-09-27 come robotown-roma
+negozio,Sintex Plastici di Edoardo Marcucci,Trieste,TS,"Via Francesco Crispi, 21a, 34125",45.6512328,13.7804705,https://sintexplastici.it,040 367350,lotto 07,pubblicato su prod 2026-09-27 come sintex-plastici-trieste
+negozio,Steel Models Srl,Albignasego,PD,"Vicolo Gela, 2, 35020",45.357958,11.841464,https://www.steelmodels.com,049 895 5008,lotto 09,pubblicato su prod 2026-09-27 come steel-models-albignasego
+negozio,TRENTO TRENO modellismo,Trento,TN,"Vicolo del Vó, 58, 38122",46.0707367,11.1239226,https://www.trentotreno.com,348 514 5365,lotto 07,pubblicato su prod 2026-09-27 come trento-treno-modellismo-trento
+negozio,Terra Mare Cielo Modellismo,Milano,MI,"Via Enrico Nöe, 15, 20133",45.4777803,9.2189028,https://www.terramarecielo.com,02 3651 3409,lotto 08,pubblicato su prod 2026-09-27 come terra-mare-cielo-modellismo-milano
+negozio,Tiny Cars di Sardini Enrico Maria,Milano,MI,"Via Cenisio 19 angolo Via Monte Asolone, 20154",45.4873133,9.1701169,https://www.tinycars.it,02 313830,lotto 08,pubblicato su prod 2026-09-27 come tiny-cars-milano
+negozio,Tommasin Modellismo Padova,Padova,PD,"Via S. Prosdocimo, 26, 35139",45.4069864,11.8664589,https://www.padovamodellismo.com,049 871 4749,lotto 09,pubblicato su prod 2026-09-27 come tommasin-modellismo-padova
+negozio,Trenidea S.A.S di Daniele Buttafava,Genova,GE,"Via di Vallechiara, 15, 16124",44.4138451,8.929752,https://trenidea.it,010 251 2988,lotto 11,pubblicato su prod 2026-09-27 come trenidea-genova
+negozio,Zerio Modellismo,Treviso,TV,"Via Terraglio, 21a, 31100",45.6584649,12.246376,,0422 403280,lotto 07,pubblicato su prod 2026-09-27 come zerio-modellismo-treviso
+negozio,ST Model,,,,40.751547,8.507803,https://www.stmodel.it,347 180 5462,DA VERIFICARE,manca indirizzo
+negozio,2T Modellismo di Tordoni Tito,Foligno,PG,"Via Giorgio Vasari, 13, 06034",42.962378,12.682873,https://www.2tmodellismo.it,0742 21118,SCARTATA,Google Maps: chiuso definitivamente/temporaneamente (verifica 2026-09-27)
+negozio,Al Parma Model,Parma,PR,"Str. Nino Bixio, 116/c, 43125",44.797278,10.319279,https://www.parmamodel.it,0521 200297,SCARTATA,duplicato: scheda gia presente a DB o nel censimento
+negozio,Dibi,Foggia,FG,"Via Emilio Perrone, 29, 71121",41.456110,15.553645,https://www.dibimodel.it,,SCARTATA,Google Maps: chiuso definitivamente/temporaneamente (verifica 2026-09-27)
+negozio,HOBBY SHOP modellismo,Palermo,PA,"Via Terrasanta, 75/77, 90141",38.130017,13.344744,https://www.hobbyshopmodellismo.com,091 346166,SCARTATA,Google Maps: chiuso definitivamente/temporaneamente (verifica 2026-09-27)
+negozio,Hobby Roma Modellismo,Roma,RM,"Via Carroceto, 83, 00178",41.865275,12.539103,,06 763277,SCARTATA,Google Maps: chiuso definitivamente/temporaneamente (verifica 2026-09-27)
+negozio,Lorenzi Modellismo,Malcesine,VR,"Via Casella, 34, 37018",45.765349,10.808558,,,SCARTATA,Google Maps: chiuso definitivamente/temporaneamente (verifica 2026-09-27)
+negozio,Magistroni Alessio,Pero,MI,"Strada Statale del Sempione, 28, 20016",,,,02 3391 0956,SCARTATA,Google Maps: chiuso definitivamente/temporaneamente (verifica 2026-09-27)
+negozio,Modellismo Hobby House,Roma,RM,"Viale Carnaro, 28, 00141",41.941188,12.531977,,,SCARTATA,Google Maps: chiuso definitivamente/temporaneamente (verifica 2026-09-27)
+negozio,Modellismo Mannucci,Roma,RM,"Viale Carnaro, 15 D, 00141",41.940555,12.531838,,339 521 2274,SCARTATA,Google Maps: chiuso definitivamente/temporaneamente (verifica 2026-09-27)
+negozio,Modellismo Nalin,Monselice,PD,"Via Dante, 2B, 35043",45.241895,11.750466,https://www.modellismonalin.com,328 441 4406,SCARTATA,Google Maps: chiuso definitivamente/temporaneamente (verifica 2026-09-27)
+negozio,Ready to win models,Bergamo,BG,"Via Pignolo, 27, 24121",45.698855,9.675797,,035 271367,SCARTATA,Google Maps: chiuso definitivamente/temporaneamente (verifica 2026-09-27)
