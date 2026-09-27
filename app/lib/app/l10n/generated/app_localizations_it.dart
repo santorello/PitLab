@@ -2107,7 +2107,10 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get nearbyShopGeneric => 'Negozio RC';
+  String get nearbyShopGeneric => 'Negozio di modellismo';
+
+  @override
+  String get shopTypeBadge => 'Negozio di modellismo';
 
   @override
   String get nearbyStatusUpdating => 'Aggiornamento in corso';

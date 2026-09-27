@@ -261,7 +261,7 @@ class _ShopHero extends StatelessWidget {
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          _TypeBadge(label: 'Negozio RC'),
+                          _TypeBadge(label: l10n.shopTypeBadge),
                           if (shop.city.isNotEmpty)
                             _LocationBadge(city: shop.city),
                         ],

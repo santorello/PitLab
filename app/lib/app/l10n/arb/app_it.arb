@@ -740,7 +740,8 @@
       }
     }
   },
-  "nearbyShopGeneric": "Negozio RC",
+  "nearbyShopGeneric": "Negozio di modellismo",
+  "shopTypeBadge": "Negozio di modellismo",
   "nearbyStatusUpdating": "Aggiornamento in corso",
   "shopSearchHint": "Cerca negozio o specializzazione...",
   "shopSaveAction": "Salva negozio",

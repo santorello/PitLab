@@ -2107,7 +2107,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get nearbyShopGeneric => 'RC shop';
+  String get nearbyShopGeneric => 'Model shop';
+
+  @override
+  String get shopTypeBadge => 'Model shop';
 
   @override
   String get nearbyStatusUpdating => 'Updating';

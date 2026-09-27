@@ -3785,8 +3785,14 @@ abstract class AppLocalizations {
   /// No description provided for @nearbyShopGeneric.
   ///
   /// In en, this message translates to:
-  /// **'RC shop'**
+  /// **'Model shop'**
   String get nearbyShopGeneric;
+
+  /// No description provided for @shopTypeBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Model shop'**
+  String get shopTypeBadge;
 
   /// No description provided for @nearbyStatusUpdating.
   ///

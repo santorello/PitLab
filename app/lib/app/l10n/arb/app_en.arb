@@ -740,7 +740,8 @@
       }
     }
   },
-  "nearbyShopGeneric": "RC shop",
+  "nearbyShopGeneric": "Model shop",
+  "shopTypeBadge": "Model shop",
   "nearbyStatusUpdating": "Updating",
   "shopSearchHint": "Search a shop or specialty...",
   "shopSaveAction": "Save shop",
