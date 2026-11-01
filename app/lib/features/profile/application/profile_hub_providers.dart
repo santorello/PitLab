@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/providers/local_storage_providers.dart';
 import '../../../shared/utils/local_image_data_url.dart';
 import '../../auth/application/auth_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class CreatedEventRecord {
   CreatedEventRecord({
@@ -160,11 +161,12 @@ class CreatedEventRecord {
     if (iso == null) return '';
     try {
       final dt = DateTime.parse(iso).toLocal();
-      const days = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
-      const months = [
-        'Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu',
-        'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic',
-      ];
+      final days = AppLang.code == 'it'
+          ? const ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom']
+          : const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      final months = AppLang.code == 'it'
+          ? const ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic']
+          : const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       return '${days[dt.weekday - 1]} ${dt.day} ${months[dt.month - 1]} ${dt.year}';
     } catch (e, st) {
       AppErrorReporter.report(e, st, context: 'profile_hub_providers');

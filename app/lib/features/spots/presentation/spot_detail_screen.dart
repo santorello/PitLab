@@ -17,6 +17,7 @@ import '../../garage/presentation/builds_seen_here.dart';
 import '../application/spots_providers.dart';
 import '../domain/spot_catalog.dart';
 import '../domain/spot_tags.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class SpotDetailScreen extends ConsumerWidget {
   const SpotDetailScreen({required this.slug, super.key});
@@ -43,7 +44,7 @@ class SpotDetailScreen extends ConsumerWidget {
             child: Text(
               _localeText(
                 context,
-                it: 'Spot non trovato.',
+                it: tr('Spot non trovato.'),
                 en: 'Spot not found.',
               ),
               style: Theme.of(context).textTheme.titleMedium,
@@ -103,7 +104,7 @@ class SpotDetailScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                     child: Text(
-                      spot.category,
+                      tr(spot.category),
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: Colors.white,
                       ),
@@ -173,8 +174,8 @@ class SpotDetailScreen extends ConsumerWidget {
                           canEditSpot
                               ? _localeText(
                                   context,
-                                  it: 'Modifica spot',
-                                  en: 'Edit spot',
+                                  it: tr('Modifica spot'),
+                                  en: tr('Edit spot'),
                                 )
                               : l10n.spotsSuggestEditAction,
                         ),
@@ -230,13 +231,13 @@ class SpotDetailScreen extends ConsumerWidget {
                           ? _localeText(
                               context,
                               it:
-                                  'Le immagini reali non sono ancora caricate, ma lo spot ha già un archivio foto dichiarato.',
+                                  tr('Le immagini reali non sono ancora caricate, ma lo spot ha già un archivio foto dichiarato.'),
                               en:
                                   'Real images are not uploaded yet, but this spot already has a declared photo archive.',
                             )
                           : _localeText(
                               context,
-                              it: 'Foto condivise dalla community per capire fondo, spazio e accessi.',
+                              it: tr('Foto condivise dalla community per capire fondo, spazio e accessi.'),
                               en: 'Community photos to understand terrain, space, and access.',
                             ),
                       style: Theme.of(
@@ -319,8 +320,8 @@ class SpotDetailScreen extends ConsumerWidget {
                     Text(
                       _localeText(
                         context,
-                        it: 'Video spot',
-                        en: 'Spot video',
+                        it: tr('Video spot'),
+                        en: tr('Spot video'),
                       ),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
@@ -328,7 +329,7 @@ class SpotDetailScreen extends ConsumerWidget {
                     Text(
                       _localeText(
                         context,
-                        it: 'Apri il link condiviso per vedere il punto e il tipo di terreno.',
+                        it: tr('Apri il link condiviso per vedere il punto e il tipo di terreno.'),
                         en: 'Open the shared link to see the area and terrain.',
                       ),
                       style: Theme.of(
@@ -342,7 +343,7 @@ class SpotDetailScreen extends ConsumerWidget {
                       label: Text(
                         _localeText(
                           context,
-                          it: 'Apri video',
+                          it: tr('Apri video'),
                           en: 'Open video',
                         ),
                       ),
@@ -362,7 +363,7 @@ class SpotDetailScreen extends ConsumerWidget {
                   Text(
                     _localeText(
                       context,
-                      it: 'Panoramica spot',
+                      it: tr('Panoramica spot'),
                       en: 'Spot overview',
                     ),
                     style: Theme.of(context).textTheme.titleLarge,
@@ -389,7 +390,7 @@ class SpotDetailScreen extends ConsumerWidget {
                           icon: Icons.warning_amber_outlined,
                           label: _localeText(
                             context,
-                            it: 'Volo: rispetta le regole ENAC, verifica la zona su d-flight',
+                            it: tr('Volo: rispetta le regole ENAC, verifica la zona su d-flight'),
                             en: 'Flying: follow ENAC rules, check the area on d-flight',
                           ),
                         ),
@@ -397,7 +398,7 @@ class SpotDetailScreen extends ConsumerWidget {
                         icon: Icons.groups_outlined,
                         label: _localeText(
                           context,
-                          it: 'Usa lo spot con buon senso',
+                          it: tr('Usa lo spot con buon senso'),
                           en: 'Use the spot responsibly',
                         ),
                       ),
@@ -406,7 +407,7 @@ class SpotDetailScreen extends ConsumerWidget {
                           icon: Icons.ondemand_video_outlined,
                           label: _localeText(
                             context,
-                            it: 'Video disponibile',
+                            it: tr('Video disponibile'),
                             en: 'Video available',
                           ),
                         ),

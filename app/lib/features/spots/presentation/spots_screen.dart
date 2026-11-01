@@ -12,6 +12,7 @@ import '../../../shared/widgets/place_card.dart';
 import '../application/spots_providers.dart';
 import '../domain/spot_catalog.dart';
 import '../domain/spot_tags.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class SpotsScreen extends ConsumerStatefulWidget {
   const SpotsScreen({super.key});
@@ -69,7 +70,7 @@ class _SpotsScreenState extends ConsumerState<SpotsScreen> {
           ),
           const SizedBox(height: 18),
           SpotTagPicker(
-            title: _localeText(context, it: 'Filtra per', en: 'Filter by'),
+            title: _localeText(context, it: tr('Filtra per'), en: 'Filter by'),
             tags: spotBestForTags,
             selected: _filter,
             multi: false,
@@ -101,10 +102,10 @@ class _SpotCard extends StatelessWidget {
     final media = _SpotMedia(spot: spot);
 
     // Overline "CITTÀ · CATEGORIA".
-    final overlineParts = [spot.city, spot.category]
+    final overlineParts = [spot.city, tr(spot.category)]
         .where((s) => s.trim().isNotEmpty)
         .toList();
-    final overline = overlineParts.isEmpty ? 'Spot' : overlineParts.join(' · ');
+    final overline = overlineParts.isEmpty ? tr('Spot') : overlineParts.join(' · ');
 
     // Riga statistiche: adatto a + fondo + foto.
     final stats = <CardStat>[];
@@ -132,7 +133,7 @@ class _SpotCard extends StatelessWidget {
       label: Text(
         _localeText(
           context,
-          it: 'Apri spot',
+          it: tr('Apri spot'),
           en: 'Open spot',
         ),
       ),
@@ -253,7 +254,7 @@ class _SpotMedia extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        _localeText(context, it: 'Video', en: 'Video'),
+                        _localeText(context, it: tr('Video'), en: tr('Video')),
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w800,

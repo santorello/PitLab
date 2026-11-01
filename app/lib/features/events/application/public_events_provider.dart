@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../auth/application/auth_providers.dart';
 import '../../profile/application/profile_hub_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 // ─── Repository ──────────────────────────────────────────────────────────────
 
@@ -152,11 +153,12 @@ class PublicEventsRepository {
     if (iso == null) return '';
     try {
       final dt = DateTime.parse(iso).toLocal();
-      const days = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
-      const months = [
-        'Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu',
-        'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic',
-      ];
+      final days = AppLang.code == 'it'
+          ? const ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom']
+          : const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      final months = AppLang.code == 'it'
+          ? const ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic']
+          : const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       return '${days[dt.weekday - 1]} ${dt.day} ${months[dt.month - 1]} ${dt.year}';
     } catch (e, st) {
       AppErrorReporter.report(e, st, context: 'public_events_provider');
@@ -196,7 +198,7 @@ CreatedEventRecord mapPublicEventRow(Map<String, dynamic> row) {
     title: row['title'] as String? ?? '',
     location: location,
     note: row['description'] as String? ?? '',
-    badge: 'Evento',
+    badge: tr('Evento'),
     creatorLabel: trackName,
     creatorRole: 'track',
     venue: trackName,

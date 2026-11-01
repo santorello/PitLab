@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../auth/application/auth_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 // ─── Record types ────────────────────────────────────────────────────────────
 
@@ -21,7 +22,7 @@ class AdminTrackClaim {
   String get trackSlug =>
       raw['track_slug'] as String? ?? raw['shop_slug'] as String? ?? '';
   bool get isShop => raw.containsKey('shop_id');
-  String get userName => raw['user_name'] as String? ?? 'Utente';
+  String get userName => raw['user_name'] as String? ?? tr('Utente');
   String get message => raw['message'] as String? ?? '';
   String get contact => raw['contact'] as String? ?? '';
 }
@@ -34,12 +35,36 @@ class AdminReportedComment {
 
   String get id => raw['id'] as String? ?? '';
   String get body => raw['body'] as String? ?? '';
-  String get author => raw['author'] as String? ?? 'Utente';
+  String get author => raw['author'] as String? ?? tr('Utente');
   String get entityType => raw['entity_type'] as String? ?? '';
   int get reportedCount => (raw['reported_count'] as num?)?.toInt() ?? 0;
   List<String> get reasons =>
       ((raw['reasons'] as List?) ?? const []).whereType<String>().toList();
 }
+
+/// Un commento qualsiasi (RPC `admin_all_comments`), anche nascosto.
+class AdminComment {
+  const AdminComment(this.raw);
+
+  final Map<String, dynamic> raw;
+
+  String get id => raw['id'] as String? ?? '';
+  String get body => raw['body'] as String? ?? '';
+  String get author => raw['author'] as String? ?? tr('Utente');
+  String get entityType => raw['entity_type'] as String? ?? '';
+  String get entityTitle => raw['entity_title'] as String? ?? '';
+  String? get route => raw['route'] as String?;
+  bool get isHidden => raw['is_hidden'] as bool? ?? false;
+  int get reportedCount => (raw['reported_count'] as num?)?.toInt() ?? 0;
+  DateTime? get createdAt => DateTime.tryParse('${raw['created_at'] ?? ''}');
+}
+
+/// Ordinamento admin: prima ciò che aspetta una decisione, poi il resto,
+/// mantenendo l'ordine ricevuto (già dal più recente). Stabile.
+List<T> pendingFirst<T>(List<T> items, bool Function(T) isPending) => [
+      ...items.where(isPending),
+      ...items.where((item) => !isPending(item)),
+    ];
 
 /// Proposta di modifica a uno spot, in attesa di revisione
 /// (vista `admin_spot_suggestions`).
@@ -51,7 +76,7 @@ class AdminSpotSuggestion {
   String get id => raw['id'] as String? ?? '';
   String get spotSlug => raw['spot_slug'] as String? ?? '';
   String get spotTitle => raw['spot_title'] as String? ?? '';
-  String get author => raw['submitted_by_name'] as String? ?? 'Utente';
+  String get author => raw['submitted_by_name'] as String? ?? tr('Utente');
   Map<String, dynamic> get payload =>
       (raw['payload'] as Map?)?.cast<String, dynamic>() ?? const {};
 
@@ -148,8 +173,11 @@ class AdminApprovalRecord {
     required this.submittedAtLabel,
     required this.route,
     required this.needsReview,
+    this.submittedAt,
   });
 
+  /// Per ordinare la coda: piste e negozi mescolati, dal più recente.
+  final DateTime? submittedAt;
   final String id;
   final String entityType;
   final String title;
@@ -207,6 +235,7 @@ class AdminEventRecord {
     required this.startAt,
     required this.visibility,
     required this.source,
+    this.createdAt = '',
   });
 
   final String id;
@@ -214,8 +243,38 @@ class AdminEventRecord {
   final String startAt;
   final String visibility;
   final String source;
+  final String createdAt;
 
   bool get supportsVisibilityToggle => source == 'events';
+}
+
+/// Una riga di "Da sistemare" (RPC `admin_content_to_fix`).
+/// [reason]: `no_coords` | `no_photo`.
+class AdminFixItem {
+  const AdminFixItem({
+    required this.kind,
+    required this.id,
+    required this.slug,
+    required this.title,
+    required this.reason,
+    required this.refAt,
+  });
+
+  factory AdminFixItem.fromRow(Map<String, dynamic> row) => AdminFixItem(
+        kind: '${row['kind'] ?? ''}',
+        id: '${row['id'] ?? ''}',
+        slug: row['slug'] as String?,
+        title: '${row['title'] ?? ''}',
+        reason: '${row['reason'] ?? ''}',
+        refAt: DateTime.tryParse('${row['ref_at'] ?? ''}'),
+      );
+
+  final String kind;
+  final String id;
+  final String? slug;
+  final String title;
+  final String reason;
+  final DateTime? refAt;
 }
 
 // ─── Repository ──────────────────────────────────────────────────────────────
@@ -249,7 +308,7 @@ class AdminRepository {
     final rows = await _client
         .from('admin_spot_suggestions')
         .select()
-        .order('created_at');
+        .order('created_at', ascending: false);
     return (rows as List<dynamic>)
         .whereType<Map<String, dynamic>>()
         .map(AdminSpotSuggestion.new)
@@ -266,9 +325,12 @@ class AdminRepository {
 
   Future<List<AdminTrackClaim>> fetchTrackClaims() async {
     final rows = await _client.rpc('admin_track_claims');
+    // La RPC ordina dalla più vecchia: in admin vogliamo la più recente in alto.
     return ((rows as List?) ?? const [])
         .whereType<Map>()
         .map((row) => AdminTrackClaim(row.cast<String, dynamic>()))
+        .toList()
+        .reversed
         .toList();
   }
 
@@ -278,9 +340,12 @@ class AdminRepository {
 
   Future<List<AdminTrackClaim>> fetchShopClaims() async {
     final rows = await _client.rpc('admin_shop_claims');
+    // La RPC ordina dalla più vecchia: in admin vogliamo la più recente in alto.
     return ((rows as List?) ?? const [])
         .whereType<Map>()
         .map((row) => AdminTrackClaim(row.cast<String, dynamic>()))
+        .toList()
+        .reversed
         .toList();
   }
 
@@ -408,7 +473,7 @@ class AdminRepository {
     }
 
     final data = await q
-        .order('display_name')
+        .order('created_at', ascending: false)
         .range(offset, offset + limit - 1);
 
     return (data as List<dynamic>)
@@ -442,9 +507,10 @@ class AdminRepository {
     final response = await _client
         .from('tracks')
         .select('id, slug, name, city, approval_status, is_public')
-        .order('name');
+        .order('updated_at', ascending: false)
+        .order('name'); // a pari data (import in blocco) alfabetico
 
-    return (response as List<dynamic>)
+    final rows = (response as List<dynamic>)
         .whereType<Map<String, dynamic>>()
         .map(
           (row) => AdminTrackRecord(
@@ -457,6 +523,7 @@ class AdminRepository {
           ),
         )
         .toList();
+    return pendingFirst(rows, (r) => r.approvalStatus == 'pending');
   }
 
   Future<void> updateTrackApproval(String trackId, String status) async {
@@ -480,7 +547,7 @@ class AdminRepository {
         .from('tracks')
         .select('id, slug, name, city, short_description, organization_name, submitted_by, created_at')
         .eq('approval_status', 'pending')
-        .order('created_at');
+        .order('created_at', ascending: false);
 
     return (response as List<dynamic>)
         .whereType<Map<String, dynamic>>()
@@ -495,7 +562,7 @@ class AdminRepository {
           final createdAt = row['created_at'] as String?;
           return AdminApprovalRecord(
             id: 'track-$id',
-            entityType: 'Pista',
+            entityType: tr('Pista'),
             title: name,
             subtitle: shortDesc,
             ownerLabel: orgName.isEmpty ? submittedBy : orgName,
@@ -503,6 +570,7 @@ class AdminRepository {
             submittedAtLabel: _submittedAtLabelFromIso(createdAt),
             route: '/track/$slug',
             needsReview: true,
+            submittedAt: DateTime.tryParse(createdAt ?? ''),
           );
         })
         .toList();
@@ -514,9 +582,10 @@ class AdminRepository {
     final response = await _client
         .from('shops')
         .select('id, slug, name, city, approval_status, is_public')
-        .order('name');
+        .order('updated_at', ascending: false)
+        .order('name'); // a pari data (import in blocco) alfabetico
 
-    return (response as List<dynamic>)
+    final rows = (response as List<dynamic>)
         .whereType<Map<String, dynamic>>()
         .map(
           (row) => AdminShopRecord(
@@ -529,6 +598,7 @@ class AdminRepository {
           ),
         )
         .toList();
+    return pendingFirst(rows, (r) => r.approvalStatus == 'pending');
   }
 
   Future<List<AdminApprovalRecord>> fetchPendingShopSubmissions() async {
@@ -547,7 +617,7 @@ class AdminRepository {
           final organizationName = row['organization_name'] as String? ?? '';
           return AdminApprovalRecord(
             id: 'shop-${row['id'] as String? ?? ''}',
-            entityType: 'Negozio',
+            entityType: tr('Negozio'),
             title: row['name'] as String? ?? '',
             subtitle: row['subtitle'] as String? ?? '',
             ownerLabel: organizationName.isEmpty ? submittedBy : organizationName,
@@ -557,6 +627,7 @@ class AdminRepository {
             ),
             route: '/shop/${row['slug'] as String? ?? ''}',
             needsReview: true,
+            submittedAt: DateTime.tryParse('${row['updated_at'] ?? ''}'),
           );
         })
         .toList();
@@ -585,14 +656,14 @@ class AdminRepository {
   Future<List<AdminEventRecord>> fetchAllEvents({int limit = 100}) async {
     final officialResponse = await _client
         .from('events')
-        .select('id, title, start_at, visibility')
-        .order('start_at', ascending: false)
+        .select('id, title, start_at, visibility, created_at')
+        .order('created_at', ascending: false)
         .limit(limit);
 
     final communityResponse = await _client
         .from('community_events')
-        .select('id, title, starts_at')
-        .order('starts_at', ascending: false)
+        .select('id, title, starts_at, created_at')
+        .order('created_at', ascending: false)
         .limit(limit);
 
     final officialEvents = (officialResponse as List<dynamic>)
@@ -604,6 +675,7 @@ class AdminRepository {
             startAt: row['start_at'] as String? ?? '',
             visibility: row['visibility'] as String? ?? 'public',
             source: 'events',
+            createdAt: row['created_at'] as String? ?? '',
           ),
         )
         .toList();
@@ -617,14 +689,15 @@ class AdminRepository {
             startAt: row['starts_at'] as String? ?? '',
             visibility: 'public',
             source: 'community_events',
+            createdAt: row['created_at'] as String? ?? '',
           ),
         )
         .toList();
 
     final combined = [...officialEvents, ...communityEvents];
     combined.sort((a, b) {
-      final aDate = DateTime.tryParse(a.startAt);
-      final bDate = DateTime.tryParse(b.startAt);
+      final aDate = DateTime.tryParse(a.createdAt);
+      final bDate = DateTime.tryParse(b.createdAt);
       if (aDate == null && bDate == null) return 0;
       if (aDate == null) return 1;
       if (bDate == null) return -1;
@@ -638,6 +711,27 @@ class AdminRepository {
         .from('events')
         .update({'visibility': visibility})
         .eq('id', eventId);
+  }
+
+  Future<List<AdminComment>> fetchAllComments() async {
+    final rows = await _client.rpc('admin_all_comments');
+    return ((rows as List?) ?? const [])
+        .whereType<Map>()
+        .map((row) => AdminComment(row.cast<String, dynamic>()))
+        .toList();
+  }
+
+  Future<void> deleteComment(String id) =>
+      _client.from('entity_comments').delete().eq('id', id);
+
+  Future<List<AdminFixItem>> fetchContentToFix() async {
+    final rows = await _client.rpc('admin_content_to_fix');
+    return ((rows as List?) ?? const [])
+        .whereType<Map>()
+        .map((row) => AdminFixItem.fromRow(row.cast<String, dynamic>()))
+        .toList()
+        .reversed // la RPC va dal più vecchio: i nuovi in alto
+        .toList();
   }
 
   Future<void> deleteEvent(AdminEventRecord event) async {
@@ -660,6 +754,24 @@ final adminDashboardProvider = FutureProvider<AdminDashboard?>((ref) async {
   // a rispondere solo agli admin.
   if (repository == null) return null;
   return repository.fetchDashboard();
+});
+
+/// Tutti i commenti di PitLap, dal più recente.
+final adminAllCommentsProvider =
+    FutureProvider<List<AdminComment>>((ref) async {
+  final repository = ref.watch(adminRepositoryProvider);
+  final role = ref.watch(effectiveUserRoleProvider);
+  if (repository == null || role != 'admin') return const [];
+  return repository.fetchAllComments();
+});
+
+/// Elenco "Da sistemare": stesse regole del numero `content_to_fix`.
+final adminContentToFixProvider =
+    FutureProvider<List<AdminFixItem>>((ref) async {
+  final repository = ref.watch(adminRepositoryProvider);
+  final role = ref.watch(effectiveUserRoleProvider);
+  if (repository == null || role != 'admin') return const [];
+  return repository.fetchContentToFix();
 });
 
 final adminTrackClaimsProvider =
@@ -750,7 +862,10 @@ final adminApprovalQueueProvider = FutureProvider<List<AdminApprovalRecord>>((re
       ? <AdminApprovalRecord>[]
       : await repository.fetchPendingShopSubmissions();
 
-  return [...trackItems, ...shopItems];
+  final epoch = DateTime.fromMillisecondsSinceEpoch(0);
+  return [...trackItems, ...shopItems]
+    ..sort((a, b) =>
+        (b.submittedAt ?? epoch).compareTo(a.submittedAt ?? epoch));
 });
 
 String _submittedAtLabelFromIso(String? isoDate) {
@@ -763,10 +878,10 @@ String _submittedAtLabelFromIso(String? isoDate) {
 String _submittedAtLabelFromDt(DateTime parsed) {
   final difference = DateTime.now().difference(parsed);
   if (difference.inMinutes < 60) {
-    return 'inviata ${difference.inMinutes.clamp(1, 59)}m fa';
+    return trf('inviata {0}m fa', [difference.inMinutes.clamp(1, 59)]);
   }
-  if (difference.inHours < 24) return 'inviata ${difference.inHours}h fa';
-  return 'inviata ${difference.inDays}g fa';
+  if (difference.inHours < 24) return trf('inviata {0}h fa', [difference.inHours]);
+  return trf('inviata {0}g fa', [difference.inDays]);
 }
 
 // ─── Admin Users Search ───────────────────────────────────────────────────────

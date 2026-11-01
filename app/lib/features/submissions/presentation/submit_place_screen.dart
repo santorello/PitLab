@@ -29,6 +29,7 @@ import '../../spots/application/spots_providers.dart';
 import '../../tracks/application/tracks_providers.dart';
 import '../../spots/domain/spot_catalog.dart';
 import '../../spots/domain/spot_tags.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class SubmitPlaceScreen extends ConsumerStatefulWidget {
   const SubmitPlaceScreen({
@@ -138,10 +139,10 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
       title: !isEditingSpot
           ? l10n.submitPlaceTitle
           : canEditExistingSpot
-              ? _localeText(context, it: 'Modifica spot', en: 'Edit spot')
+              ? _localeText(context, it: tr('Modifica spot'), en: tr('Edit spot'))
               : _localeText(
                   context,
-                  it: 'Proponi una modifica',
+                  it: tr('Proponi una modifica'),
                   en: 'Suggest an edit',
                 ),
       description: !isEditingSpot
@@ -149,12 +150,12 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
           : canEditExistingSpot
               ? _localeText(
                   context,
-                  it: 'Aggiorna foto, posizione e dettagli del tuo spot.',
+                  it: tr('Aggiorna foto, posizione e dettagli del tuo spot.'),
                   en: 'Update photos, location, and details for your spot.',
                 )
               : _localeText(
                   context,
-                  it: 'Correggi posizione, tag o descrizione: la proposta va in coda agli admin.',
+                  it: tr('Correggi posizione, tag o descrizione: la proposta va in coda agli admin.'),
                   en: 'Fix the location, tags or description: your suggestion goes to the admin queue.',
                 ),
       child: ListView(
@@ -166,7 +167,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                 child: Text(
                   _localeText(
                     context,
-                    it: 'Non sei l\'owner di questo spot: le tue modifiche saranno inviate come proposta e un admin le approvera.',
+                    it: tr('Non sei l\'owner di questo spot: le tue modifiche saranno inviate come proposta e un admin le approvera.'),
                     en: 'You are not the owner of this spot: your changes will be sent as a suggestion for an admin to approve.',
                   ),
                 ),
@@ -196,8 +197,8 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(color: AppColors.signalOrange.withAlpha(80)),
                   ),
-                  child: const Text(
-                    'Invia una segnalazione',
+                  child: Text(
+                    tr('Invia una segnalazione'),
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -253,22 +254,22 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
               initialSelection: _selectedSpotPlace,
               labelText: _localeText(
                 context,
-                it: 'Indirizzo / punto mappa',
+                it: tr('Indirizzo / punto mappa'),
                 en: 'Address / map point',
               ),
               hintText: _localeText(
                 context,
-                it: 'Cerca un luogo reale e scegli dalla lista',
+                it: tr('Cerca un luogo reale e scegli dalla lista'),
                 en: 'Search a real place and pick from the list',
               ),
               emptyInfoText: _localeText(
                 context,
-                it: 'Puoi cercare un luogo canonico oppure compilare manualmente e usare la posizione attuale.',
+                it: tr('Puoi cercare un luogo canonico oppure compilare manualmente e usare la posizione attuale.'),
                 en: 'You can search a canonical place or fill manually and use your current location.',
               ),
               verifiedInfoBuilder: (selection) => _localeText(
                 context,
-                it: 'Luogo verificato: ${selection.label}. Coordinate pronte per la mappa.',
+                it: trf('Luogo verificato: {0}. Coordinate pronte per la mappa.', [selection.label]),
                 en: 'Verified place: ${selection.label}. Coordinates are ready for the map.',
               ),
               types: const <String>[
@@ -306,7 +307,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                   label: Text(
                     _localeText(
                       context,
-                      it: 'Usa posizione attuale',
+                      it: tr('Usa posizione attuale'),
                       en: 'Use current location',
                     ),
                   ),
@@ -340,7 +341,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
               ProcessingStatusBadge(
                 label: _localeText(
                   context,
-                  it: 'Recupero coordinate e indirizzo in corso',
+                  it: tr('Recupero coordinate e indirizzo in corso'),
                   en: 'Resolving coordinates and address',
                 ),
                 icon: Icons.location_searching_outlined,
@@ -362,7 +363,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
           ],
           if (_submissionType == 'spot') ...[
             SpotTagPicker(
-              title: _localeText(context, it: 'Ideale per', en: 'Best for'),
+              title: _localeText(context, it: tr('Ideale per'), en: 'Best for'),
               tags: spotBestForTags,
               selected: _bestForTags,
               onChanged: (v) => setState(() => _bestForTags = v),
@@ -372,7 +373,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
               Text(
                 _localeText(
                   context,
-                  it: 'Per droni e aerei valgono le regole ENAC: verifica la zona su d-flight prima di indicarla.',
+                  it: tr('Per droni e aerei valgono le regole ENAC: verifica la zona su d-flight prima di indicarla.'),
                   en: 'Drones and planes follow ENAC rules: check the area on d-flight before listing it.',
                 ),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.steel),
@@ -387,7 +388,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
             ),
             const SizedBox(height: 16),
             SpotTagPicker(
-              title: _localeText(context, it: 'Accesso', en: 'Access'),
+              title: _localeText(context, it: tr('Accesso'), en: 'Access'),
               tags: spotAccessTags,
               selected: _accessType,
               multi: false,
@@ -415,7 +416,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
             decoration: InputDecoration(
               labelText: _localeText(
                 context,
-                it: 'Link YouTube o video opzionale',
+                it: tr('Link YouTube o video opzionale'),
                 en: 'Optional YouTube or video link',
               ),
             ),
@@ -430,7 +431,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                   Text(
                     _localeText(
                       context,
-                      it: 'Foto dal dispositivo',
+                      it: tr('Foto dal dispositivo'),
                       en: 'Photos from device',
                     ),
                     style: Theme.of(context).textTheme.titleMedium,
@@ -439,7 +440,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                   Text(
                     _localeText(
                       context,
-                       it: 'Carica fino a 5 foto locali. La prima foto verra\' usata anche come cover della card spot.',
+                       it: tr('Carica fino a 5 foto locali. La prima foto verra\' usata anche come cover della card spot.'),
                        en: 'Upload up to 5 local photos. The first photo will also be used as the spot card cover.',
                      ),
                     style: Theme.of(
@@ -453,7 +454,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                     label: Text(
                       _localeText(
                         context,
-                        it: 'Carica foto',
+                        it: tr('Carica foto'),
                         en: 'Upload photos',
                       ),
                     ),
@@ -462,7 +463,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                   Text(
                     _localeText(
                       context,
-                      it: '${_pickedImages.length}/5 foto selezionate',
+                      it: trf('{0}/5 foto selezionate', [_pickedImages.length]),
                       en: '${_pickedImages.length}/5 photos selected',
                     ),
                     style: Theme.of(
@@ -474,7 +475,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                     ImageTransferProgressCard(
                       label: _localeText(
                         context,
-                        it: 'Preparazione foto in corso',
+                        it: tr('Preparazione foto in corso'),
                         en: 'Preparing photos',
                       ),
                       batchState: _imageTransferState,
@@ -571,7 +572,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
                 isEditingSpot
                     ? _localeText(
                         context,
-                        it: 'Salva modifiche spot',
+                        it: tr('Salva modifiche spot'),
                         en: 'Save spot changes',
                       )
                     : l10n.submissionSendButton,
@@ -616,7 +617,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
               content: Text(
                 _localeText(
                   context,
-                  it: 'Questo luogo e\' gia\' stato proposto ed e\' in approvazione.',
+                  it: tr('Questo luogo e\' gia\' stato proposto ed e\' in approvazione.'),
                   en: 'This place has already been submitted and is pending review.',
                 ),
               ),
@@ -643,7 +644,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
     final successMessage = isEditingSpot
         ? _localeText(
             context,
-            it: 'Spot aggiornato con successo.',
+            it: tr('Spot aggiornato con successo.'),
             en: 'Spot updated successfully.',
           )
         : l10n.submissionSendSuccess(name, city);
@@ -677,7 +678,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
               content: Text(
                 _localeText(
                   context,
-                  it: 'Accedi per proporre una modifica.',
+                  it: tr('Accedi per proporre una modifica.'),
                   en: 'Sign in to suggest an edit.',
                 ),
               ),
@@ -712,13 +713,13 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
               sent
                   ? _localeText(
                       context,
-                      it: 'Proposta inviata: la vedra un admin.',
+                      it: tr('Proposta inviata: la vedra un admin.'),
                       en: 'Suggestion sent: an admin will review it.',
                     )
                   : (ref.read(spotEntriesProvider.notifier).lastSaveError ??
                       _localeText(
                         context,
-                        it: 'Proposta non inviata. Forse ne hai gia una in attesa su questo spot.',
+                        it: tr('Proposta non inviata. Forse ne hai gia una in attesa su questo spot.'),
                         en: 'Suggestion not sent. You may already have one pending for this spot.',
                       )),
             ),
@@ -772,7 +773,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
         note: description.isEmpty
             ? _localeText(
                 context,
-                it: 'Nuovo spot condiviso dalla community PitLap.',
+                it: tr('Nuovo spot condiviso dalla community PitLap.'),
                 en: 'New spot shared by the PitLap community.',
               )
             : description,
@@ -791,7 +792,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
       final remoteUnavailableMessage = _localeText(
         context,
         it:
-            'Supabase non disponibile: lo spot non e stato salvato in modo permanente.',
+            tr('Supabase non disponibile: lo spot non e stato salvato in modo permanente.'),
         en: 'Supabase unavailable: the spot was not saved permanently.',
       );
       final savedRemotely = isEditingSpot
@@ -835,7 +836,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
           name: name,
           city: city,
           shortDescription: description.isEmpty
-              ? 'Nuova pista inserita dal gestore e pronta per il completamento.'
+              ? tr('Nuova pista inserita dal gestore e pronta per il completamento.')
               : description,
           approvalStatus: 'draft',
           imageUrl: coverUrl,
@@ -849,7 +850,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
           ref.invalidate(submittedTracksProvider);
         } catch (e) {
           messenger.showSnackBar(
-            SnackBar(content: Text('Errore nel salvataggio pista: $e')),
+            SnackBar(content: Text(trf('Errore nel salvataggio pista: {0}', [e]))),
           );
           return;
         }
@@ -881,7 +882,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
           content: Text(
             _localeText(
               context,
-              it: 'Hai già raggiunto il massimo di 5 foto.',
+              it: tr('Hai già raggiunto il massimo di 5 foto.'),
               en: 'You already reached the maximum of 5 photos.',
             ),
           ),
@@ -900,7 +901,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
           content: Text(
             _localeText(
               context,
-              it: 'Devi essere autenticato per caricare immagini.',
+              it: tr('Devi essere autenticato per caricare immagini.'),
               en: 'You must be signed in to upload images.',
             ),
           ),
@@ -917,7 +918,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
     final remaining = maxEventImages - _pickedImages.length;
     final uploadingSelectedPhotosLabel = _localeText(
       context,
-      it: 'Sto caricando le foto selezionate',
+      it: tr('Sto caricando le foto selezionate'),
       en: 'Uploading selected photos',
     );
     final picked = await FilePicker.platform.pickFiles(
@@ -992,7 +993,7 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
         lastError = e.message;
         uploadController.markError(index);
       } catch (e) {
-        lastError = 'Errore caricamento foto ${index + 1}';
+        lastError = trf('Errore caricamento foto {0}', [index + 1]);
         uploadController.markError(index);
       }
       if (mounted) {
@@ -1022,12 +1023,12 @@ class _SubmitPlaceScreenState extends ConsumerState<SubmitPlaceScreen> {
     final messenger = ScaffoldMessenger.of(context);
     final permissionDeniedMessage = _localeText(
       context,
-      it: 'Permesso posizione non concesso.',
+      it: tr('Permesso posizione non concesso.'),
       en: 'Location permission not granted.',
     );
     final successMessage = _localeText(
       context,
-      it: 'Posizione rilevata e campi compilati automaticamente.',
+      it: tr('Posizione rilevata e campi compilati automaticamente.'),
       en: 'Location detected and fields filled automatically.',
     );
     setState(() {

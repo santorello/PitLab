@@ -1,3 +1,4 @@
+import 'package:pitlap_app/app/l10n/tr.dart';
 enum MediaUploadStage { queued, preparing, uploading, processing, done, error }
 
 class MediaUploadItemState {
@@ -56,8 +57,8 @@ class MediaUploadBatchState {
 
   String get detailsLabel {
     if (failedCount > 0) {
-      return '$completedCount di $totalCount immagini pronte - $failedCount con errore';
+      return trf('{0} di {1} immagini pronte - {2} con errore', [completedCount, totalCount, failedCount]);
     }
-    return '$completedCount di $totalCount immagini pronte';
+    return trf('{0} di {1} immagini pronte', [completedCount, totalCount]);
   }
 }

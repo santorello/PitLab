@@ -8,6 +8,7 @@ import '../../app/theme/app_colors.dart';
 import '../places/place_search_provider.dart';
 import '../places/place_search_service.dart';
 import '../places/place_selection.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class PlacePickerField extends ConsumerStatefulWidget {
   const PlacePickerField({
@@ -184,7 +185,7 @@ class _PlacePickerFieldState extends ConsumerState<PlacePickerField> {
               ],
             ),
             child: _loading
-                ? const Padding(
+                ? Padding(
                     padding: EdgeInsets.all(16),
                     child: Row(
                       children: [
@@ -194,7 +195,7 @@ class _PlacePickerFieldState extends ConsumerState<PlacePickerField> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         ),
                         SizedBox(width: 12),
-                        Expanded(child: Text('Sto cercando il luogo corretto...')),
+                        Expanded(child: Text(tr('Sto cercando il luogo corretto...'))),
                       ],
                     ),
                   )
@@ -276,7 +277,7 @@ class _PlacePickerFieldState extends ConsumerState<PlacePickerField> {
             _selected == null
                 ? widget.emptyInfoText ?? ''
                 : widget.verifiedInfoBuilder?.call(_selected!) ??
-                    'Luogo verificato: ${_selected!.label}.',
+                    trf('Luogo verificato: {0}.', [_selected!.label]),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppColors.steel,
             ),

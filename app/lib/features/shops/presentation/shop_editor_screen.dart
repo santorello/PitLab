@@ -20,6 +20,7 @@ import '../../auth/application/auth_providers.dart';
 import '../../tracks/application/tracks_providers.dart' show supabaseClientProvider;
 import '../application/shop_permissions_providers.dart';
 import '../application/shop_editor_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class ShopEditorScreen extends ConsumerStatefulWidget {
   const ShopEditorScreen({
@@ -233,9 +234,9 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
     ].take(maxShopGalleryImages).toList();
 
     return ContentScaffold(
-      title: widget.isCreating ? 'Nuovo negozio' : l10n.shopDetailTitle,
+      title: widget.isCreating ? tr('Nuovo negozio') : l10n.shopDetailTitle,
       description: widget.isCreating
-          ? 'Compila i campi e invia il negozio in approvazione.'
+          ? tr('Compila i campi e invia il negozio in approvazione.')
           : l10n.shopDetailDescription(_nameController.text.isNotEmpty ? _nameController.text : ''),
       child: ListView(
         children: [
@@ -301,30 +302,30 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                     const SizedBox(height: 12),
                     TextField(
                       controller: _cityController,
-                      decoration: const InputDecoration(labelText: 'Città'),
+                      decoration: InputDecoration(labelText: tr('Città')),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _addressController,
-                      decoration: const InputDecoration(labelText: 'Indirizzo'),
+                      decoration: InputDecoration(labelText: tr('Indirizzo')),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _websiteController,
-                      decoration: const InputDecoration(labelText: 'Sito web'),
+                      decoration: InputDecoration(labelText: tr('Sito web')),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _organizationController,
-                      decoration: const InputDecoration(
-                        labelText: 'Società o negozio',
+                      decoration: InputDecoration(
+                        labelText: tr('Società o negozio'),
                       ),
                     ),
                     const SizedBox(height: 20),
 
                     // Cover image
                     Text(
-                      'Immagine di copertina',
+                      tr('Immagine di copertina'),
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const SizedBox(height: 10),
@@ -333,14 +334,14 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                       entityType: 'shops',
                       label: l10n.shopEditImageUrlLabel,
                       uploadLabel: l10n.shopImageUploadAction,
-                      progressLabel: 'Preparazione cover negozio',
+                      progressLabel: tr('Preparazione cover negozio'),
                       onUploaded: (_) => setState(() => _localCoverImage = ''),
                     ),
                     const SizedBox(height: 20),
 
                     // Galleria
                     Text(
-                      'Galleria foto',
+                      tr('Galleria foto'),
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const SizedBox(height: 10),
@@ -349,7 +350,7 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                       maxLines: 4,
                       decoration: InputDecoration(
                         labelText: l10n.shopGalleryFieldLabel,
-                        hintText: 'Un URL per riga',
+                        hintText: tr('Un URL per riga'),
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -369,9 +370,9 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                         final userId = ref.read(effectiveUserIdProvider);
                         if (uploadService == null || userId == null) {
                           messenger.showSnackBar(
-                            const SnackBar(
+                            SnackBar(
                               content: Text(
-                                'Devi essere autenticato per caricare immagini.',
+                                tr('Devi essere autenticato per caricare immagini.'),
                               ),
                             ),
                           );
@@ -412,7 +413,7 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                         final filesToUpload = files.take(takeCount).toList();
                         final uploadController = MediaUploadController(
                           totalItems: filesToUpload.length,
-                          initialStageLabel: 'Sto caricando la galleria negozio',
+                          initialStageLabel: tr('Sto caricando la galleria negozio'),
                         );
                         setState(() {
                           _galleryTransferState = uploadController.snapshot;
@@ -456,7 +457,7 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                             lastError = e.message;
                             uploadController.markError(i);
                           } catch (e) {
-                            lastError = 'Errore caricamento foto $i';
+                            lastError = trf('Errore caricamento foto {0}', [i]);
                             uploadController.markError(i);
                           }
                           if (mounted) {
@@ -498,7 +499,7 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                     if (_uploadingGallery) ...[
                       const SizedBox(height: 10),
                       ImageTransferProgressCard(
-                        label: 'Preparazione galleria negozio',
+                        label: tr('Preparazione galleria negozio'),
                         batchState: _galleryTransferState,
                         icon: Icons.collections_outlined,
                       ),
@@ -507,16 +508,16 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
 
                     // Servizi e info
                     Text(
-                      'Servizi e info operative',
+                      tr('Servizi e info operative'),
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _serviceLabelsController,
                       maxLines: 4,
-                      decoration: const InputDecoration(
-                        labelText: 'Servizi e punti forti',
-                        helperText: 'Uno per riga oppure separati da virgola.',
+                      decoration: InputDecoration(
+                        labelText: tr('Servizi e punti forti'),
+                        helperText: tr('Uno per riga oppure separati da virgola.'),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -598,9 +599,9 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                                   content: Text(
                                     savedRemotely
                                         ? (widget.isCreating
-                                              ? 'Bozza negozio salvata su Supabase.'
+                                              ? tr('Bozza negozio salvata su Supabase.')
                                               : l10n.shopEditSavedMessage)
-                                        : 'Bozza negozio salvata solo in locale.',
+                                        : tr('Bozza negozio salvata solo in locale.'),
                                   ),
                                 ),
                               );
@@ -612,7 +613,7 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                               messenger.showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    'Errore nel salvataggio del negozio: $error',
+                                    trf('Errore nel salvataggio del negozio: {0}', [error]),
                                   ),
                                 ),
                               );
@@ -621,7 +622,7 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                           icon: const Icon(Icons.save_outlined),
                           label: Text(
                             widget.isCreating
-                                ? 'Salva bozza'
+                                ? tr('Salva bozza')
                                 : l10n.shopEditSave,
                           ),
                         ),
@@ -669,8 +670,8 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                                   SnackBar(
                                     content: Text(
                                       savedRemotely
-                                          ? 'Negozio inviato alla coda approvazioni admin.'
-                                          : 'Negozio salvato solo in locale: Supabase non disponibile.',
+                                          ? tr('Negozio inviato alla coda approvazioni admin.')
+                                          : tr('Negozio salvato solo in locale: Supabase non disponibile.'),
                                     ),
                                   ),
                                 );
@@ -680,14 +681,14 @@ class _ShopEditorScreenState extends ConsumerState<ShopEditorScreen> {
                                 messenger.showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      'Errore nell\'invio del negozio: $error',
+                                      trf('Errore nell\'invio del negozio: {0}', [error]),
                                     ),
                                   ),
                                 );
                               }
                             },
                             icon: const Icon(Icons.rule_outlined),
-                            label: const Text('Invia in approvazione'),
+                            label: Text(tr('Invia in approvazione')),
                           ),
                       ],
                     ),

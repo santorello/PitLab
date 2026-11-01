@@ -12,6 +12,7 @@ import '../../../shared/models/track_map_pin.dart';
 import '../../../shared/models/managed_track_update.dart';
 import '../../../shared/models/today_arrival_status.dart';
 import '../../../shared/repositories/tracks_repository.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class SupabaseTracksRepository implements TracksRepository {
   const SupabaseTracksRepository(this._client);
@@ -651,7 +652,7 @@ class SupabaseTracksRepository implements TracksRepository {
     await _client.from('track_status_history').insert({
       'track_id': trackId,
       'status': 'info',
-      'message': 'Scheda pista aggiornata dal pannello gestione.',
+      'message': tr('Scheda pista aggiornata dal pannello gestione.'),
       'updated_by': userId,
     });
   }

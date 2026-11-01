@@ -5,6 +5,7 @@ import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
 import '../data/models/pitcoin_badge.dart';
 import '../providers/pitcoin_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 /// Vetrina badge. Due modalità:
 ///
@@ -40,7 +41,7 @@ class PitcoinBadgesSection extends ConsumerWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Riconoscimenti', style: Theme.of(context).textTheme.titleLarge),
+              Text(tr('Riconoscimenti'), style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 10),
               _BadgeStrip(badges: badges, languageCode: languageCode),
             ],

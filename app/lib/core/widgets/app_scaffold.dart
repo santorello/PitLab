@@ -11,6 +11,7 @@ import '../../features/notifications/presentation/notification_bell.dart';
 import '../../features/support/presentation/coffee_button.dart';
 import '../../shared/widgets/pitlap_logo.dart';
 import 'language_toggle.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class AppScaffold extends ConsumerStatefulWidget {
   const AppScaffold({required this.child, super.key});
@@ -20,7 +21,7 @@ class AppScaffold extends ConsumerStatefulWidget {
   // Navigazione (23/09/2026): Esplora e' la mappa a tutto schermo con elenco
   // (ExploreMapScreen); le build hanno una voce propria. Le rotte di prima
   // (/tracks, /spots, /shops, /nearby, /spots/map) restano valide.
-  static const _destinations = <_Destination>[
+  static List<_Destination> get _destinations => <_Destination>[
     _Destination(
       labelKey: 'home',
       labelFallback: 'Home',
@@ -29,7 +30,7 @@ class AppScaffold extends ConsumerStatefulWidget {
     ),
     _Destination(
       labelKey: 'explore',
-      labelFallback: 'Esplora',
+      labelFallback: tr('Esplora'),
       icon: Icons.explore_outlined,
       location: '/explore',
     ),
@@ -55,7 +56,7 @@ class AppScaffold extends ConsumerStatefulWidget {
     ),
     _Destination(
       labelKey: 'garage',
-      labelFallback: 'Garage',
+      labelFallback: tr('Garage'),
       icon: Icons.garage_outlined,
       location: '/garage',
     ),
@@ -153,7 +154,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                         onPressed: () => showFeedbackDialog(context),
                         icon: const Icon(Icons.feedback_outlined,
                             color: AppColors.concrete),
-                        tooltip: 'Invia feedback',
+                        tooltip: tr('Invia feedback'),
                       ),
                       const CoffeeButton(color: AppColors.concrete),
                       const NotificationBell(),
@@ -309,9 +310,9 @@ class _MobileNavigationBar extends StatelessWidget {
         // Voce fissa: prima prendeva icona ed etichetta della pagina aperta
         // (Eventi, Negozi, Garage...) e la barra cambiava a ogni pagina.
         // L'evidenziazione basta a dire che si e' dentro "Altro".
-        const NavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.more_horiz),
-          label: 'Altro',
+          label: tr('Altro'),
         ),
       ],
     );
@@ -378,7 +379,7 @@ class _ScaffoldBodyWithImpersonationBanner extends ConsumerWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Vista come $displayName · ${active.role}',
+                      trf('Vista come {0} · {1}', [displayName, active.role]),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -397,7 +398,7 @@ class _ScaffoldBodyWithImpersonationBanner extends ConsumerWidget {
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: const Text('Esci'),
+                    child: Text(tr('Esci')),
                   ),
                 ],
               ),
@@ -497,25 +498,25 @@ class _MobileOverflowMenu extends ConsumerWidget {
           value: _MenuAction.language,
           child: ListTile(
             leading: const Icon(Icons.language),
-            title: Text(isIt ? 'Lingua: Italiano' : 'Language: English'),
+            title: Text(isIt ? tr('Lingua: Italiano') : 'Language: English'),
             subtitle: Text(isIt ? 'Passa a English' : 'Switch to Italiano'),
             contentPadding: EdgeInsets.zero,
           ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: _MenuAction.feedback,
           child: ListTile(
             leading: Icon(Icons.feedback_outlined),
-            title: Text('Invia feedback'),
+            title: Text(tr('Invia feedback')),
             contentPadding: EdgeInsets.zero,
           ),
         ),
         if (isDonationEnabled)
-          const PopupMenuItem(
+          PopupMenuItem(
             value: _MenuAction.coffee,
             child: ListTile(
               leading: Icon(Icons.local_cafe_outlined),
-              title: Text('Offri un caffè'),
+              title: Text(tr('Offri un caffè')),
               contentPadding: EdgeInsets.zero,
             ),
           ),
@@ -590,4 +591,4 @@ class _Destination {
 }
 
 String _exploreLabel(BuildContext context) =>
-    Localizations.localeOf(context).languageCode == 'it' ? 'Esplora' : 'Explore';
+    Localizations.localeOf(context).languageCode == 'it' ? tr('Esplora') : 'Explore';

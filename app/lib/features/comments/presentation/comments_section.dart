@@ -8,6 +8,7 @@ import '../../../shared/widgets/adaptive_image.dart';
 import '../../auth/application/auth_providers.dart';
 import '../application/comments_providers.dart';
 import '../domain/entity_comment.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 // ── Entry point pubblico ──────────────────────────────────────────────────
 
@@ -204,7 +205,7 @@ class _CommentTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final author = comment.author;
-    final displayName = author?.displayName ?? 'Pilota PitLap';
+    final displayName = author?.displayName ?? tr('Pilota PitLap');
     final avatarUrl = author?.avatarUrl;
     final initial = displayName.trim().isEmpty ? 'P' : displayName.trim().characters.first;
 
@@ -348,13 +349,13 @@ class _CommentTile extends StatelessWidget {
   String _relativeTime(DateTime dt) {
     final now = DateTime.now();
     final diff = now.difference(dt);
-    if (diff.inSeconds < 60) return 'ora';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}min fa';
-    if (diff.inHours < 24) return '${diff.inHours}h fa';
-    if (diff.inDays < 7) return '${diff.inDays}g fa';
-    if (diff.inDays < 30) return '${(diff.inDays / 7).floor()}sett fa';
-    if (diff.inDays < 365) return '${(diff.inDays / 30).floor()}mesi fa';
-    return '${(diff.inDays / 365).floor()}a fa';
+    if (diff.inSeconds < 60) return tr('ora');
+    if (diff.inMinutes < 60) return trf('{0}min fa', [diff.inMinutes]);
+    if (diff.inHours < 24) return trf('{0}h fa', [diff.inHours]);
+    if (diff.inDays < 7) return trf('{0}g fa', [diff.inDays]);
+    if (diff.inDays < 30) return trf('{0}sett fa', [(diff.inDays / 7).floor()]);
+    if (diff.inDays < 365) return trf('{0}mesi fa', [(diff.inDays / 30).floor()]);
+    return trf('{0}a fa', [(diff.inDays / 365).floor()]);
   }
 }
 

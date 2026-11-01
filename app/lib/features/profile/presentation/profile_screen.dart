@@ -26,6 +26,7 @@ import '../../shops/application/public_shops_provider.dart';
 import '../../shops/application/shop_follows_providers.dart';
 import '../../tracks/application/tracks_providers.dart';
 import '../application/profile_hub_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -50,7 +51,7 @@ class ProfileScreen extends ConsumerWidget {
     final emailValue = isImpersonating
         ? _profileText(
             context,
-            it: 'Profilo impersonato',
+            it: tr('Profilo impersonato'),
             en: 'Impersonated profile',
           )
         : (sessionUser?.email ?? l10n.profileNotSignedIn);
@@ -150,8 +151,8 @@ class ProfileScreen extends ConsumerWidget {
         helper: _profileText(
           context,
           it: favoriteTrackEntries.isEmpty
-              ? 'Nessuna pista salvata.'
-              : 'Apri l\'elenco delle piste che segui.',
+              ? tr('Nessuna pista salvata.')
+              : tr('Apri l\'elenco delle piste che segui.'),
           en: favoriteTrackEntries.isEmpty
               ? 'No saved tracks yet.'
               : 'Open the list of tracks you follow.',
@@ -173,8 +174,8 @@ class ProfileScreen extends ConsumerWidget {
         helper: _profileText(
           context,
           it: favoriteShopEntries.isEmpty
-              ? 'Nessun negozio salvato.'
-              : 'Apri l\'elenco dei negozi salvati.',
+              ? tr('Nessun negozio salvato.')
+              : tr('Apri l\'elenco dei negozi salvati.'),
           en: favoriteShopEntries.isEmpty
               ? 'No saved shops yet.'
               : 'Open the list of saved shops.',
@@ -196,8 +197,8 @@ class ProfileScreen extends ConsumerWidget {
         helper: _profileText(
           context,
           it: createdEventEntries.isEmpty
-              ? 'Nessun evento creato.'
-              : 'Apri gli eventi che hai pubblicato.',
+              ? tr('Nessun evento creato.')
+              : tr('Apri gli eventi che hai pubblicato.'),
           en: createdEventEntries.isEmpty
               ? 'No created events yet.'
               : 'Open the events you published.',
@@ -216,8 +217,8 @@ class ProfileScreen extends ConsumerWidget {
         helper: _profileText(
           context,
           it: buildEntries.isEmpty
-              ? 'Nessuna build nel garage.'
-              : 'Apri il garage per gestire le tue build.',
+              ? tr('Nessuna build nel garage.')
+              : tr('Apri il garage per gestire le tue build.'),
           en: buildEntries.isEmpty
               ? 'No builds in your garage yet.'
               : 'Open the garage to manage your builds.',
@@ -273,7 +274,7 @@ class ProfileScreen extends ConsumerWidget {
                               _profileText(
                                 context,
                                 it:
-                                    'Il tuo spazio personale per profilo, garage, eventi e attività dentro PitLap.',
+                                    tr('Il tuo spazio personale per profilo, garage, eventi e attività dentro PitLap.'),
                                 en:
                                     'Your personal space for profile, garage, events, and activity inside PitLap.',
                               ),
@@ -330,7 +331,7 @@ class ProfileScreen extends ConsumerWidget {
                     _profileText(
                       context,
                       it:
-                          'Stai vedendo il profilo dell\'utente impersonato. Le azioni sensibili dell\'account reale restano disabilitate finche\' non esci dalla vista impersonata.',
+                          tr('Stai vedendo il profilo dell\'utente impersonato. Le azioni sensibili dell\'account reale restano disabilitate finche\' non esci dalla vista impersonata.'),
                       en:
                           'You are viewing the impersonated user profile. Sensitive real-account actions stay disabled until you leave impersonation.',
                     ),
@@ -344,9 +345,9 @@ class ProfileScreen extends ConsumerWidget {
         : null;
     final overviewSection = _ProfileSection(
             eyebrow: 'View d’insieme',
-            title: 'Panoramica account',
+            title: tr('Panoramica account'),
             body:
-                'Una lettura rapida di ciò che segui, salvi e pubblichi dentro PitLap.',
+                tr('Una lettura rapida di ciò che segui, salvi e pubblichi dentro PitLap.'),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 // Telefono: due colonne che riempiono la larghezza.
@@ -370,7 +371,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           );
     final quickLinksSection = _ProfileSection(
-            eyebrow: 'Collegamenti',
+            eyebrow: tr('Collegamenti'),
             title: l10n.profileQuickLinksTitle,
             body: l10n.profileQuickLinksBody,
             child: Wrap(
@@ -396,7 +397,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           );
     final identitySection = _ProfileSection(
-            eyebrow: 'Identità',
+            eyebrow: tr('Identità'),
             title: l10n.profileBasicsTitle,
             body: l10n.profileBasicsBody,
             child: _ProfileBasicsEditor(
@@ -407,7 +408,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           );
     final presenceSection = _ProfileSection(
-            eyebrow: 'Presenza',
+            eyebrow: tr('Presenza'),
             title: l10n.externalLinksTitle,
             body: l10n.externalLinksProfileBody,
             child: Column(
@@ -438,7 +439,7 @@ class ProfileScreen extends ConsumerWidget {
             )
         : null;
     final privacySection = _ProfileSection(
-            eyebrow: 'Privacy',
+            eyebrow: tr('Privacy'),
             title: l10n.profilePrivacyTitle,
             body: l10n.profilePrivacyBody,
             child: Column(
@@ -451,7 +452,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           );
     final settingsSection = _ProfileSection(
-            eyebrow: 'Impostazioni',
+            eyebrow: tr('Impostazioni'),
             title: l10n.profileSettingsTitle,
             body: l10n.profileSettingsBody,
             child: Column(
@@ -535,7 +536,7 @@ class ProfileScreen extends ConsumerWidget {
           );
       final tabs = <(String, Widget)>[
         (
-          _profileText(context, it: 'Panoramica', en: 'Overview'),
+          _profileText(context, it: tr('Panoramica'), en: 'Overview'),
           tabList([impersonationNote, overviewSection, quickLinksSection]),
         ),
         if (sessionUser != null)
@@ -544,11 +545,11 @@ class ProfileScreen extends ConsumerWidget {
             tabList([const PitcoinBalanceCard(), badgesSection]),
           ),
         (
-          _profileText(context, it: 'Dati', en: 'Details'),
+          _profileText(context, it: tr('Dati'), en: 'Details'),
           tabList([identitySection, presenceSection]),
         ),
         (
-          _profileText(context, it: 'Impostazioni', en: 'Settings'),
+          _profileText(context, it: tr('Impostazioni'), en: 'Settings'),
           tabList([privacySection, settingsSection]),
         ),
       ];
@@ -637,7 +638,7 @@ class ProfileScreen extends ConsumerWidget {
               Text(
                 _profileText(
                   ctx,
-                  it: 'Email attuale: $currentEmail\n\nInserisci la nuova email. Riceverai un link di conferma su entrambi gli indirizzi.',
+                  it: trf('Email attuale: {0}\n\nInserisci la nuova email. Riceverai un link di conferma su entrambi gli indirizzi.', [currentEmail]),
                   en: 'Current email: $currentEmail\n\nEnter your new email. A confirmation link will be sent to both addresses.',
                 ),
                 style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(color: AppColors.steel),
@@ -647,8 +648,8 @@ class ProfileScreen extends ConsumerWidget {
                 controller: controller,
                 keyboardType: TextInputType.emailAddress,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Nuova email',
+                decoration: InputDecoration(
+                  labelText: tr('Nuova email'),
                   hintText: 'nome@esempio.com',
                   prefixIcon: Icon(Icons.alternate_email_outlined),
                 ),
@@ -679,7 +680,7 @@ class ProfileScreen extends ConsumerWidget {
                             content: Text(
                               _profileText(
                                 context,
-                                it: 'Conferma inviata a $newEmail. Controlla la casella e clicca il link per completare il cambio.',
+                                it: trf('Conferma inviata a {0}. Controlla la casella e clicca il link per completare il cambio.', [newEmail]),
                                 en: 'Confirmation sent to $newEmail. Check your inbox and click the link to complete the change.',
                               ),
                             ),
@@ -690,7 +691,7 @@ class ProfileScreen extends ConsumerWidget {
                         if (!ctx.mounted) return;
                         setState(() => sending = false);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Errore: $e')),
+                          SnackBar(content: Text(trf('Errore: {0}', [e]))),
                         );
                       }
                     },
@@ -700,7 +701,7 @@ class ProfileScreen extends ConsumerWidget {
                       height: 16,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Invia conferma'),
+                  : Text(tr('Invia conferma')),
             ),
           ],
         ),
@@ -727,7 +728,7 @@ class ProfileScreen extends ConsumerWidget {
           content: Text(
             _profileText(
               ctx,
-              it: 'Ti invieremo un nuovo magic link all\'indirizzo $currentEmail per rientrare nell\'account.',
+              it: trf('Ti invieremo un nuovo magic link all\'indirizzo {0} per rientrare nell\'account.', [currentEmail]),
               en: 'We will send a new magic link to $currentEmail so you can sign back in.',
             ),
             style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(color: AppColors.steel),
@@ -752,7 +753,7 @@ class ProfileScreen extends ConsumerWidget {
                             content: Text(
                               _profileText(
                                 context,
-                                it: 'Magic link inviato a $currentEmail.',
+                                it: trf('Magic link inviato a {0}.', [currentEmail]),
                                 en: 'Magic link sent to $currentEmail.',
                               ),
                             ),
@@ -762,7 +763,7 @@ class ProfileScreen extends ConsumerWidget {
                         if (!ctx.mounted) return;
                         setState(() => sending = false);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Errore: $e')),
+                          SnackBar(content: Text(trf('Errore: {0}', [e]))),
                         );
                       }
                     },
@@ -772,7 +773,7 @@ class ProfileScreen extends ConsumerWidget {
                       height: 16,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Invia magic link'),
+                  : Text(tr('Invia magic link')),
             ),
           ],
         ),
@@ -798,7 +799,7 @@ class ProfileScreen extends ConsumerWidget {
             Text(
               _profileText(
                 ctx,
-                it: 'Stai richiedendo l\'eliminazione del tuo account PitLap.\n\nI tuoi dati personali verranno rimossi entro 30 giorni. Questa operazione non può essere annullata una volta confermata.',
+                it: tr('Stai richiedendo l\'eliminazione del tuo account PitLap.\n\nI tuoi dati personali verranno rimossi entro 30 giorni. Questa operazione non può essere annullata una volta confermata.'),
                 en: 'You are requesting the deletion of your PitLap account.\n\nYour personal data will be removed within 30 days. This action cannot be undone once confirmed.',
               ),
               style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(color: AppColors.steel),
@@ -814,7 +815,7 @@ class ProfileScreen extends ConsumerWidget {
               child: Text(
                 _profileText(
                   ctx,
-                  it: '⚠️ Accessi, dati di sessione e preferiti verranno eliminati definitivamente.',
+                  it: tr('⚠️ Accessi, dati di sessione e preferiti verranno eliminati definitivamente.'),
                   en: '⚠️ Check-ins, session data and saved items will be permanently deleted.',
                 ),
                 style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
@@ -835,7 +836,7 @@ class ProfileScreen extends ConsumerWidget {
               foregroundColor: Colors.white,
             ),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Sì, elimina account'),
+            child: Text(tr('Sì, elimina account')),
           ),
         ],
       ),
@@ -856,7 +857,7 @@ class ProfileScreen extends ConsumerWidget {
           content: Text(
             _profileText(
               context,
-              it: 'Richiesta di eliminazione inviata. Verrai contattato entro 30 giorni.',
+              it: tr('Richiesta di eliminazione inviata. Verrai contattato entro 30 giorni.'),
               en: 'Deletion request submitted. You will be notified within 30 days.',
             ),
           ),
@@ -867,7 +868,7 @@ class ProfileScreen extends ConsumerWidget {
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore: $e')),
+        SnackBar(content: Text(trf('Errore: {0}', [e]))),
       );
     }
   }
@@ -1040,22 +1041,22 @@ class _ProfileSection extends StatelessWidget {
 
 String _cleanProfileEyebrow(String value) {
   if (value.contains('View d')) {
-    return 'Panoramica';
+    return tr('Panoramica');
   }
   if (value.contains('Identità')) {
-    return 'Identità';
+    return tr('Identità');
   }
   if (value.contains('Collegamenti')) {
-    return 'Collegamenti';
+    return tr('Collegamenti');
   }
   if (value.contains('Presenza')) {
-    return 'Presenza';
+    return tr('Presenza');
   }
   if (value.contains('Privacy')) {
-    return 'Privacy';
+    return tr('Privacy');
   }
   if (value.contains('Impostazioni')) {
-    return 'Impostazioni';
+    return tr('Impostazioni');
   }
   return value;
 }
@@ -1064,7 +1065,7 @@ String _cleanProfileSectionBody(BuildContext context, String value) {
   if (value.contains('nei test') || value.contains('current tests')) {
     return _profileText(
       context,
-      it: 'Accessi rapidi alle aree principali del tuo account.',
+      it: tr('Accessi rapidi alle aree principali del tuo account.'),
       en: 'Quick access to the main areas of your account.',
     );
   }
@@ -1340,7 +1341,7 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
                     Text(
                       _profileText(
                         context,
-                        it: 'Immagine caricata dal dispositivo in uso.',
+                        it: tr('Immagine caricata dal dispositivo in uso.'),
                         en: 'Image uploaded from your device in use.',
                       ),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -1357,7 +1358,7 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
                     label: Text(
                       _profileText(
                         context,
-                        it: 'Carica da dispositivo',
+                        it: tr('Carica da dispositivo'),
                         en: 'Upload from device',
                       ),
                     ),
@@ -1367,7 +1368,7 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
                     ImageTransferProgressCard(
                       label: _profileText(
                         context,
-                        it: 'Preparazione foto profilo',
+                        it: tr('Preparazione foto profilo'),
                         en: 'Preparing profile photo',
                       ),
                       batchState: _avatarTransferState,
@@ -1383,7 +1384,7 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
         Text(
           _profileText(
             context,
-            it: 'Puoi usare un link immagine oppure caricare una foto direttamente dal tuo dispositivo.',
+            it: tr('Puoi usare un link immagine oppure caricare una foto direttamente dal tuo dispositivo.'),
             en: 'You can use an image link or upload a photo directly from your device.',
           ),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.steel),
@@ -1394,7 +1395,7 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
             _profileText(
               context,
               it:
-                  'In vista impersonata puoi consultare il profilo, ma le modifiche restano bloccate per evitare aggiornamenti involontari sull\'account reale.',
+                  tr('In vista impersonata puoi consultare il profilo, ma le modifiche restano bloccate per evitare aggiornamenti involontari sull\'account reale.'),
               en:
                   'In impersonated view you can inspect the profile, but edits stay blocked to avoid accidental changes on the real account.',
             ),
@@ -1452,7 +1453,7 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
         Text(
           _profileText(
             context,
-            it: 'Puoi aggiornare nome visibile, foto profilo e lingua del tuo account.',
+            it: tr('Puoi aggiornare nome visibile, foto profilo e lingua del tuo account.'),
             en: 'You can update display name, profile photo, and language for your account.',
           ),
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.steel),
@@ -1465,12 +1466,12 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
     final messenger = ScaffoldMessenger.of(context);
     final preparingAvatarLabel = _profileText(
       context,
-      it: 'Sto preparando la foto profilo',
+      it: tr('Sto preparando la foto profilo'),
       en: 'Preparing profile photo',
     );
     final genericUploadErrorMessage = _profileText(
       context,
-      it: 'Errore imprevisto durante il caricamento.',
+      it: tr('Errore imprevisto durante il caricamento.'),
       en: 'Unexpected error during upload.',
     );
     setState(() {
@@ -1488,7 +1489,7 @@ class _ProfileBasicsEditorState extends ConsumerState<_ProfileBasicsEditor> {
             content: Text(
               _profileText(
                 context,
-                it: 'Devi essere autenticato per caricare immagini.',
+                it: tr('Devi essere autenticato per caricare immagini.'),
                 en: 'You must be signed in to upload images.',
               ),
             ),
@@ -1816,11 +1817,11 @@ class _PublicProfileSettingsState extends ConsumerState<_PublicProfileSettings> 
   Future<void> _save(String userId, bool isPublic, String? currentSlug) async {
     final slug = _slugController.text.trim();
     if (isPublic && slug.isEmpty) {
-      setState(() => _slugError = 'Inserisci uno slug per attivare il profilo pubblico.');
+      setState(() => _slugError = tr('Inserisci uno slug per attivare il profilo pubblico.'));
       return;
     }
     if (slug.isNotEmpty && !_slugRegex.hasMatch(slug)) {
-      setState(() => _slugError = 'Usa solo lettere minuscole, numeri e trattini (min 3, max 30 caratteri).');
+      setState(() => _slugError = tr('Usa solo lettere minuscole, numeri e trattini (min 3, max 30 caratteri).'));
       return;
     }
     setState(() { _saving = true; _slugError = null; });
@@ -1836,13 +1837,13 @@ class _PublicProfileSettingsState extends ConsumerState<_PublicProfileSettings> 
       if (mounted) {
         setState(() => _pendingIsPublic = null);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Impostazioni profilo pubblico aggiornate.')),
+          SnackBar(content: Text(tr('Impostazioni profilo pubblico aggiornate.'))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Errore nel salvataggio: $e')),
+          SnackBar(content: Text(trf('Errore nel salvataggio: {0}', [e]))),
         );
       }
     } finally {
@@ -1872,11 +1873,11 @@ class _PublicProfileSettingsState extends ConsumerState<_PublicProfileSettings> 
           children: [
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Profilo pubblico'),
+              title: Text(tr('Profilo pubblico')),
               subtitle: Text(
                 isPublic
-                    ? 'Visibile a chiunque tramite link'
-                    : 'Visibile solo a te (privato)',
+                    ? tr('Visibile a chiunque tramite link')
+                    : tr('Visibile solo a te (privato)'),
                 style: TextStyle(color: AppColors.steel),
               ),
               value: isPublic,
@@ -1889,7 +1890,7 @@ class _PublicProfileSettingsState extends ConsumerState<_PublicProfileSettings> 
               TextFormField(
                 controller: _slugController,
                 decoration: InputDecoration(
-                  labelText: 'Slug profilo',
+                  labelText: tr('Slug profilo'),
                   hintText: 'es. mario-rossi-rc',
                   helperText: 'URL: pitlap.app/u/${_slugController.text.isNotEmpty ? _slugController.text : "tuo-slug"}',
                   errorText: _slugError,
@@ -1909,7 +1910,7 @@ class _PublicProfileSettingsState extends ConsumerState<_PublicProfileSettings> 
                       : () => _save(targetUserId, isPublic, currentSlug),
                   child: _saving
                       ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : const Text('Salva'),
+                      : Text(tr('Salva')),
                 ),
               ),
             ],

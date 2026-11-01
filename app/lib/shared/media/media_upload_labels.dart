@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import 'media_upload_state.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 String mediaUploadStageLabel(
   BuildContext context,
@@ -11,15 +12,15 @@ String mediaUploadStageLabel(
   return switch (stage) {
     MediaUploadStage.queued => isItalian ? 'In coda' : 'Queued',
     MediaUploadStage.preparing => isItalian
-        ? 'Sto preparando il file'
+        ? tr('Sto preparando il file')
         : 'Preparing file',
     MediaUploadStage.uploading => isItalian
-        ? 'Caricamento in corso'
+        ? tr('Caricamento in corso')
         : 'Uploading',
     MediaUploadStage.processing => isItalian
-        ? 'Sto ottimizzando il file'
+        ? tr('Sto ottimizzando il file')
         : 'Processing file',
     MediaUploadStage.done => isItalian ? 'File pronto' : 'File ready',
-    MediaUploadStage.error => isItalian ? 'Errore file' : 'File error',
+    MediaUploadStage.error => isItalian ? tr('Errore file') : 'File error',
   };
 }

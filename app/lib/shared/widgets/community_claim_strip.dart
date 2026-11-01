@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_radius.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 /// Fascia "Segnalata dalla community" con l'invito a rivendicare la scheda.
 /// Usata su piste e negozi: [onDark] per l'hero scuro della pista.
@@ -36,14 +37,14 @@ class CommunityClaimStrip extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              label,
+              tr(label),
               style: TextStyle(color: fg, fontSize: 13),
             ),
           ),
           TextButton(
             onPressed: onClaim,
             child: Text(
-              action,
+              tr(action),
               style: TextStyle(color: fg, fontWeight: FontWeight.w700),
             ),
           ),

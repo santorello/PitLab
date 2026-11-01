@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../location/application/user_location_context_provider.dart';
 import '../../tracks/application/tracks_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class HomeTrackWeather {
   const HomeTrackWeather({
@@ -71,7 +72,7 @@ class HomeBuildOfWeek {
       title: map['title'] as String? ?? '',
       meta: map['meta'] as String? ?? '',
       imageUrls: _parseImageUrls(map['image_urls']),
-      authorName: displayName.trim().isEmpty ? 'Pilota PitLap' : displayName.trim(),
+      authorName: displayName.trim().isEmpty ? tr('Pilota PitLap') : displayName.trim(),
       authorSlug: fallbackSlug,
       weeklyVotes: (map['weekly_votes'] as num?)?.toInt() ?? 0,
       commentCount: (map['comment_count'] as num?)?.toInt() ?? 0,

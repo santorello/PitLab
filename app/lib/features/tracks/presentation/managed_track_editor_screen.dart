@@ -11,6 +11,7 @@ import '../../../shared/widgets/external_links_section.dart';
 import '../../auth/application/auth_providers.dart';
 import '../application/track_taxonomy_option.dart';
 import '../application/tracks_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class ManagedTrackEditorScreen extends ConsumerStatefulWidget {
   const ManagedTrackEditorScreen({
@@ -84,14 +85,14 @@ class _ManagedTrackEditorScreenState
     );
 
     return ContentScaffold(
-      title: 'Modifica pista',
+      title: tr('Modifica pista'),
       description:
-          'Editor operativo per aggiornare la scheda pubblica della pista assegnata.',
+          tr('Editor operativo per aggiornare la scheda pubblica della pista assegnata.'),
       child: trackAsync.when(
         data: (track) {
           if (track == null) {
-            return const Center(
-              child: Text('Questa pista non risulta assegnata al tuo account.'),
+            return Center(
+              child: Text(tr('Questa pista non risulta assegnata al tuo account.')),
             );
           }
 
@@ -101,42 +102,42 @@ class _ManagedTrackEditorScreenState
             children: [
               // ── Scheda pubblica ──────────────────────────────────
               _SectionCard(
-                title: 'Scheda pubblica',
-                body: 'Nome, posizione e testi visibili nel dettaglio pista.',
+                title: tr('Scheda pubblica'),
+                body: tr('Nome, posizione e testi visibili nel dettaglio pista.'),
                 child: Column(
                   children: [
                     TextField(
                       controller: _nameController,
                       onChanged: (_) => setState(() {}),
-                      decoration: const InputDecoration(labelText: 'Nome pista'),
+                      decoration: InputDecoration(labelText: tr('Nome pista')),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _slugController,
                       decoration:
-                          const InputDecoration(labelText: 'Slug pubblico'),
+                          InputDecoration(labelText: tr('Slug pubblico')),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _cityController,
                       onChanged: (_) => setState(() {}),
-                      decoration: const InputDecoration(labelText: 'Città'),
+                      decoration: InputDecoration(labelText: tr('Città')),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _countryController,
-                      decoration: const InputDecoration(labelText: 'Paese'),
+                      decoration: InputDecoration(labelText: tr('Paese')),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _addressController,
-                      decoration: const InputDecoration(labelText: 'Indirizzo'),
+                      decoration: InputDecoration(labelText: tr('Indirizzo')),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _mapUrlController,
-                      decoration: const InputDecoration(
-                        labelText: 'URL mappa esterna',
+                      decoration: InputDecoration(
+                        labelText: tr('URL mappa esterna'),
                         hintText: 'https://maps.google.com/...',
                       ),
                     ),
@@ -144,7 +145,7 @@ class _ManagedTrackEditorScreenState
                     CoverImageField(
                       controller: _coverImageUrlController,
                       entityType: 'tracks',
-                      progressLabel: 'Preparazione copertina pista',
+                      progressLabel: tr('Preparazione copertina pista'),
                       onUploaded: (_) => setState(() {}),
                     ),
                     const SizedBox(height: 12),
@@ -152,16 +153,16 @@ class _ManagedTrackEditorScreenState
                       controller: _shortDescriptionController,
                       onChanged: (_) => setState(() {}),
                       maxLines: 3,
-                      decoration: const InputDecoration(
-                        labelText: 'Descrizione breve',
+                      decoration: InputDecoration(
+                        labelText: tr('Descrizione breve'),
                       ),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _descriptionController,
                       maxLines: 6,
-                      decoration: const InputDecoration(
-                        labelText: 'Descrizione completa',
+                      decoration: InputDecoration(
+                        labelText: tr('Descrizione completa'),
                       ),
                     ),
                   ],
@@ -172,8 +173,8 @@ class _ManagedTrackEditorScreenState
 
               // ── Categorie ────────────────────────────────────────
               _SectionCard(
-                title: 'Categoria pista',
-                body: 'Seleziona il tipo di pista — usato nei filtri di ricerca.',
+                title: tr('Categoria pista'),
+                body: tr('Seleziona il tipo di pista — usato nei filtri di ricerca.'),
                 child: Wrap(
                   spacing: 10,
                   runSpacing: 10,
@@ -196,8 +197,8 @@ class _ManagedTrackEditorScreenState
 
               // ── Servizi ──────────────────────────────────────────
               _SectionCard(
-                title: 'Servizi disponibili',
-                body: 'Seleziona i servizi confermati presenti in pista.',
+                title: tr('Servizi disponibili'),
+                body: tr('Seleziona i servizi confermati presenti in pista.'),
                 child: Wrap(
                   spacing: 10,
                   runSpacing: 10,
@@ -261,17 +262,17 @@ class _ManagedTrackEditorScreenState
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.save_outlined),
-                    label: Text(_saving ? 'Salvataggio...' : 'Salva su PitLap'),
+                    label: Text(_saving ? tr('Salvataggio...') : tr('Salva su PitLap')),
                   ),
                   OutlinedButton.icon(
                     onPressed: () => context.go('/track/${widget.slug}'),
                     icon: const Icon(Icons.open_in_new_outlined),
-                    label: const Text('Apri dettaglio pubblico'),
+                    label: Text(tr('Apri dettaglio pubblico')),
                   ),
                   OutlinedButton.icon(
                     onPressed: () => context.go('/manager'),
                     icon: const Icon(Icons.arrow_back_outlined),
-                    label: const Text('Torna a Gestione'),
+                    label: Text(tr('Torna a Gestione')),
                   ),
                 ],
               ),
@@ -280,7 +281,7 @@ class _ManagedTrackEditorScreenState
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
-          child: Text('Non siamo riusciti a caricare la pista: $error'),
+          child: Text(trf('Non siamo riusciti a caricare la pista: {0}', [error])),
         ),
       ),
     );
@@ -339,8 +340,8 @@ class _ManagedTrackEditorScreenState
 
     if (normalizedName.isEmpty || normalizedCity.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Nome pista e città sono obbligatori.'),
+        SnackBar(
+          content: Text(tr('Nome pista e città sono obbligatori.')),
         ),
       );
       return;
@@ -375,7 +376,7 @@ class _ManagedTrackEditorScreenState
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Scheda pista aggiornata correttamente.')),
+        SnackBar(content: Text(tr('Scheda pista aggiornata correttamente.'))),
       );
 
       if (normalizedSlug != widget.slug) {
@@ -384,7 +385,7 @@ class _ManagedTrackEditorScreenState
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Salvataggio non riuscito: $error')),
+        SnackBar(content: Text(trf('Salvataggio non riuscito: {0}', [error]))),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -462,19 +463,19 @@ class _PreviewCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Anteprima card',
+              tr('Anteprima card'),
               style: Theme.of(context).textTheme.labelMedium
                   ?.copyWith(color: AppColors.concrete),
             ),
             const SizedBox(height: 10),
             Text(
-              name.isEmpty ? 'Nome pista' : name,
+              name.isEmpty ? tr('Nome pista') : name,
               style: Theme.of(context).textTheme.titleLarge
                   ?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 4),
             Text(
-              city.isEmpty ? 'Città' : city,
+              city.isEmpty ? tr('Città') : city,
               style: Theme.of(context).textTheme.bodyMedium
                   ?.copyWith(color: AppColors.concrete),
             ),

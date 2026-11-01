@@ -1,3 +1,4 @@
+import 'package:pitlap_app/app/l10n/tr.dart';
 // Modello commento polimorfico.
 // Il join su profiles (embed Supabase) porta display_name e avatar_url
 // dell'autore in un'unica query.
@@ -18,7 +19,7 @@ class CommentAuthor {
       id: map['id'] as String? ?? '',
       displayName: (map['display_name'] as String?)?.trim().isNotEmpty == true
           ? (map['display_name'] as String).trim()
-          : 'Pilota PitLap',
+          : tr('Pilota PitLap'),
       avatarUrl: map['avatar_url'] as String?,
     );
   }

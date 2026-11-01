@@ -11,6 +11,7 @@ import '../../features/auth/application/auth_providers.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../navigation/app_router.dart';
 import '../theme/app_theme.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class PitLapBootstrap extends ConsumerWidget {
   const PitLapBootstrap({super.key});
@@ -19,6 +20,8 @@ class PitLapBootstrap extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
     final locale = ref.watch(localeProvider);
+    // I testi tradotti con tr() leggono AppLang.code: va aggiornato prima del build.
+    AppLang.code = (locale ?? const Locale('it')).languageCode;
 
     return MaterialApp.router(
       title: 'PitLap',
@@ -27,7 +30,12 @@ class PitLapBootstrap extends ConsumerWidget {
       locale: locale,
       builder: (context, child) => _AuthRedirectHandler(
         router: router,
-        child: child ?? const SizedBox.shrink(),
+        // La chiave sulla lingua ricostruisce tutto l'albero al cambio IT/EN,
+        // cosi' anche i widget const con testi tr() si aggiornano.
+        child: KeyedSubtree(
+          key: ValueKey(AppLang.code),
+          child: child ?? const SizedBox.shrink(),
+        ),
       ),
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),

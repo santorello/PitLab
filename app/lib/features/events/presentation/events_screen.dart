@@ -25,6 +25,8 @@ import '../../../shared/places/place_selection.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../profile/application/profile_hub_providers.dart';
 import '../application/public_events_provider.dart';
+import 'event_edit_dialog.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class EventsScreen extends ConsumerStatefulWidget {
   const EventsScreen({super.key});
@@ -59,7 +61,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                   border: Border.all(color: AppColors.signalOrange.withAlpha(80)),
                 ),
                 child: Text(
-                  _localeText(context, it: 'Gare & Appuntamenti', en: 'Races & Events'),
+                  _localeText(context, it: tr('Gare & Appuntamenti'), en: 'Races & Events'),
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: AppColors.graphite,
                     fontWeight: FontWeight.w700,
@@ -95,7 +97,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                             child: Text(
                               _localeText(
                                 context,
-                                it: 'In evidenza',
+                                it: tr('In evidenza'),
                                 en: 'Highlights',
                               ),
                               style: Theme.of(context).textTheme.titleLarge,
@@ -120,7 +122,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                           _localeText(
                             context,
                             it:
-                                'Una selezione rapida per capire dove c\'è movimento e cosa vale la pena aprire.',
+                                tr('Una selezione rapida per capire dove c\'è movimento e cosa vale la pena aprire.'),
                             en:
                                 'A quick selection to see where activity is happening and what is worth opening.',
                           ),
@@ -154,7 +156,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                                   primaryLabel: currentUser == null
                                       ? _localeText(
                                           context,
-                                          it: 'Accedi per vedere il dettaglio',
+                                          it: tr('Accedi per vedere il dettaglio'),
                                           en: 'Sign in to view details',
                                         )
                                       : l10n.eventsOpenAction,
@@ -172,7 +174,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                               child: Text(
                                 _localeText(
                                   context,
-                                  it: 'Nessun evento in programma al momento.',
+                                  it: tr('Nessun evento in programma al momento.'),
                                   en: 'No upcoming events at the moment.',
                                 ),
                                 style: Theme.of(context).textTheme.bodyMedium
@@ -197,12 +199,12 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                       featuredEventsAsync.maybeWhen(
                         data: (events) => _localeText(
                           context,
-                          it: '${events.length} eventi nascosti',
+                          it: trf('{0} eventi nascosti', [events.length]),
                           en: '${events.length} hidden events',
                         ),
                         orElse: () => _localeText(
                           context,
-                          it: 'Sezione chiusa',
+                          it: tr('Sezione chiusa'),
                           en: 'Section collapsed',
                         ),
                       ),
@@ -251,7 +253,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                           primaryLabel: currentUser == null
                               ? _localeText(
                                   context,
-                                  it: 'Accedi per vedere il dettaglio',
+                                  it: tr('Accedi per vedere il dettaglio'),
                                   en: 'Sign in to view details',
                                 )
                               : l10n.eventsOpenAction,
@@ -397,7 +399,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                                             _localeText(
                                               context,
                                               it:
-                                                  'Hai raggiunto il massimo di 5 foto per evento.',
+                                                  tr('Hai raggiunto il massimo di 5 foto per evento.'),
                                               en:
                                                   'You reached the maximum of 5 photos per event.',
                                             ),
@@ -412,7 +414,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                                           content: Text(
                                             _localeText(
                                               context,
-                                              it: 'Devi essere autenticato per caricare immagini.',
+                                              it: tr('Devi essere autenticato per caricare immagini.'),
                                               en: 'You must be signed in to upload images.',
                                             ),
                                           ),
@@ -427,7 +429,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                                     final uploadingEventPhotosLabel =
                                         _localeText(
                                       context,
-                                      it: 'Sto caricando le foto evento',
+                                      it: tr('Sto caricando le foto evento'),
                                       en: 'Uploading event photos',
                                     );
                                     final picked =
@@ -502,7 +504,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                                         lastError = e.message;
                                         uploadController.markError(index);
                                       } catch (e) {
-                                        lastError = 'Errore caricamento foto ${index + 1}';
+                                        lastError = trf('Errore caricamento foto {0}', [index + 1]);
                                         uploadController.markError(index);
                                       }
                                       if (context.mounted) {
@@ -536,7 +538,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                           Text(
                             _localeText(
                               context,
-                              it: '${pickedImages.length}/5 foto',
+                              it: trf('{0}/5 foto', [pickedImages.length]),
                               en: '${pickedImages.length}/5 photos',
                             ),
                             style: Theme.of(context).textTheme.bodyMedium
@@ -549,7 +551,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                         ImageTransferProgressCard(
                           label: _localeText(
                             context,
-                            it: 'Preparazione foto evento',
+                            it: tr('Preparazione foto evento'),
                             en: 'Preparing event photos',
                           ),
                           batchState: imageTransferState,
@@ -652,7 +654,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                         title: Text(
                           _localeText(
                             context,
-                            it: 'Data fine (opzionale)',
+                            it: tr('Data fine (opzionale)'),
                             en: 'End date (optional)',
                           ),
                         ),
@@ -663,7 +665,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                                 ).formatMediumDate(selectedEndDate!)
                               : _localeText(
                                   context,
-                                  it: 'Stesso giorno',
+                                  it: tr('Stesso giorno'),
                                   en: 'Same day',
                                 ),
                         ),
@@ -765,223 +767,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
   Future<void> _openEditEventDialog(
     BuildContext context,
     CreatedEventRecord original,
-  ) async {
-    final l10n = AppLocalizations.of(context)!;
-    final messenger = ScaffoldMessenger.of(context);
-    final placeSearch = ref.read(placeSearchProvider);
-    final titleController = TextEditingController(text: original.title);
-    final locationController = TextEditingController(text: original.location);
-    PlaceSelection? pickedPlace =
-        original.latitude != null && original.longitude != null
-            ? PlaceSelection(
-                label: original.location,
-                latitude: original.latitude!,
-                longitude: original.longitude!,
-                provider: 'saved',
-                providerPlaceId: original.id,
-              )
-            : null;
-    final venueController = TextEditingController(text: original.venue ?? '');
-    final noteController = TextEditingController(
-      text: original.note == l10n.eventsCreateDefaultNote ? '' : original.note,
-    );
-    DateTime selectedDate = original.startsAt?.toLocal() ??
-        DateTime.now().add(const Duration(days: 7));
-    DateTime? selectedEndDate = original.endsAt?.toLocal();
-    var pickedImages = List<String>.from(original.imageUrls);
-
-    final updated = await showDialog<CreatedEventRecord>(
-      context: context,
-      builder: (dialogContext) {
-        return DialogControllerScope(
-          controllers: [
-            titleController,
-            locationController,
-            venueController,
-            noteController,
-          ],
-          child: AlertDialog(
-          title: const Text('Modifica evento'),
-          content: StatefulBuilder(
-            builder: (context, setDialogState) {
-              return SingleChildScrollView(
-                child: SizedBox(
-                  width: 420,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextField(
-                        controller: titleController,
-                        decoration: InputDecoration(
-                          labelText: l10n.eventsCreateTitleLabel,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      PlacePickerField(
-                        controller: locationController,
-                        initialSelection: pickedPlace,
-                        labelText: l10n.eventsCreateLocationLabel,
-                        onSelected: (selection) =>
-                            setDialogState(() => pickedPlace = selection),
-                      ),
-                      if (pickedPlace != null) ...[
-                        const SizedBox(height: 12),
-                        PlaceMapPreviewCard(
-                          selection: pickedPlace!,
-                          height: 200,
-                          onPointPicked: (pin) =>
-                              setDialogState(() => pickedPlace = pin),
-                        ),
-                      ],
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: venueController,
-                        decoration: InputDecoration(
-                          labelText: l10n.eventsCreateVenueLabel,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: noteController,
-                        maxLines: 3,
-                        decoration: InputDecoration(
-                          labelText: l10n.eventsCreateNoteLabel,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(l10n.eventsCreateDateLabel),
-                        subtitle: Text(
-                          MaterialLocalizations.of(context).formatMediumDate(selectedDate),
-                        ),
-                        trailing: const Icon(Icons.calendar_today_outlined),
-                        onTap: () async {
-                          final picked = await showDatePicker(
-                            context: context,
-                            initialDate: selectedDate,
-                            firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                            lastDate: DateTime.now().add(const Duration(days: 730)),
-                          );
-                          if (picked != null) {
-                            setDialogState(() {
-                              selectedDate = picked;
-                              if (selectedEndDate != null &&
-                                  selectedEndDate!.isBefore(picked)) {
-                                selectedEndDate = null;
-                              }
-                            });
-                          }
-                        },
-                      ),
-                      // ── Data fine (opzionale) ─────────────────────────
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          _localeText(
-                            context,
-                            it: 'Data fine (opzionale)',
-                            en: 'End date (optional)',
-                          ),
-                        ),
-                        subtitle: Text(
-                          selectedEndDate != null
-                              ? MaterialLocalizations.of(
-                                  context,
-                                ).formatMediumDate(selectedEndDate!)
-                              : _localeText(
-                                  context,
-                                  it: 'Stesso giorno',
-                                  en: 'Same day',
-                                ),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (selectedEndDate != null)
-                              IconButton(
-                                onPressed: () =>
-                                    setDialogState(() => selectedEndDate = null),
-                                icon: const Icon(Icons.clear, size: 18),
-                              ),
-                            const Icon(Icons.event_outlined),
-                          ],
-                        ),
-                        onTap: () async {
-                          final picked = await showDatePicker(
-                            context: context,
-                            initialDate: selectedEndDate ??
-                                selectedDate.add(const Duration(days: 1)),
-                            firstDate: selectedDate,
-                            lastDate: DateTime.now().add(
-                              const Duration(days: 730),
-                            ),
-                          );
-                          if (picked != null) {
-                            setDialogState(() => selectedEndDate = picked);
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(MaterialLocalizations.of(dialogContext).cancelButtonLabel),
-            ),
-            FilledButton(
-              onPressed: () async {
-                final title = titleController.text.trim();
-                final location = locationController.text.trim();
-                if (title.isEmpty || location.isEmpty) return;
-                pickedPlace ??= await resolvePlaceText(placeSearch, location);
-                if (!dialogContext.mounted) return;
-                Navigator.of(dialogContext).pop(
-                  CreatedEventRecord(
-                    id: original.id,
-                    date: MaterialLocalizations.of(dialogContext).formatShortMonthDay(selectedDate),
-                    title: title,
-                    location: location,
-                    note: noteController.text.trim().isEmpty
-                        ? l10n.eventsCreateDefaultNote
-                        : noteController.text.trim(),
-                    badge: original.badge,
-                    creatorLabel: original.creatorLabel,
-                    creatorRole: original.creatorRole,
-                    authorUserId: original.authorUserId,
-                    venue: venueController.text.trim(),
-                    imageUrls: pickedImages,
-                    startsAtIso: selectedDate.toIso8601String(),
-                    endsAtIso: selectedEndDate?.toIso8601String(),
-                    latitude: pickedPlace?.latitude,
-                    longitude: pickedPlace?.longitude,
-                  ),
-                );
-              },
-              child: Text(l10n.eventsCreateSave),
-            ),
-          ],
-          ),
-        );
-      },
-    );
-
-    // dispose affidato a DialogControllerScope: un solo postFrameCallback non
-    // basta, la route resta montata per tutta l'animazione di uscita.
-
-    if (updated == null || !mounted) return;
-
-    final saved = await ref.read(createdEventsProvider.notifier).update(updated);
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(saved ? 'Evento aggiornato con successo.' : _eventSaveFailed),
-      ),
-    );
-  }
+  ) => showEventEditDialog(context, ref, original);
 
   static String _resolveCreatorLabel(String? displayName) {
     final resolvedDisplay = displayName?.trim();
@@ -993,7 +779,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     // l'indirizzo di chi ha creato l'evento (difetto A-16). Dal delta
     // 2026-09-14 il profilo ha sempre un display_name, quindi questo ramo e'
     // solo una rete di sicurezza.
-    return 'Pilota PitLap';
+    return tr('Pilota PitLap');
   }
 
   Future<void> _shareEvent(BuildContext context, String eventId) async {
@@ -1002,8 +788,8 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     // il link sarebbe morto per chiunque altro. Non condividere.
     if (eventId.startsWith('created-')) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Evento non ancora pubblicato: non condivisibile.'),
+        SnackBar(
+          content: Text(tr('Evento non ancora pubblicato: non condivisibile.')),
         ),
       );
       return;
@@ -1049,17 +835,17 @@ class _PastEventsSection extends StatelessWidget {
     final countLabel = eventsAsync.maybeWhen(
       data: (events) => _localeText(
         context,
-        it: '${events.length} eventi passati',
+        it: trf('{0} eventi passati', [events.length]),
         en: '${events.length} past events',
       ),
       loading: () => _localeText(
         context,
-        it: 'Caricamento storico...',
+        it: tr('Caricamento storico...'),
         en: 'Loading archive...',
       ),
       orElse: () => _localeText(
         context,
-        it: 'Storico eventi pubblici',
+        it: tr('Storico eventi pubblici'),
         en: 'Public event archive',
       ),
     );
@@ -1073,7 +859,7 @@ class _PastEventsSection extends StatelessWidget {
           tilePadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           childrenPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
           title: Text(
-            _localeText(context, it: 'Eventi passati', en: 'Past events'),
+            _localeText(context, it: tr('Eventi passati'), en: 'Past events'),
             style: Theme.of(context).textTheme.titleLarge,
           ),
           subtitle: Text(
@@ -1098,7 +884,7 @@ class _PastEventsSection extends StatelessWidget {
                 child: Text(
                   _localeText(
                     context,
-                    it: 'Non riesco a caricare gli eventi passati.',
+                    it: tr('Non riesco a caricare gli eventi passati.'),
                     en: 'Past events cannot be loaded right now.',
                   ),
                   style: Theme.of(
@@ -1113,7 +899,7 @@ class _PastEventsSection extends StatelessWidget {
                     child: Text(
                       _localeText(
                         context,
-                        it: 'Nessun evento passato disponibile.',
+                        it: tr('Nessun evento passato disponibile.'),
                         en: 'No past events available.',
                       ),
                       style: Theme.of(
@@ -1148,7 +934,7 @@ class _PastEventsSection extends StatelessWidget {
                                 ? l10n.eventsOpenAction
                                 : _localeText(
                                     context,
-                                    it: 'Accedi per vedere il dettaglio',
+                                    it: tr('Accedi per vedere il dettaglio'),
                                     en: 'Sign in to view details',
                                   ),
                           ),
@@ -1228,7 +1014,7 @@ class _EventCard extends StatelessWidget {
     if (onEdit != null) {
       footerActions.add(
         Tooltip(
-          message: 'Modifica evento',
+          message: tr('Modifica evento'),
           child: IconButton(
             onPressed: onEdit,
             icon: const Icon(Icons.edit_outlined, size: 18),
@@ -1249,7 +1035,7 @@ class _EventCard extends StatelessWidget {
     return PlaceCard(
       media: media,
       title: title,
-      overline: location.isNotEmpty ? '$location · Evento' : 'Evento',
+      overline: location.isNotEmpty ? trf('{0} · Evento', [location]) : tr('Evento'),
       signals: signals,
       body: note.isNotEmpty ? note : null,
       footerLeading: footerLeading,
@@ -1348,5 +1134,5 @@ String _localeText(
 }
 
 // ponytail: testo solo IT come il resto dei messaggi di modifica; in ARB se serve EN.
-const _eventSaveFailed =
-    'Evento NON salvato: controlla la connessione e riprova.';
+String get _eventSaveFailed =>
+    tr('Evento NON salvato: controlla la connessione e riprova.');

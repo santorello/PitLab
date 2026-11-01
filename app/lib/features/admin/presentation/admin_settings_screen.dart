@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/dialog_controller_scope.dart';
@@ -18,27 +19,29 @@ import '../application/admin_providers.dart';
 import 'admin_control_room.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../shops/application/shop_editor_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
+import '../../events/presentation/event_edit_dialog.dart';
 
 // FR-18: etichette leggibili per ruoli/stati (allineate a /profiles) invece
 // dei valori DB grezzi.
 String adminRoleLabel(String role) => switch (role) {
-  'track_organizer' => 'Organizzatore pista',
-  'shop_owner' || 'shop_manager' => 'Gestore negozio',
+  'track_organizer' => tr('Organizzatore pista'),
+  'shop_owner' || 'shop_manager' => tr('Gestore negozio'),
   'admin' => 'Admin',
-  'user' => 'Pilota',
+  'user' => tr('Pilota'),
   _ => role,
 };
 
 String adminApprovalLabel(String status) => switch (status) {
-  'approved' => 'Approvato',
-  'rejected' => 'Rifiutato',
-  'pending' => 'In attesa',
+  'approved' => tr('Approvato'),
+  'rejected' => tr('Rifiutato'),
+  'pending' => tr('In attesa'),
   _ => status,
 };
 
 String adminVisibilityLabel(String v) => switch (v) {
-  'public' => 'Pubblico',
-  'hidden' => 'Nascosto',
+  'public' => tr('Pubblico'),
+  'hidden' => tr('Nascosto'),
   _ => v,
 };
 
@@ -61,6 +64,29 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
 
   /// Scheda aperta: 0 Panoramica · 1 Contenuti · 2 Persone · 3 Impostazioni.
   int _tab = 0;
+
+  /// Arrivati da "Da fare ora": nella scheda si vede solo la sezione con
+  /// questo id ([_AdminSectionCard.id]). Null = scheda intera.
+  String? _focus;
+
+  static const _focusTab = {
+    'approvals': 1,
+    'claims': 1,
+    'moderation': 1,
+    'to_fix': 1,
+    'feedback': 2,
+    'deletions': 2,
+  };
+
+  void _openFocus(String target) {
+    final tab = _focusTab[target];
+    if (tab == null) return;
+    if (target == 'to_fix') ref.invalidate(adminContentToFixProvider);
+    setState(() {
+      _tab = tab;
+      _focus = target;
+    });
+  }
 
   @override
   void dispose() {
@@ -114,17 +140,26 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         const <AdminTrackClaim>[];
     final shopClaims = ref.watch(adminShopClaimsProvider).asData?.value ??
         const <AdminTrackClaim>[];
+    final spotSuggestionsAsync = ref.watch(adminSpotSuggestionsProvider);
+    final fixAsync = ref.watch(adminContentToFixProvider);
+    final commentsAsync = ref.watch(adminAllCommentsProvider);
+    final weekAgo = DateTime.now().subtract(const Duration(days: 7));
+    final newComments = (commentsAsync.asData?.value ?? const <AdminComment>[])
+        .where((c) => !c.isHidden && (c.createdAt?.isAfter(weekAgo) ?? false))
+        .length;
 
     // Sezioni per scheda. La panoramica sta in una schermata; le altre
     // scorrono dentro il loro riquadro, non trascinando tutta la pagina.
     final sections = <List<Widget>>[
       // 0 · Panoramica
-      const [AdminControlRoom()],
+      [AdminControlRoom(onOpen: _openFocus)],
       // 1 · Contenuti
       [
         _AdminSectionCard(
-          title: 'Approvazioni',
-          body: 'Coda di lavoro per spot, piste e negozi da validare.',
+          id: 'approvals',
+          count: approvals.length,
+          title: tr('Approvazioni'),
+          body: tr('Coda di lavoro per spot, piste e negozi da validare.'),
           child: _ApprovalQueueCard(
             items: approvals,
             onApprove: (item) => _resolveApproval(item, 'approved'),
@@ -132,10 +167,24 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           ),
         ),
         _AdminSectionCard(
-          title: 'Rivendicazioni piste',
+          id: 'to_fix',
+          count: fixAsync.asData?.value.length ?? 0,
+          title: tr('Da sistemare'),
+          body: tr('Spot senza coordinate o senza foto: aprili e completa i '
+              'dati. Gli eventi finiti non vanno sistemati, passano da soli '
+              'nello storico.'),
+          child: _AdminFixSection(
+            itemsAsync: fixAsync,
+            onOpen: _openFixItem,
+          ),
+        ),
+        _AdminSectionCard(
+          id: 'claims',
+          count: claims.length,
+          title: tr('Rivendicazioni piste'),
           body:
-              'Utenti che dichiarano di gestire una pista segnalata dalla community. '
-              'Verifica tu prima di approvare: chi approvi diventa gestore della scheda.',
+              tr('Utenti che dichiarano di gestire una pista segnalata dalla community. '
+              'Verifica tu prima di approvare: chi approvi diventa gestore della scheda.'),
           child: _AdminTrackClaimsSection(
             claims: claims,
             onApprove: (claim) => _resolveClaim(claim, approve: true),
@@ -143,10 +192,12 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           ),
         ),
         _AdminSectionCard(
-          title: 'Rivendicazioni negozi',
+          id: 'claims',
+          count: shopClaims.length,
+          title: tr('Rivendicazioni negozi'),
           body:
-              'Titolari che dichiarano di gestire un negozio segnalato dalla community. '
-              'Stessa verifica delle piste: chi approvi diventa gestore della scheda.',
+              tr('Titolari che dichiarano di gestire un negozio segnalato dalla community. '
+              'Stessa verifica delle piste: chi approvi diventa gestore della scheda.'),
           child: _AdminTrackClaimsSection(
             claims: shopClaims,
             onApprove: (claim) => _resolveClaim(claim, approve: true),
@@ -154,9 +205,9 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           ),
         ),
         _AdminSectionCard(
-          title: 'Piste',
+          title: tr('Piste'),
           body:
-              'Lista completa: modifica stato approvazione, naviga all\'editor, elimina.',
+              tr('Lista completa: modifica stato approvazione, naviga all\'editor, elimina.'),
           child: _AdminTracksSection(
             tracksAsync: allTracksAsync,
             onApprove: (t) => _updateTrackApproval(t, 'approved'),
@@ -165,23 +216,23 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           ),
         ),
         _AdminSectionCard(
-          title: 'Aggiungi pista segnalata dalla community',
+          title: tr('Aggiungi pista segnalata dalla community'),
           body:
-              'Dati pubblici raccolti da te. La scheda nasce senza gestore, '
-              'senza stato pista e senza PitCoin per nessuno.',
+              tr('Dati pubblici raccolti da te. La scheda nasce senza gestore, '
+              'senza stato pista e senza PitCoin per nessuno.'),
           child: Align(
             alignment: Alignment.centerLeft,
             child: FilledButton.icon(
               onPressed: _openCommunityTrackDialog,
               icon: const Icon(Icons.add_location_alt_outlined),
-              label: const Text('Nuova scheda community'),
+              label: Text(tr('Nuova scheda community')),
             ),
           ),
         ),
         _AdminSectionCard(
-          title: 'Negozi',
+          title: tr('Negozi'),
           body:
-              'Lista completa: modifica stato approvazione, visibilità pubblica, elimina.',
+              tr('Lista completa: modifica stato approvazione, visibilità pubblica, elimina.'),
           child: _AdminShopsSection(
             shopsAsync: allShopsAsync,
             onApprove: (s) => _updateShopApproval(s, 'approved'),
@@ -191,8 +242,10 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           ),
         ),
         _AdminSectionCard(
-          title: 'Moderazione',
-          body: 'Commenti segnalati dagli utenti e ancora da gestire.',
+          id: 'moderation',
+          count: reported.length,
+          title: tr('Moderazione'),
+          body: tr('Commenti segnalati dagli utenti e ancora da gestire.'),
           child: _AdminReportedCommentsSection(
             itemsAsync: ref.watch(adminReportedCommentsProvider),
             onHide: (item) => _resolveReport(item, hide: true),
@@ -200,27 +253,44 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           ),
         ),
         _AdminSectionCard(
-          title: 'Proposte sugli spot',
+          id: 'comments',
+          count: newComments,
+          countLabel: tr('nuovi'),
+          title: tr('Tutti i commenti'),
+          body: tr('Ogni commento lasciato su PitLap, dal più recente. '
+              'Il numero conta quelli degli ultimi 7 giorni.'),
+          child: _AdminCommentsSection(
+            itemsAsync: commentsAsync,
+            since: weekAgo,
+            onOpen: (c) => context.push(c.route!),
+            onHide: _hideComment,
+            onDelete: _deleteComment,
+          ),
+        ),
+        _AdminSectionCard(
+          count: spotSuggestionsAsync.asData?.value.length ?? 0,
+          title: tr('Proposte sugli spot'),
           body:
-              'Modifiche proposte dagli utenti su spot che non possono editare. '
-              'Approvando, i campi proposti sovrascrivono quelli dello spot.',
+              tr('Modifiche proposte dagli utenti su spot che non possono editare. '
+              'Approvando, i campi proposti sovrascrivono quelli dello spot.'),
           child: _AdminSpotSuggestionsSection(
-            itemsAsync: ref.watch(adminSpotSuggestionsProvider),
+            itemsAsync: spotSuggestionsAsync,
             onApprove: (item) => _reviewSpotSuggestion(item, true),
             onReject: (item) => _reviewSpotSuggestion(item, false),
           ),
         ),
         _AdminSectionCard(
-          title: 'Eventi',
+          title: tr('Eventi'),
           // Il controllo di visibilità esiste solo per gli eventi ufficiali
           // (tabella `events`): quelli della community si possono solo eliminare.
           body:
-              'Eventi ufficiali e della community. La visibilità si può '
+              tr('Eventi ufficiali e della community. La visibilità si può '
               'cambiare solo sugli eventi ufficiali; quelli creati dagli '
-              'utenti si possono solo eliminare.',
+              'utenti si possono solo eliminare.'),
           child: _AdminEventsSection(
             eventsAsync: allEventsAsync,
             onToggleVisibility: _toggleEventVisibility,
+            onEdit: _editEvent,
             onDelete: (e) => _deleteEvent(e),
           ),
         ),
@@ -228,29 +298,33 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       // 2 · Persone
       [
         _AdminSectionCard(
-          title: 'Utenti',
+          title: tr('Utenti'),
           body:
-              'Cerca, filtra per ruolo, modifica o osserva l\'app come un utente specifico.',
+              tr('Cerca, filtra per ruolo, modifica o osserva l\'app come un utente specifico.'),
           child: _AdminUsersPanel(
             onChangeRole: _changeUserRole,
             onRename: _renameUser,
           ),
         ),
         _AdminSectionCard(
-          title: 'Cancellazioni account richieste',
+          id: 'deletions',
+          count: pendingDeletions.length,
+          title: tr('Cancellazioni account richieste'),
           body:
-              'Richieste ex art. 17 GDPR. L\'informativa promette la '
+              tr('Richieste ex art. 17 GDPR. L\'informativa promette la '
               'cancellazione entro 30 giorni: la rimozione va eseguita a '
-              'mano dalla dashboard Supabase.',
+              'mano dalla dashboard Supabase.'),
           child: _AdminDeletionRequestsSection(
             requestsAsync: pendingDeletionsAsync,
             onHandled: _markDeletionHandled,
           ),
         ),
         _AdminSectionCard(
-          title: 'Feedback utenti',
+          id: 'feedback',
+          count: feedback.length,
+          title: tr('Feedback utenti'),
           body:
-              'Messaggi inviati dagli utenti (anche guest). Visibili solo a te.',
+              tr('Messaggi inviati dagli utenti (anche guest). Visibili solo a te.'),
           child: _AdminFeedbackSection(
             feedbackAsync: feedbackAsync,
             onHandled: _markFeedbackHandled,
@@ -261,29 +335,29 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       // 3 · Impostazioni
       [
         _AdminSectionCard(
-          title: 'Categorie pista',
-          body: 'Le categorie alimentano card e filtri senza hardcode.',
+          title: tr('Categorie pista'),
+          body: tr('Le categorie alimentano card e filtri senza hardcode.'),
           child: _TrackCategoriesSection(
             title: '',
             body: '',
             controller: _trackLabelController,
-            addLabel: 'Nuova categoria',
-            actionLabel: 'Aggiungi',
+            addLabel: tr('Nuova categoria'),
+            actionLabel: tr('Aggiungi'),
             categoriesAsync: trackCategoriesAsync,
             onAdd: _addTrackCategory,
             onDelete: _deleteTrackCategory,
           ),
         ),
         _AdminSectionCard(
-          title: 'Servizi negozio',
-          body: 'Tag usati in card e dettaglio negozio.',
+          title: tr('Servizi negozio'),
+          body: tr('Tag usati in card e dettaglio negozio.'),
           child: _EditableTagSection(
             title: '',
             body: '',
             controller: _shopLabelController,
             items: _shopServiceLabels,
-            addLabel: 'Nuova label negozio',
-            actionLabel: 'Aggiungi',
+            addLabel: tr('Nuova label negozio'),
+            actionLabel: tr('Aggiungi'),
             onAdd: () async {
               final value = _shopLabelController.text.trim();
               if (value.isEmpty) return;
@@ -297,7 +371,17 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       ],
     ];
 
-    final current = sections[_tab];
+    final all = sections[_tab];
+    final focused = _focus == null
+        ? const <Widget>[]
+        : all
+            .where((w) => w is _AdminSectionCard && w.id == _focus)
+            .toList();
+    // Scheda intera: prima le sezioni con qualcosa da guardare, poi il resto
+    // nell'ordine di sempre.
+    final current = focused.isNotEmpty
+        ? focused
+        : pendingFirst(all, (w) => w is _AdminSectionCard && w.count > 0);
 
     return ContentScaffold(
       title: l10n.adminTitle,
@@ -313,12 +397,25 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
               feedback.length + pendingDeletions.length,
               0,
             ],
-            onChanged: (index) => setState(() => _tab = index),
+            onChanged: (index) => setState(() {
+              _tab = index;
+              _focus = null;
+            }),
           ),
+          if (focused.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _FocusBar(
+              onBack: () => setState(() {
+                _tab = 0;
+                _focus = null;
+              }),
+              onShowAll: () => setState(() => _focus = null),
+            ),
+          ],
           const SizedBox(height: 16),
           Expanded(
             child: ListView.separated(
-              key: ValueKey(_tab),
+              key: ValueKey('$_tab-${focused.isEmpty ? '' : _focus}'),
               padding: const EdgeInsets.only(bottom: 24),
               itemCount: current.length,
               separatorBuilder: (_, _) => const SizedBox(height: 18),
@@ -345,19 +442,19 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Conferma eliminazione'),
-        content: Text('Eliminare "$label"? L\'operazione non è reversibile.'),
+        title: Text(tr('Conferma eliminazione')),
+        content: Text(trf('Eliminare "{0}"? L\'operazione non è reversibile.', [label])),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Annulla'),
+            child: Text(tr('Annulla')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: FilledButton.styleFrom(
               backgroundColor: Colors.red.shade600,
             ),
-            child: const Text('Elimina'),
+            child: Text(tr('Elimina')),
           ),
         ],
       ),
@@ -393,15 +490,34 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       ref.invalidate(adminSpotSuggestionsProvider);
       ref.invalidate(adminTrackClaimsProvider);
       ref.invalidate(adminShopClaimsProvider);
+      ref.invalidate(adminContentToFixProvider);
+      ref.invalidate(adminAllCommentsProvider);
       _showSnackBar(done);
     } catch (e) {
-      _showSnackBar('Errore: $e');
+      _showSnackBar(trf('Errore: {0}', [e]));
     }
+  }
+
+  Future<void> _hideComment(AdminComment item) => _runAdminAction(
+        () => ref
+            .read(adminRepositoryProvider)!
+            .resolveCommentReport(item.id, hide: true),
+        tr('Commento nascosto'),
+      );
+
+  Future<void> _deleteComment(AdminComment item) async {
+    final preview =
+        item.body.length > 40 ? '${item.body.substring(0, 40)}…' : item.body;
+    if (!await _confirmDelete(preview)) return;
+    await _runAdminAction(
+      () => ref.read(adminRepositoryProvider)!.deleteComment(item.id),
+      tr('Commento eliminato'),
+    );
   }
 
   Future<void> _markFeedbackHandled(AdminFeedbackRecord item) => _runAdminAction(
         () => ref.read(adminRepositoryProvider)!.markFeedbackHandled(item.id),
-        'Feedback segnato come letto',
+        tr('Feedback segnato come letto'),
       );
 
   Future<void> _resolveReport(AdminReportedComment item, {required bool hide}) =>
@@ -409,7 +525,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         () => ref
             .read(adminRepositoryProvider)!
             .resolveCommentReport(item.id, hide: hide),
-        hide ? 'Commento nascosto' : 'Segnalazione respinta',
+        hide ? tr('Commento nascosto') : tr('Segnalazione respinta'),
       );
 
   Future<void> _reviewSpotSuggestion(AdminSpotSuggestion item, bool approve) =>
@@ -417,7 +533,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         () => ref
             .read(adminRepositoryProvider)!
             .reviewSpotSuggestion(item.id, approve),
-        approve ? 'Proposta applicata allo spot' : 'Proposta rifiutata',
+        approve ? tr('Proposta applicata allo spot') : tr('Proposta rifiutata'),
       );
 
   /// Apre il client di posta con destinatario, oggetto e citazione già pronti.
@@ -433,14 +549,12 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       scheme: 'mailto',
       path: to,
       queryParameters: {
-        'subject': 'Re: il tuo feedback su PitLap',
-        'body': 'Ciao,\ngrazie per la segnalazione.\n\n'
-            '\n\n--- Il tuo messaggio ---\n$quoted\n\n'
-            'PitLap · https://pitlap.app',
+        'subject': tr('Re: il tuo feedback su PitLap'),
+        'body': trf('Ciao,\ngrazie per la segnalazione.\n\n\n\n--- Il tuo messaggio ---\n{0}\n\nPitLap · https://pitlap.app', [quoted]),
       },
     );
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      _showSnackBar('Nessun client di posta disponibile: scrivi a $to');
+      _showSnackBar(trf('Nessun client di posta disponibile: scrivi a {0}', [to]));
     }
   }
 
@@ -449,7 +563,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         () => ref
             .read(adminRepositoryProvider)!
             .markDeletionHandled(request.userId),
-        'Richiesta segnata come gestita',
+        tr('Richiesta segnata come gestita'),
       );
 
   Future<void> _resolveClaim(AdminTrackClaim claim, {required bool approve}) =>
@@ -462,8 +576,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                 .read(adminRepositoryProvider)!
                 .resolveTrackClaim(claim.id, approve: approve),
         approve
-            ? '${claim.userName} è ora gestore di ${claim.trackName}'
-            : 'Richiesta rifiutata',
+            ? trf('{0} è ora gestore di {1}', [claim.userName, claim.trackName])
+            : tr('Richiesta rifiutata'),
       );
 
   Future<void> _openCommunityTrackDialog() async {
@@ -480,7 +594,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       builder: (dialogContext) => DialogControllerScope(
         controllers: [name, city, address, coords, website, hours, description],
         child: AlertDialog(
-          title: const Text('Nuova scheda community'),
+          title: Text(tr('Nuova scheda community')),
           content: SizedBox(
             width: 460,
             child: SingleChildScrollView(
@@ -493,11 +607,11 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                   ),
                   TextField(
                     controller: city,
-                    decoration: const InputDecoration(labelText: 'Città *'),
+                    decoration: InputDecoration(labelText: tr('Città *')),
                   ),
                   TextField(
                     controller: address,
-                    decoration: const InputDecoration(labelText: 'Indirizzo'),
+                    decoration: InputDecoration(labelText: tr('Indirizzo')),
                   ),
                   TextField(
                     controller: coords,
@@ -508,12 +622,12 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                   ),
                   TextField(
                     controller: website,
-                    decoration: const InputDecoration(labelText: 'Sito'),
+                    decoration: InputDecoration(labelText: tr('Sito')),
                   ),
                   TextField(
                     controller: hours,
-                    decoration: const InputDecoration(
-                      labelText: 'Orari',
+                    decoration: InputDecoration(
+                      labelText: tr('Orari'),
                       hintText: 'Domenica 10:30-18:00',
                     ),
                   ),
@@ -522,7 +636,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     minLines: 2,
                     maxLines: 3,
                     decoration:
-                        const InputDecoration(labelText: 'Descrizione breve'),
+                        InputDecoration(labelText: tr('Descrizione breve')),
                   ),
                 ],
               ),
@@ -531,11 +645,11 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Annulla'),
+              child: Text(tr('Annulla')),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('Crea'),
+              child: Text(tr('Crea')),
             ),
           ],
         ),
@@ -543,7 +657,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     );
     if (confirmed != true) return;
     if (name.text.trim().isEmpty || city.text.trim().isEmpty) {
-      _showSnackBar('Nome e città sono obbligatori');
+      _showSnackBar(tr('Nome e città sono obbligatori'));
       return;
     }
     final parts = coords.text.split(',');
@@ -561,7 +675,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             hours: hours.text.trim(),
             shortDescription: description.text.trim(),
           ),
-      'Scheda creata: ora è visibile come "segnalata dalla community"',
+      tr('Scheda creata: ora è visibile come "segnalata dalla community"'),
     );
     ref.invalidate(adminAllTracksProvider);
     _invalidatePublicCaches();
@@ -574,7 +688,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       final trackId = item.id.replaceFirst('track-', '');
       final repository = ref.read(adminRepositoryProvider);
       if (repository == null) {
-        _showSnackBar('Connessione al server non disponibile.');
+        _showSnackBar(tr('Connessione al server non disponibile.'));
         return;
       }
       try {
@@ -584,7 +698,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         ref.invalidate(adminAllTracksProvider);
         _invalidatePublicCaches();
       } catch (e) {
-        if (mounted) _showSnackBar('Errore nell\'aggiornamento: $e');
+        if (mounted) _showSnackBar(trf('Errore nell\'aggiornamento: {0}', [e]));
         return;
       }
     } else if (item.id.startsWith('shop-')) {
@@ -601,13 +715,13 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         ref.invalidate(adminAllShopsProvider);
         _invalidatePublicCaches();
       } catch (e) {
-        if (mounted) _showSnackBar('Errore nell\'aggiornamento: $e');
+        if (mounted) _showSnackBar(trf('Errore nell\'aggiornamento: {0}', [e]));
         return;
       }
     }
     if (mounted) {
       _showSnackBar(
-        '${item.entityType} "${item.title}" ${nextStatus == 'approved' ? 'approvato' : 'rifiutato'}',
+        '${item.entityType} "${item.title}" ${tr(nextStatus == 'approved' ? 'approvato' : 'rifiutato')}',
       );
     }
   }
@@ -644,11 +758,11 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text('Annulla'),
+              child: Text(tr('Annulla')),
             ),
             FilledButton(
               onPressed: () => Navigator.of(ctx).pop(true),
-              child: const Text('Salva'),
+              child: Text(tr('Salva')),
             ),
           ],
         ),
@@ -670,9 +784,9 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         ),
       );
       _invalidatePublicCaches();
-      _showSnackBar('Ruolo aggiornato: $selected');
+      _showSnackBar(trf('Ruolo aggiornato: {0}', [selected]));
     } catch (e) {
-      _showSnackBar('Errore: $e');
+      _showSnackBar(trf('Errore: {0}', [e]));
     }
   }
 
@@ -683,7 +797,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       builder: (ctx) => DialogControllerScope(
         controllers: [controller],
         child: AlertDialog(
-          title: const Text('Modifica display name'),
+          title: Text(tr('Modifica display name')),
           content: TextField(
             controller: controller,
             decoration: const InputDecoration(labelText: 'Display name'),
@@ -692,11 +806,11 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text('Annulla'),
+              child: Text(tr('Annulla')),
             ),
             FilledButton(
               onPressed: () => Navigator.of(ctx).pop(true),
-              child: const Text('Salva'),
+              child: Text(tr('Salva')),
             ),
           ],
         ),
@@ -721,9 +835,9 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         ),
       );
       _invalidatePublicCaches();
-      _showSnackBar('Display name aggiornato');
+      _showSnackBar(tr('Display name aggiornato'));
     } catch (e) {
-      _showSnackBar('Errore: $e');
+      _showSnackBar(trf('Errore: {0}', [e]));
     }
   }
 
@@ -739,10 +853,10 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       ref.invalidate(adminDashboardProvider);
       _invalidatePublicCaches();
       _showSnackBar(
-        '"${track.name}" ${status == 'approved' ? 'approvata' : 'rifiutata'}',
+        '"${track.name}" ${tr(status == 'approved' ? 'approvata' : 'rifiutata')}',
       );
     } catch (e) {
-      _showSnackBar('Errore: $e');
+      _showSnackBar(trf('Errore: {0}', [e]));
     }
   }
 
@@ -758,7 +872,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       _invalidatePublicCaches();
       _showSnackBar('"${track.name}" eliminata');
     } catch (e) {
-      _showSnackBar('Errore: $e');
+      _showSnackBar(trf('Errore: {0}', [e]));
     }
   }
 
@@ -773,10 +887,10 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       ref.invalidate(adminDashboardProvider);
       _invalidatePublicCaches();
       _showSnackBar(
-        '"${shop.name}" ${status == 'approved' ? 'approvato' : 'rifiutato'}',
+        '"${shop.name}" ${tr(status == 'approved' ? 'approvato' : 'rifiutato')}',
       );
     } catch (e) {
-      _showSnackBar('Errore: $e');
+      _showSnackBar(trf('Errore: {0}', [e]));
     }
   }
 
@@ -788,10 +902,10 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       ref.invalidate(adminAllShopsProvider);
       _invalidatePublicCaches();
       _showSnackBar(
-        '"${shop.name}" ora ${!shop.isPublic ? 'pubblico' : 'nascosto'}',
+        '"${shop.name}" ${tr('ora')} ${tr(!shop.isPublic ? 'pubblico' : 'nascosto')}',
       );
     } catch (e) {
-      _showSnackBar('Errore: $e');
+      _showSnackBar(trf('Errore: {0}', [e]));
     }
   }
 
@@ -805,9 +919,9 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       ref.invalidate(adminApprovalQueueProvider);
       ref.invalidate(adminDashboardProvider);
       _invalidatePublicCaches();
-      _showSnackBar('"${shop.name}" eliminato');
+      _showSnackBar(trf('"{0}" eliminato', [shop.name]));
     } catch (e) {
-      _showSnackBar('Errore: $e');
+      _showSnackBar(trf('Errore: {0}', [e]));
     }
   }
 
@@ -822,10 +936,34 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       await repository.updateEventVisibility(event.id, newVisibility);
       ref.invalidate(adminAllEventsProvider);
       _invalidatePublicCaches();
-      _showSnackBar('"${event.title}" ora $newVisibility');
+      _showSnackBar('"${event.title}" · ${adminVisibilityLabel(newVisibility)}');
     } catch (e) {
-      _showSnackBar('Errore: $e');
+      _showSnackBar(trf('Errore: {0}', [e]));
     }
+  }
+
+  // Modifica completa (testi, luogo, date, foto) degli eventi community.
+  Future<void> _editEvent(AdminEventRecord event) async {
+    final repo = ref.read(publicEventsRepositoryProvider);
+    final record = await repo?.fetchPublicEventById(event.id);
+    if (!mounted) return;
+    if (record == null) {
+      _showSnackBar(tr('Evento non trovato.'));
+      return;
+    }
+    final saved = await showEventEditDialog(context, ref, record);
+    if (saved) ref.invalidate(adminAllEventsProvider);
+  }
+
+  /// Apre la scheda pubblica (dove l'admin modifica) e al ritorno ricarica
+  /// elenco e numero: se hai aggiunto foto o coordinate, la riga sparisce.
+  Future<void> _openFixItem(AdminFixItem item) async {
+    final slug = item.slug;
+    if (slug == null || slug.isEmpty) return;
+    await context.push('/spot/$slug');
+    if (!mounted) return;
+    ref.invalidate(adminContentToFixProvider);
+    ref.invalidate(adminDashboardProvider);
   }
 
   Future<void> _deleteEvent(AdminEventRecord event) async {
@@ -837,9 +975,9 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       ref.invalidate(adminAllEventsProvider);
       ref.invalidate(adminDashboardProvider);
       _invalidatePublicCaches();
-      _showSnackBar('"${event.title}" eliminato');
+      _showSnackBar(trf('"{0}" eliminato', [event.title]));
     } catch (e) {
-      _showSnackBar('Errore: $e');
+      _showSnackBar(trf('Errore: {0}', [e]));
     }
   }
 
@@ -911,7 +1049,7 @@ class _AdminUsersPanelState extends ConsumerState<_AdminUsersPanel> {
   final TextEditingController _searchController = TextEditingController();
 
   static const _roles = <String?>[null, 'user', 'track_organizer', 'shop_owner', 'admin'];
-  static const _roleLabels = <String>['Tutti', 'Pilota', 'Organizzatore', 'Gestore negozio', 'Admin'];
+  static List<String> get _roleLabels => <String>[tr('Tutti'), tr('Pilota'), tr('Organizzatore'), tr('Gestore negozio'), 'Admin'];
 
   @override
   void dispose() {
@@ -932,12 +1070,12 @@ class _AdminUsersPanelState extends ConsumerState<_AdminUsersPanel> {
           controller: _searchController,
           onChanged: controller.setQuery,
           decoration: InputDecoration(
-            hintText: 'Cerca per nome...',
+            hintText: tr('Cerca per nome...'),
             prefixIcon: const Icon(Icons.search, size: 20),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
                     icon: const Icon(Icons.close, size: 18),
-                    tooltip: 'Cancella',
+                    tooltip: tr('Cancella'),
                     onPressed: () {
                       _searchController.clear();
                       controller.setQuery('');
@@ -978,7 +1116,7 @@ class _AdminUsersPanelState extends ConsumerState<_AdminUsersPanel> {
             child: Text(
               // ponytail: accordo singolare/plurale inline. La schermata admin non
               // e' localizzata (stringhe italiane hardcoded), quindi niente ICU.
-              '${state.countLabel} ${state.countLabel == '1' ? 'profilo' : 'profili'}'
+              '${state.countLabel} ${tr(state.countLabel == '1' ? 'profilo' : 'profili')}'
               '${state.roleFilter != null ? ' (${state.roleFilter})' : ''}',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: AppColors.steel,
@@ -994,14 +1132,14 @@ class _AdminUsersPanelState extends ConsumerState<_AdminUsersPanel> {
           )
         else if (state.error != null)
           Text(
-            'Errore: ${state.error}',
+            trf('Errore: {0}', [state.error]),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.red.shade700,
             ),
           )
         else if (state.users.isEmpty)
           Text(
-            'Nessun utente trovato.',
+            tr('Nessun utente trovato.'),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.steel,
             ),
@@ -1026,7 +1164,7 @@ class _AdminUsersPanelState extends ConsumerState<_AdminUsersPanel> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        'Vista come ${user.displayName.isNotEmpty ? user.displayName : user.id.substring(0, 8)} (${user.role}) · Solo UI, JWT e RLS invariati',
+                        trf('Vista come {0} ({1}) · Solo UI, JWT e RLS invariati', [user.displayName.isNotEmpty ? user.displayName : user.id.substring(0, 8), user.role]),
                       ),
                       duration: const Duration(seconds: 3),
                     ),
@@ -1049,7 +1187,7 @@ class _AdminUsersPanelState extends ConsumerState<_AdminUsersPanel> {
                 : OutlinedButton.icon(
                     onPressed: () => ref.read(adminUsersProvider.notifier).loadMore(),
                     icon: const Icon(Icons.expand_more, size: 18),
-                    label: const Text('Carica altri 30'),
+                    label: Text(tr('Carica altri 30')),
                   ),
           ),
         ],
@@ -1086,7 +1224,7 @@ class _UserRow extends StatelessWidget {
     final date = DateTime.tryParse(raw)?.toLocal();
     if (date == null) return '';
     String two(int n) => n.toString().padLeft(2, '0');
-    return ' · iscritto il ${two(date.day)}/${two(date.month)}/${date.year}';
+    return trf(' · iscritto il {0}/{1}/{2}', [two(date.day), two(date.month), date.year]);
   }
 
   String _initials(String name, String id) {
@@ -1096,7 +1234,7 @@ class _UserRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = user.displayName.isEmpty ? '(senza nome)' : user.displayName;
+    final label = user.displayName.isEmpty ? tr('(senza nome)') : user.displayName;
     final shortId = user.id.length >= 8 ? user.id.substring(0, 8) : user.id;
     final roleColor = _roleColor(user.role);
 
@@ -1171,7 +1309,7 @@ class _UserRow extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.visibility_outlined, size: 17),
               tooltip:
-                  'Osserva come questo utente\n⚠️ Solo UI — non modifica JWT né policy RLS',
+                  tr('Osserva come questo utente\n⚠️ Solo UI — non modifica JWT né policy RLS'),
               padding: const EdgeInsets.all(6),
               constraints: const BoxConstraints(),
               onPressed: onImpersonate,
@@ -1179,7 +1317,7 @@ class _UserRow extends StatelessWidget {
           // Rinomina
           IconButton(
             icon: const Icon(Icons.edit_outlined, size: 17),
-            tooltip: 'Rinomina',
+            tooltip: tr('Rinomina'),
             padding: const EdgeInsets.all(6),
             constraints: const BoxConstraints(),
             onPressed: onRename,
@@ -1211,7 +1349,7 @@ class _AdminTracksSection extends StatelessWidget {
       data: (tracks) {
         if (tracks.isEmpty) {
           return Text(
-            'Nessuna pista trovata.',
+            tr('Nessuna pista trovata.'),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.steel,
             ),
@@ -1221,7 +1359,7 @@ class _AdminTracksSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${tracks.length} ${tracks.length == 1 ? 'pista' : 'piste'} nel database',
+              trf('{0} {1} nel database', [tracks.length, tr(tracks.length == 1 ? 'pista' : 'piste')]),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -1250,7 +1388,7 @@ class _AdminTracksSection extends StatelessWidget {
         child: CircularProgressIndicator(),
       ),
       error: (_, _) => Text(
-        'Impossibile caricare le piste.',
+        tr('Impossibile caricare le piste.'),
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           color: AppColors.steel,
         ),
@@ -1282,7 +1420,7 @@ class _AdminShopsSection extends StatelessWidget {
       data: (shops) {
         if (shops.isEmpty) {
           return Text(
-            'Nessun negozio trovato.',
+            tr('Nessun negozio trovato.'),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.steel,
             ),
@@ -1292,7 +1430,7 @@ class _AdminShopsSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${shops.length} ${shops.length == 1 ? 'negozio' : 'negozi'} nel database',
+              trf('{0} {1} nel database', [shops.length, tr(shops.length == 1 ? 'negozio' : 'negozi')]),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -1325,7 +1463,7 @@ class _AdminShopsSection extends StatelessWidget {
         child: CircularProgressIndicator(),
       ),
       error: (_, _) => Text(
-        'Impossibile caricare i negozi.',
+        tr('Impossibile caricare i negozi.'),
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           color: AppColors.steel,
         ),
@@ -1340,11 +1478,13 @@ class _AdminEventsSection extends StatelessWidget {
   const _AdminEventsSection({
     required this.eventsAsync,
     required this.onToggleVisibility,
+    required this.onEdit,
     required this.onDelete,
   });
 
   final AsyncValue<List<AdminEventRecord>> eventsAsync;
   final void Function(AdminEventRecord) onToggleVisibility;
+  final void Function(AdminEventRecord) onEdit;
   final void Function(AdminEventRecord) onDelete;
 
   String _formatDate(String iso) {
@@ -1361,7 +1501,7 @@ class _AdminEventsSection extends StatelessWidget {
       data: (events) {
         if (events.isEmpty) {
           return Text(
-            'Nessun evento nel database.',
+            tr('Nessun evento nel database.'),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.steel,
             ),
@@ -1371,7 +1511,7 @@ class _AdminEventsSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${events.length} ${events.length == 1 ? 'evento' : 'eventi'} nel database',
+              trf('{0} {1} nel database', [events.length, events.length == 1 ? 'evento' : 'eventi']),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -1407,8 +1547,8 @@ class _AdminEventsSection extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             e.source == 'community_events'
-                                ? 'Evento community'
-                                : 'Evento ufficiale',
+                                ? tr('Evento community')
+                                : tr('Evento ufficiale'),
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(color: AppColors.steel),
                           ),
@@ -1432,18 +1572,24 @@ class _AdminEventsSection extends StatelessWidget {
                           size: 18,
                         ),
                         tooltip: e.visibility == 'public'
-                            ? 'Rendi privato'
-                            : 'Rendi pubblico',
+                            ? tr('Rendi privato')
+                            : tr('Rendi pubblico'),
                         onPressed: () => onToggleVisibility(e),
                       ),
                     ],
+                    if (e.source == 'community_events')
+                      IconButton(
+                        icon: const Icon(Icons.edit_outlined, size: 18),
+                        tooltip: tr('Modifica evento'),
+                        onPressed: () => onEdit(e),
+                      ),
                     IconButton(
                       icon: const Icon(
                         Icons.delete_outline,
                         size: 18,
                         color: Colors.red,
                       ),
-                      tooltip: 'Elimina',
+                      tooltip: tr('Elimina'),
                       onPressed: () => onDelete(e),
                     ),
                   ],
@@ -1458,7 +1604,7 @@ class _AdminEventsSection extends StatelessWidget {
         child: CircularProgressIndicator(),
       ),
       error: (_, _) => Text(
-        'Impossibile caricare gli eventi.',
+        tr('Impossibile caricare gli eventi.'),
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           color: AppColors.steel,
         ),
@@ -1493,11 +1639,11 @@ class _AdminFeedbackSection extends StatelessWidget {
         padding: EdgeInsets.all(16),
         child: Center(child: CircularProgressIndicator()),
       ),
-      error: (e, _) => Text('Errore nel caricamento feedback: $e'),
+      error: (e, _) => Text(trf('Errore nel caricamento feedback: {0}', [e])),
       data: (items) {
         if (items.isEmpty) {
           return Text(
-            'Nessun feedback da leggere.',
+            tr('Nessun feedback da leggere.'),
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium
@@ -1546,12 +1692,12 @@ class _AdminFeedbackSection extends StatelessWidget {
                             TextButton.icon(
                               onPressed: () => onReply(f),
                               icon: const Icon(Icons.reply_outlined, size: 18),
-                              label: const Text('Rispondi'),
+                              label: Text(tr('Rispondi')),
                             ),
                           TextButton.icon(
                             onPressed: () => onHandled(f),
                             icon: const Icon(Icons.check, size: 18),
-                            label: const Text('Segna come letto'),
+                            label: Text(tr('Segna come letto')),
                           ),
                         ],
                       ),
@@ -1582,7 +1728,7 @@ class _AdminTrackClaimsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     if (claims.isEmpty) {
       return Text(
-        'Nessuna rivendicazione in attesa.',
+        tr('Nessuna rivendicazione in attesa.'),
         style: Theme.of(context)
             .textTheme
             .bodyMedium
@@ -1633,12 +1779,12 @@ class _AdminTrackClaimsSection extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () => onReject(claim),
-                      child: const Text('Rifiuta'),
+                      child: Text(tr('Rifiuta')),
                     ),
                     FilledButton.icon(
                       onPressed: () => onApprove(claim),
                       icon: const Icon(Icons.verified_outlined, size: 18),
-                      label: const Text('Approva: diventa gestore'),
+                      label: Text(tr('Approva: diventa gestore')),
                     ),
                   ],
                 ),
@@ -1668,11 +1814,11 @@ class _AdminReportedCommentsSection extends StatelessWidget {
         padding: EdgeInsets.all(16),
         child: Center(child: CircularProgressIndicator()),
       ),
-      error: (e, _) => Text('Errore nel caricamento segnalazioni: $e'),
+      error: (e, _) => Text(trf('Errore nel caricamento segnalazioni: {0}', [e])),
       data: (items) {
         if (items.isEmpty) {
           return Text(
-            'Nessuna segnalazione da gestire.',
+            tr('Nessuna segnalazione da gestire.'),
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium
@@ -1705,7 +1851,7 @@ class _AdminReportedCommentsSection extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       '${item.author} · ${item.reportedCount} '
-                      '${item.reportedCount == 1 ? 'segnalazione' : 'segnalazioni'}'
+                      '${tr(item.reportedCount == 1 ? 'segnalazione' : 'segnalazioni')}'
                       '${item.reasons.isEmpty ? '' : ' · ${item.reasons.join(', ')}'}',
                       style: Theme.of(context)
                           .textTheme
@@ -1719,12 +1865,12 @@ class _AdminReportedCommentsSection extends StatelessWidget {
                       children: [
                         TextButton(
                           onPressed: () => onDismiss(item),
-                          child: const Text('Respingi segnalazione'),
+                          child: Text(tr('Respingi segnalazione')),
                         ),
                         FilledButton.icon(
                           onPressed: () => onHide(item),
                           icon: const Icon(Icons.visibility_off_outlined, size: 18),
-                          label: const Text('Nascondi commento'),
+                          label: Text(tr('Nascondi commento')),
                         ),
                       ],
                     ),
@@ -1815,7 +1961,7 @@ class _EntityRow extends StatelessWidget {
               if (showPublicStatus) ...[
                 const SizedBox(width: 6),
                 _StatusPill(
-                  label: isPublic ? 'Pubblico' : 'Nascosto',
+                  label: isPublic ? tr('Pubblico') : tr('Nascosto'),
                   color: isPublic ? Colors.blue.shade600 : AppColors.steel,
                 ),
               ],
@@ -1828,7 +1974,7 @@ class _EntityRow extends StatelessWidget {
             children: [
               _ActionButton(
                 icon: Icons.open_in_new_outlined,
-                label: 'Apri',
+                label: tr('Apri'),
                 onPressed: () => context.go(detailRoute),
               ),
               _ActionButton(
@@ -1839,14 +1985,14 @@ class _EntityRow extends StatelessWidget {
               if (onApprove != null)
                 _ActionButton(
                   icon: Icons.check,
-                  label: 'Approva',
+                  label: tr('Approva'),
                   color: Colors.green.shade600,
                   onPressed: onApprove!,
                 ),
               if (onReject != null)
                 _ActionButton(
                   icon: Icons.close,
-                  label: 'Rifiuta',
+                  label: tr('Rifiuta'),
                   color: Colors.red.shade600,
                   onPressed: onReject!,
                 ),
@@ -1855,12 +2001,12 @@ class _EntityRow extends StatelessWidget {
                   icon: isPublic
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
-                  label: isPublic ? 'Nascondi' : 'Pubblica',
+                  label: isPublic ? tr('Nascondi') : tr('Pubblica'),
                   onPressed: onTogglePublic!,
                 ),
               _ActionButton(
                 icon: Icons.delete_outline,
-                label: 'Elimina',
+                label: tr('Elimina'),
                 color: Colors.red.shade700,
                 onPressed: onDelete,
               ),
@@ -1934,24 +2080,68 @@ class _ActionButton extends StatelessWidget {
 
 class _AdminSectionCard extends StatelessWidget {
   const _AdminSectionCard({
+    this.id,
+    this.count = 0,
+    this.countLabel,
     required this.title,
     required this.body,
     required this.child,
   });
 
+  /// Per i collegamenti da "Da fare ora" (vedi `_openFocus`).
+  final String? id;
+
+  /// Elementi da guardare: > 0 porta la sezione in cima e la evidenzia.
+  final int count;
+
+  /// Testo dopo il numero (es. "nuovi"); null = solo il numero.
+  final String? countLabel;
   final String title;
   final String body;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
+    final hot = count > 0;
     return Card(
+      shape: hot
+          ? RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadius.xl),
+              side: const BorderSide(color: AppColors.signalOrange, width: 1.5),
+            )
+          : null,
       child: Padding(
         padding: AppSpacing.card(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
+            Row(
+              children: [
+                Flexible(
+                  child: Text(title,
+                      style: Theme.of(context).textTheme.titleLarge),
+                ),
+                if (hot) ...[
+                  const SizedBox(width: 10),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: AppColors.signalOrange,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      countLabel == null ? '$count' : '$count $countLabel',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
             const SizedBox(height: 8),
             Text(
               body,
@@ -1991,7 +2181,7 @@ class _ApprovalQueueCard extends StatelessWidget {
           border: Border.all(color: AppColors.concrete),
         ),
         child: Text(
-          'Nessun elemento in approvazione al momento.',
+          tr('Nessun elemento in approvazione al momento.'),
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: AppColors.steel,
           ),
@@ -2057,18 +2247,18 @@ class _ApprovalQueueCard extends StatelessWidget {
                         OutlinedButton.icon(
                           onPressed: () => context.go(item.route),
                           icon: const Icon(Icons.open_in_new_outlined),
-                          label: const Text('Apri'),
+                          label: Text(tr('Apri')),
                         ),
                         FilledButton.tonalIcon(
                           onPressed:
                               item.needsReview ? () => onApprove(item) : null,
                           icon: const Icon(Icons.check),
-                          label: const Text('Approva'),
+                          label: Text(tr('Approva')),
                         ),
                         OutlinedButton.icon(
                           onPressed: () => onReject(item),
                           icon: const Icon(Icons.close),
-                          label: const Text('Rifiuta'),
+                          label: Text(tr('Rifiuta')),
                         ),
                       ],
                     ),
@@ -2278,7 +2468,7 @@ class _AdminDeletionRequestsSection extends StatelessWidget {
       data: (requests) {
         if (requests.isEmpty) {
           return Text(
-            'Nessuna richiesta in attesa.',
+            tr('Nessuna richiesta in attesa.'),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.steel,
             ),
@@ -2332,8 +2522,7 @@ class _AdminDeletionRequestsSection extends StatelessWidget {
                           ),
                           Text(
                             'ID ${request.userId.substring(0, 8)}… · '
-                            'richiesta ${request.daysElapsed} '
-                            '${request.daysElapsed == 1 ? "giorno" : "giorni"} fa',
+                            '${trf(request.daysElapsed == 1 ? 'richiesta {0} giorno fa' : 'richiesta {0} giorni fa', [request.daysElapsed])}',
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(color: AppColors.steel),
                           ),
@@ -2342,7 +2531,7 @@ class _AdminDeletionRequestsSection extends StatelessWidget {
                     ),
                     if (overdue)
                       Text(
-                        'Scaduta',
+                        tr('Scaduta'),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: Colors.red.shade700,
                           fontWeight: FontWeight.w700,
@@ -2351,7 +2540,7 @@ class _AdminDeletionRequestsSection extends StatelessWidget {
                     const SizedBox(width: 8),
                     TextButton(
                       onPressed: () => onHandled(request),
-                      child: const Text('Segna gestita'),
+                      child: Text(tr('Segna gestita')),
                     ),
                   ],
                 ),
@@ -2365,7 +2554,7 @@ class _AdminDeletionRequestsSection extends StatelessWidget {
         child: CircularProgressIndicator(),
       ),
       error: (error, _) => Text(
-        'Impossibile leggere le richieste: $error',
+        trf('Impossibile leggere le richieste: {0}', [error]),
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           color: Colors.red.shade700,
         ),
@@ -2383,7 +2572,7 @@ class _AdminTabBar extends StatelessWidget {
     required this.onChanged,
   });
 
-  static const labels = ['Panoramica', 'Contenuti', 'Persone', 'Impostazioni'];
+  static List<String> get labels => [tr('Panoramica'), tr('Contenuti'), tr('Persone'), tr('Impostazioni')];
 
   final int current;
   final List<int> badges;
@@ -2461,11 +2650,11 @@ class _AdminSpotSuggestionsSection extends StatelessWidget {
         padding: EdgeInsets.all(16),
         child: Center(child: CircularProgressIndicator()),
       ),
-      error: (e, _) => Text('Errore nel caricamento proposte: $e'),
+      error: (e, _) => Text(trf('Errore nel caricamento proposte: {0}', [e])),
       data: (items) {
         if (items.isEmpty) {
           return Text(
-            'Nessuna proposta in attesa.',
+            tr('Nessuna proposta in attesa.'),
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium
@@ -2520,12 +2709,261 @@ class _AdminSpotSuggestionsSection extends StatelessWidget {
                       children: [
                         TextButton(
                           onPressed: () => onReject(item),
-                          child: const Text('Rifiuta'),
+                          child: Text(tr('Rifiuta')),
                         ),
                         FilledButton.icon(
                           onPressed: () => onApprove(item),
                           icon: const Icon(Icons.check, size: 18),
-                          label: const Text('Applica allo spot'),
+                          label: Text(tr('Applica allo spot')),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Barra sopra la sezione aperta da "Da fare ora".
+class _FocusBar extends StatelessWidget {
+  const _FocusBar({required this.onBack, required this.onShowAll});
+
+  final VoidCallback onBack;
+  final VoidCallback onShowAll;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 4,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        TextButton.icon(
+          onPressed: onBack,
+          icon: const Icon(Icons.arrow_back_rounded, size: 18),
+          label: Text(tr('Torna alla Panoramica')),
+        ),
+        TextButton(
+          onPressed: onShowAll,
+          child: Text(tr('Mostra tutta la scheda')),
+        ),
+      ],
+    );
+  }
+}
+
+/// Elenco "Da sistemare" con le azioni dirette su ogni riga.
+class _AdminFixSection extends StatelessWidget {
+  const _AdminFixSection({
+    required this.itemsAsync,
+    required this.onOpen,
+  });
+
+  final AsyncValue<List<AdminFixItem>> itemsAsync;
+  final void Function(AdminFixItem) onOpen;
+
+  static String _reasonLabel(String reason) => switch (reason) {
+        'no_coords' => tr('Spot senza coordinate'),
+        'no_photo' => tr('Spot senza foto'),
+        _ => reason,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final muted = Theme.of(context)
+        .textTheme
+        .bodySmall
+        ?.copyWith(color: AppColors.steel);
+    return itemsAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.symmetric(vertical: 16),
+        child: CircularProgressIndicator(),
+      ),
+      error: (_, _) => Text(tr('Impossibile caricare l\'elenco.'), style: muted),
+      data: (items) {
+        if (items.isEmpty) {
+          return Text(tr('Niente da sistemare.'), style: muted);
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (final item in items)
+              Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8F7F3),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.concrete),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.title,
+                            style: Theme.of(context).textTheme.titleSmall,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(_reasonLabel(item.reason), style: muted),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.open_in_new_rounded, size: 18),
+                      tooltip: tr('Apri lo spot per aggiungere i dati'),
+                      onPressed: () => onOpen(item),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Tutti i commenti, dal più recente: nascosti e segnalati ben visibili.
+class _AdminCommentsSection extends StatelessWidget {
+  const _AdminCommentsSection({
+    required this.itemsAsync,
+    required this.since,
+    required this.onOpen,
+    required this.onHide,
+    required this.onDelete,
+  });
+
+  final AsyncValue<List<AdminComment>> itemsAsync;
+
+  /// Commenti dopo questa data: etichetta "Nuovo".
+  final DateTime since;
+  final ValueChanged<AdminComment> onOpen;
+  final ValueChanged<AdminComment> onHide;
+  final ValueChanged<AdminComment> onDelete;
+
+  static String _typeLabel(String type) => switch (type) {
+        'spot' => tr('Spot'),
+        'track' => tr('Pista'),
+        'event' => tr('Evento'),
+        'user_build' => tr('Build'),
+        _ => type,
+      };
+
+  static String _date(DateTime? dt) {
+    if (dt == null) return '';
+    final d = dt.toLocal();
+    return '${d.day.toString().padLeft(2, '0')}/'
+        '${d.month.toString().padLeft(2, '0')}/${d.year} '
+        '${d.hour.toString().padLeft(2, '0')}:'
+        '${d.minute.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final muted = Theme.of(context)
+        .textTheme
+        .bodySmall
+        ?.copyWith(color: AppColors.steel);
+    return itemsAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Text(trf('Errore nel caricamento commenti: {0}', [e])),
+      data: (items) {
+        if (items.isEmpty) {
+          return Text(tr('Nessun commento ancora.'), style: muted);
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (final c in items)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: c.isHidden
+                      ? const Color(0xFFEDEEF0)
+                      : AppColors.surfaceMuted,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: c.reportedCount > 0
+                        ? AppColors.closedRed
+                        : AppColors.concrete,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: [
+                        if (!c.isHidden &&
+                            (c.createdAt?.isAfter(since) ?? false))
+                          _StatusPill(
+                              label: tr('Nuovo'),
+                              color: AppColors.signalOrange),
+                        if (c.isHidden)
+                          _StatusPill(
+                              label: tr('Nascosto'), color: AppColors.steel),
+                        if (c.reportedCount > 0)
+                          _StatusPill(
+                            label: '${c.reportedCount} ${tr(c.reportedCount == 1 ? 'segnalazione' : 'segnalazioni')}',
+                            color: AppColors.closedRed,
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      c.body,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: c.isHidden
+                                ? AppColors.steel
+                                : AppColors.graphite,
+                          ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${c.author} · ${_typeLabel(c.entityType)}'
+                      '${c.entityTitle.isEmpty ? '' : ' "${c.entityTitle}"'}'
+                      ' · ${_date(c.createdAt)}',
+                      style: muted,
+                    ),
+                    Wrap(
+                      spacing: 4,
+                      alignment: WrapAlignment.end,
+                      children: [
+                        if (c.route != null)
+                          TextButton.icon(
+                            onPressed: () => onOpen(c),
+                            icon: const Icon(Icons.open_in_new_rounded,
+                                size: 16),
+                            label: Text(tr('Apri')),
+                          ),
+                        if (!c.isHidden)
+                          TextButton.icon(
+                            onPressed: () => onHide(c),
+                            icon: const Icon(Icons.visibility_off_outlined,
+                                size: 16),
+                            label: Text(tr('Nascondi')),
+                          ),
+                        TextButton.icon(
+                          onPressed: () => onDelete(c),
+                          icon: const Icon(Icons.delete_outline,
+                              size: 16, color: Colors.red),
+                          label: Text(tr('Elimina'),
+                              style: const TextStyle(color: Colors.red)),
                         ),
                       ],
                     ),

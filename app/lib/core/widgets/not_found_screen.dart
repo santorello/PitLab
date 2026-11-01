@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/theme/app_colors.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 /// Schermata 404 — mostrata da GoRouter quando la route non esiste.
 class NotFoundScreen extends StatelessWidget {
@@ -51,7 +52,7 @@ class NotFoundScreen extends StatelessWidget {
 
                 // Titolo
                 Text(
-                  'Pagina non trovata',
+                  tr('Pagina non trovata'),
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.graphite,
@@ -62,7 +63,7 @@ class NotFoundScreen extends StatelessWidget {
 
                 // Sottotitolo
                 Text(
-                  'La pagina che stai cercando non esiste o è stata spostata.',
+                  tr('La pagina che stai cercando non esiste o è stata spostata.'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.steel,
                   ),
@@ -74,7 +75,7 @@ class NotFoundScreen extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: () => context.go('/'),
                   icon: const Icon(Icons.home_outlined),
-                  label: const Text('Torna alla home'),
+                  label: Text(tr('Torna alla home')),
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.signalOrange,
                     foregroundColor: Colors.white,

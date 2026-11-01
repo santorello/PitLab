@@ -16,6 +16,7 @@ import '../../pitcoin/providers/pitcoin_providers.dart';
 import '../application/public_shops_provider.dart';
 import '../application/shop_editor_providers.dart';
 import '../application/shop_follows_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class ShopsScreen extends ConsumerStatefulWidget {
   const ShopsScreen({super.key});
@@ -95,14 +96,14 @@ class _ShopsScreenState extends ConsumerState<ShopsScreen> {
                       borderRadius: BorderRadius.circular(999),
                       border: Border.all(color: AppColors.signalOrange.withAlpha(80)),
                     ),
-                    child: const Text(
-                      'Gestione negozio',
+                    child: Text(
+                      tr('Gestione negozio'),
                       style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    'Crea una nuova scheda negozio, salvala in bozza o inviala in approvazione.',
+                    tr('Crea una nuova scheda negozio, salvala in bozza o inviala in approvazione.'),
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: AppColors.steel,
                     ),
@@ -115,7 +116,7 @@ class _ShopsScreenState extends ConsumerState<ShopsScreen> {
                       FilledButton.icon(
                         onPressed: () => context.go('/shops/new'),
                         icon: const Icon(Icons.add_business_outlined),
-                        label: const Text('Crea negozio'),
+                        label: Text(tr('Crea negozio')),
                       ),
                       if (myDrafts.any((draft) => draft.approvalStatus == 'pending'))
                         _ShopSignalChip(
@@ -136,12 +137,12 @@ class _ShopsScreenState extends ConsumerState<ShopsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'I tuoi negozi',
+                        tr('I tuoi negozi'),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Bozze, schede in approvazione e negozi già preparati dal tuo account.',
+                        tr('Bozze, schede in approvazione e negozi già preparati dal tuo account.'),
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: AppColors.steel,
                         ),
@@ -304,10 +305,10 @@ class _ManagedShopDraftCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusLabel = switch (draft.approvalStatus) {
-      'pending' => 'In approvazione',
-      'approved' => 'Approvato',
-      'rejected' => 'Da rivedere',
-      _ => 'Bozza negozio',
+      'pending' => tr('In approvazione'),
+      'approved' => tr('Approvato'),
+      'rejected' => tr('Da rivedere'),
+      _ => tr('Bozza negozio'),
     };
 
     return Card(
@@ -376,13 +377,13 @@ class _ManagedShopDraftCard extends StatelessWidget {
                     FilledButton.tonalIcon(
                       onPressed: () => context.go('/shop/${draft.slug}/edit'),
                       icon: const Icon(Icons.edit_outlined),
-                      label: const Text('Modifica'),
+                      label: Text(tr('Modifica')),
                     ),
                     if (draft.approvalStatus == 'approved')
                       OutlinedButton.icon(
                         onPressed: () => context.go('/shop/${draft.slug}'),
                         icon: const Icon(Icons.open_in_new_outlined),
-                        label: const Text('Apri scheda'),
+                        label: Text(tr('Apri scheda')),
                       ),
                   ],
                 ),
@@ -501,7 +502,7 @@ class _ShopCard extends StatelessWidget {
           ),
         ];
 
-        final overline = distance.isNotEmpty ? '$distance · Negozio' : 'Negozio';
+        final overline = distance.isNotEmpty ? trf('{0} · Negozio', [distance]) : tr('Negozio');
 
         return PlaceCard(
           media: media,
@@ -575,7 +576,7 @@ class _ShopMedia extends StatelessWidget {
                           color: Colors.white.withAlpha(170),
                           borderRadius: BorderRadius.circular(AppRadius.pill),
                         ),
-                        child: const Text('Negozio'),
+                        child: Text(tr('Negozio')),
                       ),
                       const Spacer(),
                       Icon(

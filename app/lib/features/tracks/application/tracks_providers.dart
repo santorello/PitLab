@@ -21,6 +21,7 @@ import '../../../shared/repositories/tracks_repository.dart';
 import '../infrastructure/open_meteo_weather_repository.dart';
 import '../infrastructure/supabase_tracks_repository.dart';
 import 'track_taxonomy_option.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 // Guard difensivo: i provider degli arrivi richiedono un UUID valido come trackId.
 // Local drafts creati prima dell'assegnazione UUID usano il slug come ID;
@@ -63,12 +64,12 @@ const _defaultTrackCategoryOptions = <TrackTaxonomyOption>[
   TrackTaxonomyOption(key: 'outdoor', label: 'Outdoor'),
 ];
 
-const _defaultTrackServiceOptions = <TrackTaxonomyOption>[
+List<TrackTaxonomyOption> get _defaultTrackServiceOptions => <TrackTaxonomyOption>[
   TrackTaxonomyOption(key: 'power_220v', label: '220V'),
-  TrackTaxonomyOption(key: 'compressed_air', label: 'Aria compressa'),
-  TrackTaxonomyOption(key: 'tables', label: 'Tavoli box'),
-  TrackTaxonomyOption(key: 'toilets', label: 'Bagni'),
-  TrackTaxonomyOption(key: 'food', label: 'Ristoro'),
+  TrackTaxonomyOption(key: 'compressed_air', label: tr('Aria compressa')),
+  TrackTaxonomyOption(key: 'tables', label: tr('Tavoli box')),
+  TrackTaxonomyOption(key: 'toilets', label: tr('Bagni')),
+  TrackTaxonomyOption(key: 'food', label: tr('Ristoro')),
 ];
 
 String _localizedLabel({

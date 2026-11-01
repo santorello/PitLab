@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/bootstrap/app_config.dart';
 import '../../app/theme/app_colors.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class EnvironmentBanner extends StatelessWidget {
   const EnvironmentBanner({super.key});
@@ -22,7 +23,7 @@ class EnvironmentBanner extends StatelessWidget {
         border: Border.all(color: AppColors.warningAmber.withAlpha(90)),
       ),
       child: Text(
-        'Supabase non configurato. Avvia l\'app con --dart-define=SUPABASE_URL e --dart-define=SUPABASE_PUBLISHABLE_KEY.',
+        tr('Supabase non configurato. Avvia l\'app con --dart-define=SUPABASE_URL e --dart-define=SUPABASE_PUBLISHABLE_KEY.'),
         style: Theme.of(context).textTheme.bodyMedium,
       ),
     );

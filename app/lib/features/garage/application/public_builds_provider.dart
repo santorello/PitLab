@@ -6,6 +6,7 @@ import '../../../shared/utils/db_list_parser.dart';
 import '../../../shared/utils/moderation_message.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../tracks/application/tracks_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class PublicBuildAuthor {
   const PublicBuildAuthor({
@@ -25,7 +26,7 @@ class PublicBuildAuthor {
   factory PublicBuildAuthor.fromMap(Map<String, dynamic> map) {
     return PublicBuildAuthor(
       id: map['id'] as String? ?? '',
-      displayName: map['display_name'] as String? ?? 'Pilota PitLap',
+      displayName: map['display_name'] as String? ?? tr('Pilota PitLap'),
       // Link al profilo solo se pubblico; il nome si mostra comunque (build pubblica = firmata).
       publicSlug: map['is_public'] == true ? (map['public_slug'] as String? ?? '') : '',
       avatarUrl: map['avatar_url'] as String?,
@@ -63,7 +64,7 @@ class PublicBuildListing {
 
   String get authorName => author?.displayName.trim().isNotEmpty == true
       ? author!.displayName.trim()
-      : 'Pilota PitLap';
+      : tr('Pilota PitLap');
 
   String get specsLabel => specs.join(' · ');
 
@@ -75,7 +76,7 @@ class PublicBuildListing {
     return PublicBuildListing(
       id: map['id'] as String? ?? '',
       ownerId: map['owner_id'] as String? ?? '',
-      title: map['title'] as String? ?? 'Build PitLap',
+      title: map['title'] as String? ?? tr('Build PitLap'),
       meta: map['meta'] as String? ?? '',
       specs: parseDbStringList(map['specs']),
       imageUrls: parseDbStringList(map['image_urls']),
@@ -262,7 +263,7 @@ class BuildLikeNotifier extends AsyncNotifier<BuildLikeState> {
     final userId = ref.read(currentUserProvider)?.id;
     final current = state.value;
     if (client == null || current == null) return '';
-    if (userId == null) return 'Accedi per mettere like alle build.';
+    if (userId == null) return tr('Accedi per mettere like alle build.');
 
     final next = BuildLikeState(
       count: current.count + (current.likedByMe ? -1 : 1),
@@ -286,7 +287,7 @@ class BuildLikeNotifier extends AsyncNotifier<BuildLikeState> {
     } catch (error) {
       state = AsyncData(current);
       return rateLimitMessage(error) ??
-          'Like non salvato. Riprova tra poco.';
+          tr('Like non salvato. Riprova tra poco.');
     }
   }
 }

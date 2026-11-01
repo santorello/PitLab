@@ -4,11 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_radius.dart';
 import '../application/admin_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 /// Control room: fascia di stato, numeri, "Da fare ora", salute, andamento.
 /// Tutti i dati arrivano da una sola chiamata (`admin_dashboard`).
 class AdminControlRoom extends ConsumerWidget {
-  const AdminControlRoom({super.key});
+  const AdminControlRoom({super.key, this.onOpen});
+
+  /// Clic su una riga di "Da fare ora": porta alla sezione dove si lavora.
+  /// Valori: `approvals`, `claims`, `moderation`, `feedback`, `deletions`,
+  /// `to_fix`.
+  final ValueChanged<String>? onOpen;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,8 +28,8 @@ class AdminControlRoom extends ConsumerWidget {
       error: (error, _) => _Banner(
         color: AppColors.closedRed,
         background: const Color(0xFFFDECEC),
-        title: 'Dati non disponibili',
-        subtitle: 'Riprova ad aggiornare la pagina. ($error)',
+        title: tr('Dati non disponibili'),
+        subtitle: trf('Riprova ad aggiornare la pagina. ({0})', [error]),
       ),
       data: (data) {
         // Niente dati: meglio dirlo che mostrare una pagina bianca.
@@ -31,8 +37,8 @@ class AdminControlRoom extends ConsumerWidget {
           return _Banner(
             color: AppColors.steel,
             background: AppColors.surfaceMuted,
-            title: 'Panoramica non disponibile',
-            subtitle: 'Ricarica la pagina; se resta vuota, rifai l\'accesso.',
+            title: tr('Panoramica non disponibile'),
+            subtitle: tr('Ricarica la pagina; se resta vuota, rifai l\'accesso.'),
           );
         }
         return Column(
@@ -44,7 +50,7 @@ class AdminControlRoom extends ConsumerWidget {
             const SizedBox(height: 12),
             LayoutBuilder(
               builder: (context, constraints) {
-                final todo = _TodoList(data: data);
+                final todo = _TodoList(data: data, onOpen: onOpen);
                 final health = _HealthCard(data: data);
                 if (constraints.maxWidth < 900) {
                   return Column(
@@ -84,19 +90,19 @@ class _StatusBand extends StatelessWidget {
       return _Banner(
         color: AppColors.openGreen,
         background: const Color(0xFFE9F7EF),
-        title: 'Tutto tranquillo',
+        title: tr('Tutto tranquillo'),
         subtitle:
-            'Niente da approvare, niente da moderare, nessun feedback da leggere.',
+            tr('Niente da approvare, niente da moderare, nessun feedback da leggere.'),
       );
     }
     final oldest = data.todo('oldest_pending_days');
     return _Banner(
       color: AppColors.signalOrange,
       background: const Color(0xFFFEF6EC),
-      title: 'C\'è da lavorare · $open ${open == 1 ? 'azione' : 'azioni'}',
+      title: trf('C\'è da lavorare · {0} {1}', [open, open == 1 ? 'azione' : 'azioni']),
       subtitle: oldest > 0
-          ? 'La più vecchia aspetta da $oldest ${oldest == 1 ? 'giorno' : 'giorni'}.'
-          : 'Tutte arrivate oggi.',
+          ? trf('La più vecchia aspetta da {0} {1}.', [oldest, oldest == 1 ? 'giorno' : 'giorni'])
+          : tr('Tutte arrivate oggi.'),
     );
   }
 }
@@ -180,28 +186,28 @@ class _CountsRow extends StatelessWidget {
       runSpacing: 16,
       children: [
         _Tile(
-          label: 'Iscritti',
+          label: tr('Iscritti'),
           value: '${data.count('users')}',
           hint: delta == 0
-              ? '$users7d negli ultimi 7 giorni'
-              : '${delta > 0 ? '+' : ''}$delta rispetto ai 7 giorni prima',
+              ? trf('{0} negli ultimi 7 giorni', [users7d])
+              : trf('{0}{1} rispetto ai 7 giorni prima', [delta > 0 ? '+' : '', delta]),
           hintColor: delta > 0 ? AppColors.openGreen : AppColors.steel,
         ),
         _Tile(
-          label: 'Onboarding completato',
+          label: tr('Onboarding completato'),
           value: '${data.count('onboarding_done')} / ${data.count('users')}',
         ),
         _Tile(
-          label: 'Piste',
+          label: tr('Piste'),
           value: '${data.count('tracks')}',
-          hint: '${data.count('tracks_open')} aperte ora',
+          hint: trf('{0} aperte ora', [data.count('tracks_open')]),
         ),
-        _Tile(label: 'Spot', value: '${data.count('spots')}'),
-        _Tile(label: 'Eventi futuri', value: '${data.count('events_future')}'),
+        _Tile(label: tr('Spot'), value: '${data.count('spots')}'),
+        _Tile(label: tr('Eventi futuri'), value: '${data.count('events_future')}'),
         _Tile(
-          label: 'Silenzio',
+          label: tr('Silenzio'),
           value: silence == null ? '—' : '$silence h',
-          hint: 'dall\'ultimo contenuto pubblicato',
+          hint: tr('dall\'ultimo contenuto pubblicato'),
         ),
       ],
     );
@@ -262,9 +268,13 @@ class _Tile extends StatelessWidget {
 // ── Da fare ora ───────────────────────────────────────────────────────────────
 
 class _TodoList extends StatelessWidget {
-  const _TodoList({required this.data});
+  const _TodoList({required this.data, this.onOpen});
 
   final AdminDashboard data;
+  final ValueChanged<String>? onOpen;
+
+  VoidCallback? _open(String target) =>
+      onOpen == null ? null : () => onOpen!(target);
 
   @override
   Widget build(BuildContext context) {
@@ -272,44 +282,50 @@ class _TodoList extends StatelessWidget {
     final rows = <Widget>[
       _TodoRow(
         count: pending,
-        title: 'Piste e negozi da approvare',
+        title: tr('Piste e negozi da approvare'),
         detail: pending == 0
-            ? 'Nessuna richiesta in coda'
-            : '${data.todo('pending_tracks')} piste · ${data.todo('pending_shops')} negozi',
+            ? tr('Nessuna richiesta in coda')
+            : trf('{0} piste · {1} negozi', [data.todo('pending_tracks'), data.todo('pending_shops')]),
         urgent: data.todo('oldest_pending_days') >= 2,
+        onTap: _open('approvals'),
       ),
       _TodoRow(
         count: data.todo('track_claims') + data.todo('shop_claims'),
-        title: 'Rivendicazioni da verificare',
-        detail: 'Chi approvi diventa gestore della scheda',
+        title: tr('Rivendicazioni da verificare'),
+        detail: tr('Chi approvi diventa gestore della scheda'),
+        onTap: _open('claims'),
       ),
       _TodoRow(
         count: data.todo('reported_comments'),
-        title: 'Commenti segnalati',
-        detail: 'Da moderare nella sezione Moderazione',
+        title: tr('Commenti segnalati'),
+        detail: tr('Da moderare nella sezione Moderazione'),
+        onTap: _open('moderation'),
       ),
       _TodoRow(
         count: data.todo('feedback'),
-        title: 'Feedback dagli utenti',
-        detail: 'Sezione "Feedback utenti"',
+        title: tr('Feedback dagli utenti'),
+        detail: tr('Sezione "Feedback utenti"'),
+        onTap: _open('feedback'),
       ),
       _TodoRow(
         count: data.todo('deletion_requests'),
-        title: 'Richieste di cancellazione account',
+        title: tr('Richieste di cancellazione account'),
         detail: data.todo('deletion_requests') == 0
-            ? 'Nessuna richiesta aperta'
-            : 'La più vecchia da ${data.todo('deletion_oldest_days')} giorni sui 30',
+            ? tr('Nessuna richiesta aperta')
+            : trf('La più vecchia da {0} giorni sui 30', [data.todo('deletion_oldest_days')]),
         urgent: data.todo('deletion_oldest_days') >= 20,
+        onTap: _open('deletions'),
       ),
       _TodoRow(
         count: data.todo('content_to_fix'),
-        title: 'Contenuti da sistemare',
-        detail: 'Senza coordinate o senza foto, ed eventi scaduti',
+        title: tr('Contenuti da sistemare'),
+        detail: tr('Spot senza coordinate o senza foto'),
+        onTap: _open('to_fix'),
       ),
     ];
 
     return _Card(
-      title: 'Da fare ora',
+      title: tr('Da fare ora'),
       child: Column(
         children: [
           for (final row in rows) ...[row, const SizedBox(height: 10)],
@@ -325,12 +341,16 @@ class _TodoRow extends StatelessWidget {
     required this.title,
     required this.detail,
     this.urgent = false,
+    this.onTap,
   });
 
   final int count;
   final String title;
   final String detail;
   final bool urgent;
+
+  /// Solo se c'è qualcosa da fare: una riga a zero non porta da nessuna parte.
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -346,7 +366,10 @@ class _TodoRow extends StatelessWidget {
             ? const Color(0xFFFEF2F2)
             : const Color(0xFFFEF6EC);
 
-    return Container(
+    final tap = done ? null : onTap;
+
+    // Ink (non Container): così l'effetto al clic si vede sopra lo sfondo.
+    final row = Ink(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: background,
@@ -389,8 +412,32 @@ class _TodoRow extends StatelessWidget {
               ],
             ),
           ),
+          if (tap != null) ...[
+            const SizedBox(width: 8),
+            Text(
+              tr('Vai'),
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+            Icon(Icons.chevron_right_rounded, color: color),
+          ],
         ],
       ),
+    );
+
+    // Material proprio: la card attorno è un Container colorato e Ink
+    // dipingerebbe sotto di lei, cioè non si vedrebbe.
+    return Material(
+      type: MaterialType.transparency,
+      child: tap == null
+          ? row
+          : InkWell(
+              onTap: tap,
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              child: row,
+            ),
     );
   }
 }
@@ -403,11 +450,11 @@ class _HealthCard extends StatelessWidget {
   final AdminDashboard data;
 
   String _since(DateTime? moment) {
-    if (moment == null) return 'mai';
+    if (moment == null) return tr('mai');
     final diff = DateTime.now().difference(moment);
-    if (diff.inMinutes < 60) return '${diff.inMinutes} min fa';
-    if (diff.inHours < 48) return '${diff.inHours} ore fa';
-    return '${diff.inDays} giorni fa';
+    if (diff.inMinutes < 60) return trf('{0} min fa', [diff.inMinutes]);
+    if (diff.inHours < 48) return trf('{0} ore fa', [diff.inHours]);
+    return trf('{0} giorni fa', [diff.inDays]);
   }
 
   @override
@@ -426,7 +473,7 @@ class _HealthCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Salute',
+            tr('Salute'),
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w800,
@@ -451,16 +498,16 @@ class _HealthCard extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           _HealthRow(
-            label: 'Ultimo iscritto',
+            label: tr('Ultimo iscritto'),
             value: _since(data.healthDate('last_signup_at')),
           ),
           _HealthRow(
-            label: 'Ultimo contenuto',
+            label: tr('Ultimo contenuto'),
             value: _since(data.healthDate('last_content_at')),
           ),
           _HealthRow(
-            label: 'Consensi legali correnti',
-            value: '${data.consentsCurrent} utenti',
+            label: tr('Consensi legali correnti'),
+            value: trf('{0} utenti', [data.consentsCurrent]),
           ),
           const SizedBox(height: 14),
           Container(
@@ -469,8 +516,8 @@ class _HealthCard extends StatelessWidget {
               color: Colors.white.withAlpha(26),
               borderRadius: BorderRadius.circular(AppRadius.lg),
             ),
-            child: const Text(
-              'Email ancora dal mittente di prova Supabase',
+            child: Text(
+              tr('Email ancora dal mittente di prova Supabase'),
               style: TextStyle(color: Colors.white70, fontSize: 12),
             ),
           ),
@@ -524,7 +571,7 @@ class _SignupsChart extends StatelessWidget {
         : values.reduce((a, b) => a > b ? a : b);
 
     return _Card(
-      title: 'Iscritti al giorno · ultimi 30 giorni',
+      title: tr('Iscritti al giorno · ultimi 30 giorni'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -534,8 +581,8 @@ class _SignupsChart extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 10),
               child: Text(
                 total == 0
-                    ? 'Nessuna iscrizione negli ultimi 30 giorni.'
-                    : '$total ${total == 1 ? 'iscritto' : 'iscritti'} negli ultimi 30 giorni: troppo pochi per un grafico.',
+                    ? tr('Nessuna iscrizione negli ultimi 30 giorni.')
+                    : trf('{0} {1} negli ultimi 30 giorni: troppo pochi per un grafico.', [total, total == 1 ? 'iscritto' : 'iscritti']),
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
@@ -553,7 +600,7 @@ class _SignupsChart extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 2),
                       child: Tooltip(
-                        message: '$value iscritti',
+                        message: trf('{0} iscritti', [value]),
                         child: Container(
                           // Barra minima visibile anche a zero.
                           height: max == 0 ? 2 : 2 + (value / max) * 80,
@@ -576,16 +623,16 @@ class _SignupsChart extends StatelessWidget {
             runSpacing: 8,
             children: [
               Text(
-                'Creati negli ultimi 7 giorni:',
+                tr('Creati negli ultimi 7 giorni:'),
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall
                     ?.copyWith(color: AppColors.steel),
               ),
-              Text('${data.created7d('spots')} spot'),
-              Text('${data.created7d('events')} eventi'),
-              Text('${data.created7d('builds')} build'),
-              Text('${data.created7d('comments')} commenti'),
+              Text(trf('{0} spot', [data.created7d('spots')])),
+              Text(trf('{0} eventi', [data.created7d('events')])),
+              Text(trf('{0} build', [data.created7d('builds')])),
+              Text(trf('{0} commenti', [data.created7d('comments')])),
             ],
           ),
         ],

@@ -20,6 +20,7 @@ import '../../../shared/widgets/processing_status_badge.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../pitcoin/providers/pitcoin_providers.dart';
 import '../application/garage_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class GarageScreen extends ConsumerWidget {
   const GarageScreen({super.key});
@@ -40,13 +41,13 @@ class GarageScreen extends ConsumerWidget {
               const Icon(Icons.lock_outline, size: 48, color: AppColors.steel),
               const SizedBox(height: 16),
               Text(
-                'Accedi per accedere al tuo garage.',
+                tr('Accedi per accedere al tuo garage.'),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: () => context.go('/login'),
-                child: const Text('Accedi'),
+                child: Text(tr('Accedi')),
               ),
             ],
           ),
@@ -84,13 +85,13 @@ class _GarageBody extends ConsumerWidget {
           children: [
             const Icon(Icons.error_outline, size: 48, color: AppColors.steel),
             const SizedBox(height: 12),
-            Text('Errore nel caricamento del garage.',
+            Text(tr('Errore nel caricamento del garage.'),
                 style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: () => ref.read(garageProvider.notifier).refresh(),
               icon: const Icon(Icons.refresh),
-              label: const Text('Riprova'),
+              label: Text(tr('Riprova')),
             ),
           ],
         ),
@@ -167,7 +168,7 @@ class _GarageBody extends ConsumerWidget {
           EmptyStatePanel(
             icon: Icons.precision_manufacturing_outlined,
             title: l10n.garageBuildsTitle,
-            subtitle: 'Nessuna build ancora. Aggiungi il tuo primo modello!',
+            subtitle: tr('Nessuna build ancora. Aggiungi il tuo primo modello!'),
             compact: true,
           )
         else
@@ -276,7 +277,7 @@ class _GarageBody extends ConsumerWidget {
                     controller: imageUrlCtrl,
                     decoration: InputDecoration(
                       labelText: l10n.garageBuildImageUrlLabel,
-                      hintText: 'Link immagine principale opzionale',
+                      hintText: tr('Link immagine principale opzionale'),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -521,7 +522,7 @@ class _GarageBody extends ConsumerWidget {
             ? (existing == null
                 ? l10n.garageBuildCreatedMessage
                 : l10n.garageBuildUpdatedMessage)
-            : 'Errore nel salvataggio. Riprova.'),
+            : tr('Errore nel salvataggio. Riprova.')),
       ));
     }
   }
@@ -535,18 +536,18 @@ class _GarageBody extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Elimina build'),
-        content: Text('Eliminare "${build.title}"? L\'operazione non è reversibile.'),
+        title: Text(tr('Elimina build')),
+        content: Text(trf('Eliminare "{0}"? L\'operazione non è reversibile.', [build.title])),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Annulla'),
+            child: Text(tr('Annulla')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: FilledButton.styleFrom(
                 backgroundColor: Colors.red.shade600),
-            child: const Text('Elimina'),
+            child: Text(tr('Elimina')),
           ),
         ],
       ),
@@ -685,7 +686,7 @@ class _BuildCard extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: () => context.push('/build/${userBuild.id}'),
                   icon: const Icon(Icons.open_in_new),
-                  label: const Text('Pagina e luoghi'),
+                  label: Text(tr('Pagina e luoghi')),
                 ),
               OutlinedButton.icon(
                 onPressed: onEdit,
@@ -707,7 +708,7 @@ class _BuildCard extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.red.shade600),
                 icon: const Icon(Icons.delete_outline),
-                label: const Text('Elimina'),
+                label: Text(tr('Elimina')),
               ),
             ],
           ),

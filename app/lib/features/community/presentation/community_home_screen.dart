@@ -21,6 +21,7 @@ import '../../../shared/widgets/weather_visuals.dart';
 import '../application/activity_feed_provider.dart';
 import '../application/home_dashboard_provider.dart';
 import '../domain/activity_feed_item.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class CommunityHomeScreen extends ConsumerWidget {
   const CommunityHomeScreen({super.key});
@@ -320,9 +321,9 @@ class _GreetingCard extends StatelessWidget {
           Text(
             openTracks > 0
                 ? (openTracks == 1
-                      ? 'Oggi risulta 1 pista aperta su PitLap.'
-                      : 'Oggi risultano $openTracks piste aperte su PitLap.')
-                : 'Dove il modellismo si incontra.',
+                      ? tr('Oggi risulta 1 pista aperta su PitLap.')
+                      : trf('Oggi risultano {0} piste aperte su PitLap.', [openTracks]))
+                : tr('Dove il modellismo si incontra.'),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.white70,
                 ),
@@ -352,8 +353,8 @@ class _WeatherStrip extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle(
-          title: 'Meteo alle tue piste',
+        _SectionTitle(
+          title: tr('Meteo alle tue piste'),
         ),
         const SizedBox(height: AppSpacing.sm),
         SizedBox(
@@ -494,8 +495,8 @@ class _PitcoinStrip extends StatelessWidget {
               label: 'PitCoin',
               value: '$totalPoints PC',
               hint: recentDelta > 0
-                  ? '+$recentDelta ultimi 7 giorni'
-                  : 'Saldo reale',
+                  ? trf('+{0} ultimi 7 giorni', [recentDelta])
+                  : tr('Saldo reale'),
               icon: Icons.paid_outlined,
               tint: AppColors.warningAmber,
             ),
@@ -505,8 +506,8 @@ class _PitcoinStrip extends StatelessWidget {
             flex: 4,
             child: _MetricCard(
               label: 'Streak',
-              value: '$streakDays gg',
-              hint: 'Da transazioni',
+              value: trf('{0} gg', [streakDays]),
+              hint: tr('Da transazioni'),
               icon: Icons.local_fire_department_outlined,
               tint: AppColors.signalOrange,
             ),
@@ -538,18 +539,18 @@ class _NearbyMapPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final mappedTotal = trackCount + spotCount + shopCount;
     final subtitleParts = [
-      if (openTrackCount > 0) '$openTrackCount aperte',
-      if (trackCount > 0) '$trackCount ${trackCount == 1 ? 'pista' : 'piste'}',
-      if (spotCount > 0) '$spotCount spot',
-      if (shopCount > 0) '$shopCount ${shopCount == 1 ? 'negozio' : 'negozi'}',
+      if (openTrackCount > 0) trf('{0} aperte', [openTrackCount]),
+      if (trackCount > 0) '$trackCount ${tr(trackCount == 1 ? 'pista' : 'piste')}',
+      if (spotCount > 0) trf('{0} spot', [spotCount]),
+      if (shopCount > 0) '$shopCount ${tr(shopCount == 1 ? 'negozio' : 'negozi')}',
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle(
-          title: 'Vicino a te',
-          actionLabel: 'mappa intera',
+        _SectionTitle(
+          title: tr('Vicino a te'),
+          actionLabel: tr('mappa intera'),
         ),
         const SizedBox(height: AppSpacing.sm),
         InkWell(
@@ -630,9 +631,9 @@ class _NearbyMapPreview extends StatelessWidget {
                                 Text(
                                   mappedTotal > 0
                                       ? isLocalized
-                                          ? '$mappedTotal luoghi entro ${radiusKm.round()} km'
-                                          : '$mappedTotal luoghi in mappa'
-                                      : 'Apri la mappa PitLap',
+                                          ? trf('{0} luoghi entro {1} km', [mappedTotal, radiusKm.round()])
+                                          : trf('{0} luoghi in mappa', [mappedTotal])
+                                      : tr('Apri la mappa PitLap'),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context)
@@ -645,7 +646,7 @@ class _NearbyMapPreview extends StatelessWidget {
                                 ),
                                 Text(
                                   subtitleParts.isEmpty
-                                      ? 'Piste, spot e negozi RC'
+                                      ? tr('Piste, spot e negozi RC')
                                       : subtitleParts.join(' - '),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -817,8 +818,8 @@ class _BuildOfWeekSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SectionTitle(
-          title: 'Build della settimana',
-          actionLabel: 'tutte le build',
+          title: tr('Build della settimana'),
+          actionLabel: tr('tutte le build'),
           onActionTap: () => context.push('/builds'),
         ),
         const SizedBox(height: AppSpacing.sm),
@@ -886,7 +887,7 @@ class _BuildOfWeekSection extends StatelessWidget {
                             ],
                           ),
                           child: Text(
-                            'TROFEO BUILD',
+                            tr('TROFEO BUILD'),
                             style: Theme.of(context)
                                 .textTheme
                                 .labelLarge
@@ -946,7 +947,7 @@ class _BuildOfWeekSection extends StatelessWidget {
                           const Icon(Icons.star, color: Color(0xFFFBBF24)),
                           const SizedBox(width: 6),
                           Text(
-                            'In evidenza',
+                            tr('In evidenza'),
                             style: Theme.of(context)
                                 .textTheme
                                 .labelLarge
@@ -1115,7 +1116,7 @@ class _GuestPitcoinNotice extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Accedi per vedere PitCoin, streak e garage collegati al tuo profilo.',
+              tr('Accedi per vedere PitCoin, streak e garage collegati al tuo profilo.'),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.graphite,
                     fontWeight: FontWeight.w600,
@@ -1134,12 +1135,12 @@ class _QuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actions = [
-      _QuickAction('Vado oggi', Icons.directions_car_outlined, '/tracks'),
-      _QuickAction('Cerca pista', Icons.flag_outlined, '/tracks'),
-      _QuickAction('Eventi', Icons.event_outlined, '/events'),
-      _QuickAction('Garage', Icons.precision_manufacturing_outlined, '/garage'),
-      _QuickAction('Aggiungi spot', Icons.add_location_alt_outlined, '/submit-place?type=spot'),
-      _QuickAction('Negozi', Icons.storefront_outlined, '/shops'),
+      _QuickAction(tr('Vado oggi'), Icons.directions_car_outlined, '/tracks'),
+      _QuickAction(tr('Cerca pista'), Icons.flag_outlined, '/tracks'),
+      _QuickAction(tr('Eventi'), Icons.event_outlined, '/events'),
+      _QuickAction(tr('Garage'), Icons.precision_manufacturing_outlined, '/garage'),
+      _QuickAction(tr('Aggiungi spot'), Icons.add_location_alt_outlined, '/submit-place?type=spot'),
+      _QuickAction(tr('Negozi'), Icons.storefront_outlined, '/shops'),
     ];
 
     return SizedBox(
@@ -1188,7 +1189,7 @@ class _FeaturedTrackCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle(title: 'Pista del giorno'),
+        _SectionTitle(title: tr('Pista del giorno')),
         const SizedBox(height: AppSpacing.sm),
         InkWell(
           onTap: () => context.push('/track/${track.slug}'),
@@ -1238,7 +1239,7 @@ class _FeaturedTrackCard extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: () => context.push('/track/${track.slug}'),
                   icon: const Icon(Icons.arrow_forward, size: 16),
-                  label: const Text('Apri scheda'),
+                  label: Text(tr('Apri scheda')),
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.signalOrange,
                     foregroundColor: Colors.white,
@@ -1278,37 +1279,37 @@ class _OverviewStatsGrid extends StatelessWidget {
         final cardHeight = width < 420 ? 104.0 : 112.0;
         final metrics = [
           _MetricCard(
-            label: 'Piste aperte',
+            label: tr('Piste aperte'),
             value: '${stats.openTracks}',
-            hint: 'Ora',
+            hint: tr('Ora'),
             icon: Icons.radio_button_checked,
             tint: AppColors.openGreen,
           ),
           _MetricCard(
-            label: 'Eventi',
+            label: tr('Eventi'),
             value: '${stats.eventsNext30Days}',
-            hint: '30 giorni',
+            hint: tr('30 giorni'),
             icon: Icons.event_outlined,
             tint: AppColors.signalOrange,
           ),
           _MetricCard(
-            label: 'Nuovi spot',
+            label: tr('Nuovi spot'),
             value: '${stats.newSpots30Days}',
-            hint: '30 giorni',
+            hint: tr('30 giorni'),
             icon: Icons.add_location_alt_outlined,
             tint: AppColors.wetBlue,
           ),
           _MetricCard(
-            label: 'Negozi',
+            label: tr('Negozi'),
             value: '${stats.publicShops}',
-            hint: '${stats.geocodedShops} in mappa',
+            hint: trf('{0} in mappa', [stats.geocodedShops]),
             icon: Icons.storefront_outlined,
             tint: AppColors.statusOpen,
           ),
           _MetricCard(
             label: 'Build',
             value: '${stats.publicBuilds}',
-            hint: 'Pubbliche',
+            hint: tr('Pubbliche'),
             icon: Icons.precision_manufacturing_outlined,
             tint: AppColors.warningAmber,
           ),
@@ -1350,7 +1351,7 @@ class _TrendingTracksSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle(title: 'Piste in trend'),
+        _SectionTitle(title: tr('Piste in trend')),
         const SizedBox(height: AppSpacing.sm),
         SizedBox(
           height: 160,
@@ -1417,7 +1418,7 @@ class _TrendingTrackTile extends StatelessWidget {
             ),
             const Spacer(),
             Text(
-              '${track.city} - ${track.arrivalsToday} oggi - ${track.events30d} eventi',
+              trf('{0} - {1} oggi - {2} eventi', [track.city, track.arrivalsToday, track.events30d]),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -1448,16 +1449,16 @@ class _LeaderboardSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SectionTitle(
-          title: 'Classifica PitCoin',
-          actionLabel: 'tutti i profili',
+          title: tr('Classifica PitCoin'),
+          actionLabel: tr('tutti i profili'),
           onActionTap: () => context.push('/profiles'),
         ),
         const SizedBox(height: AppSpacing.sm),
         if (!hasScores)
-          const _EmptyStateCard(
+          _EmptyStateCard(
             icon: Icons.emoji_events_outlined,
-            title: 'Classifica in partenza',
-            body: 'Il ranking apparira quando i profili pubblici avranno punti reali.',
+            title: tr('Classifica in partenza'),
+            body: tr('Il ranking apparira quando i profili pubblici avranno punti reali.'),
           )
         else
           _SurfaceCard(
@@ -1517,8 +1518,8 @@ class _FeedSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle(
-          title: 'Novita dalla community',
+        _SectionTitle(
+          title: tr('Novita dalla community'),
         ),
         const SizedBox(height: AppSpacing.md),
         ...visible.map(
@@ -1713,7 +1714,7 @@ class _ActivityCard extends ConsumerWidget {
                             vertical: 12,
                           ),
                         ),
-                        child: const Text('Dettagli'),
+                        child: Text(tr('Dettagli')),
                       ),
                     ],
                   ),
@@ -1728,10 +1729,10 @@ class _ActivityCard extends ConsumerWidget {
                   _ActivityMetaIcon(
                     icon: Icons.chat_bubble_outline,
                     label: commentCount == 0
-                        ? 'Commenta'
+                        ? tr('Commenta')
                         : commentCount == 1
                             ? '1 commento'
-                            : '$commentCount commenti',
+                            : trf('{0} commenti', [commentCount]),
                     color: AppColors.steel,
                     onTap: () => _openActivity(context, item),
                   ),
@@ -1739,7 +1740,7 @@ class _ActivityCard extends ConsumerWidget {
                   if (entityType != null && entityId != null)
                     _ActivityMetaIcon(
                       icon: Icons.ios_share_outlined,
-                      label: 'Condividi',
+                      label: tr('Condividi'),
                       color: AppColors.steel,
                       onTap: () => shareEntity(
                         context: context,
@@ -2192,7 +2193,7 @@ class _WeatherPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final foreground = dark ? Colors.white : AppColors.graphite;
     final background = dark ? Colors.white.withAlpha(26) : AppColors.orange50;
-    final city = weather.city.trim().isEmpty ? 'Pista' : weather.city.trim();
+    final city = weather.city.trim().isEmpty ? tr('Pista') : weather.city.trim();
     final temp = weather.temperatureC == null ? '--' : '${weather.temperatureC}°';
 
     return Container(
@@ -2226,18 +2227,18 @@ class _WeatherPill extends StatelessWidget {
 
 String _statusLabel(String status) {
   return switch (status) {
-    'open' => 'Aperta',
-    'wet' => 'Bagnata',
-    'closed' => 'Chiusa',
-    _ => 'Stato non noto',
+    'open' => tr('Aperta'),
+    'wet' => tr('Bagnata'),
+    'closed' => tr('Chiusa'),
+    _ => tr('Stato non noto'),
   };
 }
 
 String _timeGreeting(DateTime now) {
   final hour = now.hour;
-  if (hour < 12) return 'Buongiorno';
-  if (hour < 18) return 'Buon Pomeriggio';
-  return 'Buona sera';
+  if (hour < 12) return tr('Buongiorno');
+  if (hour < 18) return tr('Buon Pomeriggio');
+  return tr('Buona sera');
 }
 
 String _homeDisplayName(String? profileName) {
@@ -2245,7 +2246,7 @@ String _homeDisplayName(String? profileName) {
   if (cleanName != null && cleanName.isNotEmpty) return cleanName;
   // Il ripiego sulla parte locale dell'email non serve piu': dal delta
   // 2026-09-14 handle_new_user assegna sempre un nome al profilo.
-  return 'Pilota';
+  return tr('Pilota');
 }
 
 IconData _weatherIcon(HomeTrackWeather weather) =>
@@ -2284,27 +2285,27 @@ String _eventLabel(String eventType) {
     'community_event' => 'community',
     'track_event' => 'evento',
     'new_spot' => 'spot',
-    'track_status' => 'pista',
+    'track_status' => tr('pista'),
     _ => 'update',
   };
 }
 
 String _eventHeroLabel(String eventType) {
   return switch (eventType) {
-    'track_status' => 'scheda aggiornata',
-    'track_event' => 'evento pista',
-    'community_event' => 'evento community',
-    'new_spot' => 'nuovo spot',
-    _ => 'novità',
+    'track_status' => tr('scheda aggiornata'),
+    'track_event' => tr('evento pista'),
+    'community_event' => tr('evento community'),
+    'new_spot' => tr('nuovo spot'),
+    _ => tr('novità'),
   };
 }
 
 String _primaryActivityAction(String eventType) {
   return switch (eventType) {
-    'track_event' || 'community_event' => 'Partecipa',
-    'track_status' => 'Apri pista',
-    'new_spot' => 'Apri spot',
-    _ => 'Apri',
+    'track_event' || 'community_event' => tr('Partecipa'),
+    'track_status' => tr('Apri pista'),
+    'new_spot' => tr('Apri spot'),
+    _ => tr('Apri'),
   };
 }
 
@@ -2312,10 +2313,10 @@ String _relativeTimeLabel(DateTime createdAt) {
   final now = DateTime.now();
   final local = createdAt.toLocal();
   final difference = now.difference(local);
-  if (difference.inMinutes < 1) return 'ora';
-  if (difference.inMinutes < 60) return '${difference.inMinutes} min fa';
-  if (difference.inHours < 24) return '${difference.inHours}h fa';
-  if (difference.inDays < 7) return '${difference.inDays}g fa';
+  if (difference.inMinutes < 1) return tr('ora');
+  if (difference.inMinutes < 60) return trf('{0} min fa', [difference.inMinutes]);
+  if (difference.inHours < 24) return trf('{0}h fa', [difference.inHours]);
+  if (difference.inDays < 7) return trf('{0}g fa', [difference.inDays]);
   // FR-37: formato IT uniforme con zero-padding (gg/mm/aaaa).
   final dd = local.day.toString().padLeft(2, '0');
   final mm = local.month.toString().padLeft(2, '0');
@@ -2324,20 +2325,9 @@ String _relativeTimeLabel(DateTime createdAt) {
 
 String _heroDateToken(ActivityFeedItem item) {
   final source = item.eventDate ?? item.createdAt;
-  const months = [
-    'GEN',
-    'FEB',
-    'MAR',
-    'APR',
-    'MAG',
-    'GIU',
-    'LUG',
-    'AGO',
-    'SET',
-    'OTT',
-    'NOV',
-    'DIC',
-  ];
+  final months = AppLang.code == 'it'
+      ? const ['GEN', 'FEB', 'MAR', 'APR', 'MAG', 'GIU', 'LUG', 'AGO', 'SET', 'OTT', 'NOV', 'DIC']
+      : const ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
   return '${months[source.month - 1]} ${source.day}';
 }
 

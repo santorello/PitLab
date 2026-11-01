@@ -11,6 +11,7 @@ import '../../auth/application/auth_providers.dart';
 import '../../pitcoin/presentation/pitcoin_badges_section.dart';
 import '../../social/application/profile_follows_providers.dart';
 import '../application/public_profile_provider.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class PublicProfileScreen extends ConsumerWidget {
   const PublicProfileScreen({required this.publicSlug, super.key});
@@ -24,19 +25,19 @@ class PublicProfileScreen extends ConsumerWidget {
     // FR-20: titolo dinamico sul ruolo del profilo (non sempre "Pilota").
     final title = profileAsync.maybeWhen(
       data: (profile) => profile == null
-          ? 'Profilo pilota'
+          ? tr('Profilo pilota')
           : switch (profile.role) {
-              'track_organizer' => 'Profilo organizzatore',
-              'shop_owner' || 'shop_manager' => 'Profilo gestore negozio',
-              'admin' => 'Profilo staff PitLap',
-              _ => 'Profilo pilota',
+              'track_organizer' => tr('Profilo organizzatore'),
+              'shop_owner' || 'shop_manager' => tr('Profilo gestore negozio'),
+              'admin' => tr('Profilo staff PitLap'),
+              _ => tr('Profilo pilota'),
             },
-      orElse: () => 'Profilo pubblico',
+      orElse: () => tr('Profilo pubblico'),
     );
 
     return ContentScaffold(
       title: title,
-      description: 'Profilo pubblico PitLap',
+      description: tr('Profilo pubblico PitLap'),
       child: profileAsync.when(
         loading: () => const Center(
           child: Padding(
@@ -64,10 +65,10 @@ class _ProfileContent extends ConsumerWidget {
   final PublicProfileRecord profile;
 
   String get _roleLabel => switch (profile.role) {
-    'track_organizer' => 'Organizzatore pista',
-    'shop_owner' || 'shop_manager' => 'Gestore negozio',
+    'track_organizer' => tr('Organizzatore pista'),
+    'shop_owner' || 'shop_manager' => tr('Gestore negozio'),
     'admin' => 'Admin PitLap',
-    _ => 'Pilota',
+    _ => tr('Pilota'),
   };
 
   IconData get _roleIcon => switch (profile.role) {
@@ -189,7 +190,7 @@ class _ProfileContent extends ConsumerWidget {
                 Icon(Icons.precision_manufacturing_outlined,
                     size: 20, color: AppColors.graphite),
                 const SizedBox(width: 8),
-                Text('Garage', style: theme.textTheme.titleLarge),
+                Text(tr('Garage'), style: theme.textTheme.titleLarge),
               ],
             ),
           ),
@@ -206,12 +207,12 @@ class _ProfileContent extends ConsumerWidget {
                   const Icon(Icons.garage_outlined, size: 40, color: AppColors.steel),
                   const SizedBox(height: 10),
                   Text(
-                    'Nessuna build pubblica',
+                    tr('Nessuna build pubblica'),
                     style: theme.textTheme.titleMedium?.copyWith(color: AppColors.steel),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${profile.displayName} non ha ancora condiviso modelli nel garage.',
+                    trf('{0} non ha ancora condiviso modelli nel garage.', [profile.displayName]),
                     style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.steel),
                     textAlign: TextAlign.center,
                   ),
@@ -435,13 +436,13 @@ class _NotFoundState extends StatelessWidget {
             const Icon(Icons.person_off_outlined, size: 56, color: AppColors.steel),
             const SizedBox(height: 16),
             Text(
-              'Profilo non trovato',
+              tr('Profilo non trovato'),
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              'Il profilo "$slug" non esiste o non è pubblico.',
+              trf('Il profilo "{0}" non esiste o non è pubblico.', [slug]),
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: AppColors.steel,
               ),
@@ -470,13 +471,13 @@ class _ErrorState extends StatelessWidget {
             const Icon(Icons.error_outline, size: 56, color: AppColors.steel),
             const SizedBox(height: 16),
             Text(
-              'Errore nel caricamento',
+              tr('Errore nel caricamento'),
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              'Impossibile caricare il profilo. Riprova più tardi.',
+              tr('Impossibile caricare il profilo. Riprova più tardi.'),
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: AppColors.steel,
               ),

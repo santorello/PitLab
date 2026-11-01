@@ -13,6 +13,9 @@ import '../../comments/presentation/comments_section.dart';
 import '../../garage/presentation/builds_seen_here.dart';
 import '../../profile/application/profile_hub_providers.dart';
 import '../application/public_events_provider.dart';
+import '../../auth/application/auth_providers.dart';
+import 'event_edit_dialog.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class EventDetailScreen extends ConsumerWidget {
   const EventDetailScreen({required this.eventId, super.key});
@@ -57,7 +60,7 @@ class EventDetailScreen extends ConsumerWidget {
             child: Text(
               _localeText(
                 context,
-                it: 'Evento non trovato.',
+                it: tr('Evento non trovato.'),
                 en: 'Event not found.',
               ),
               style: Theme.of(context).textTheme.titleMedium,
@@ -66,6 +69,13 @@ class EventDetailScreen extends ConsumerWidget {
         ),
       );
     }
+
+    // Autore o admin possono modificare gli eventi community (authorUserId
+    // valorizzato solo per community_events; gli ufficiali si gestiscono altrove).
+    final me = ref.watch(currentUserProvider)?.id;
+    final canEdit = resolvedRecord.authorUserId != null &&
+        (ref.watch(isAdminProvider) || resolvedRecord.authorUserId == me);
+    final editable = resolvedRecord;
 
     final event = _ResolvedEvent(
       title: resolvedRecord.title,
@@ -165,6 +175,14 @@ class EventDetailScreen extends ConsumerWidget {
                   icon: const Icon(Icons.ios_share_outlined),
                   label: Text(l10n.eventsShareAction),
                 ),
+                if (canEdit) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  OutlinedButton.icon(
+                    onPressed: () => showEventEditDialog(context, ref, editable),
+                    icon: const Icon(Icons.edit_outlined),
+                    label: Text(tr('Modifica evento')),
+                  ),
+                ],
               ],
             ),
           ),

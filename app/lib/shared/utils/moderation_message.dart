@@ -4,6 +4,8 @@
 /// Qui non si ripete la parola incriminata: dirla di nuovo non aiuta nessuno.
 library;
 
+import 'package:pitlap_app/app/l10n/tr.dart';
+
 const String _prefix = 'PITLAP_MODERATION:';
 
 /// Categoria e campo estratti dall'errore del trigger, null se non e' un blocco.
@@ -28,21 +30,20 @@ String? moderationMessage(Object error, {bool italian = true}) {
   final category = parts.isEmpty ? '' : parts.first.trim();
 
   if (italian) {
-    const base = 'Il testo inserito non rispetta le regole della community PitLap';
+    final base = tr('Il testo inserito non rispetta le regole della community PitLap');
     switch (category) {
       case 'minori':
-        return '$base: sono vietati i riferimenti sessuali che coinvolgono minori. '
-            'Questo tipo di contenuto viene sempre bloccato.';
+        return trf('{0}: sono vietati i riferimenti sessuali che coinvolgono minori. Questo tipo di contenuto viene sempre bloccato.', [base]);
       case 'sessuale':
-        return '$base: contenuti sessuali espliciti non sono ammessi.';
+        return trf('{0}: contenuti sessuali espliciti non sono ammessi.', [base]);
       case 'bestemmia':
-        return '$base: le bestemmie non sono ammesse.';
+        return trf('{0}: le bestemmie non sono ammesse.', [base]);
       case 'odio':
-        return '$base: insulti discriminatori non sono ammessi.';
+        return trf('{0}: insulti discriminatori non sono ammessi.', [base]);
       case 'volgare':
-        return '$base: rimuovi il linguaggio volgare e riprova.';
+        return trf('{0}: rimuovi il linguaggio volgare e riprova.', [base]);
       default:
-        return '$base. Modifica il testo e riprova.';
+        return trf('{0}. Modifica il testo e riprova.', [base]);
     }
   }
 
@@ -72,6 +73,6 @@ String? rateLimitMessage(Object error, {bool italian = true}) {
     return null;
   }
   return italian
-      ? 'Troppe azioni in poco tempo: riprova tra qualche minuto.'
+      ? tr('Troppe azioni in poco tempo: riprova tra qualche minuto.')
       : 'Too many actions in a short time: please try again in a few minutes.';
 }

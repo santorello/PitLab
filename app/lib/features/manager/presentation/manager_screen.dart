@@ -13,6 +13,7 @@ import '../../../shared/models/track_list_item.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../shops/application/shop_editor_providers.dart';
 import '../../tracks/application/tracks_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class ManagerScreen extends ConsumerStatefulWidget {
   const ManagerScreen({super.key});
@@ -141,25 +142,25 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                                   onPressed: () =>
                                       context.go('/manager/tracks/new'),
                                   icon: const Icon(Icons.add_road_outlined),
-                                  label: const Text('Crea la tua pista'),
+                                  label: Text(tr('Crea la tua pista')),
                                 ),
                                 if (canManageShops)
                                   OutlinedButton.icon(
                                     onPressed: () => context.go('/shops/new'),
                                     icon: const Icon(Icons.storefront_outlined),
-                                    label: const Text('Crea negozio'),
+                                    label: Text(tr('Crea negozio')),
                                   ),
                                 OutlinedButton.icon(
                                   onPressed: () => context.go('/'),
                                   icon: const Icon(Icons.map_outlined),
-                                  label: const Text('Apri le piste'),
+                                  label: Text(tr('Apri le piste')),
                                 ),
                                 if (isAdmin)
                                   OutlinedButton.icon(
                                     onPressed: () => context.go('/admin'),
                                     icon: const Icon(Icons.settings_outlined),
-                                    label: const Text(
-                                      'Apri configuratore admin',
+                                    label: Text(
+                                      tr('Apri configuratore admin'),
                                     ),
                                   ),
                               ],
@@ -168,7 +169,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                             const Divider(),
                             const SizedBox(height: 18),
                             Text(
-                              'Quando una pista verrà collegata al tuo account, qui potrai aggiornare stato del fondo, servizi disponibili e giornate speciali senza passare da SQL o dashboard tecniche.',
+                              tr('Quando una pista verrà collegata al tuo account, qui potrai aggiornare stato del fondo, servizi disponibili e giornate speciali senza passare da SQL o dashboard tecniche.'),
                               style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(color: AppColors.steel),
                             ),
@@ -184,12 +185,12 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Cosa troverai qui',
+                              tr('Cosa troverai qui'),
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Abbiamo già preparato il pannello per una gestione rapida, pensata per club e organizzatori che devono aggiornare il contesto in pochi tocchi.',
+                              tr('Abbiamo già preparato il pannello per una gestione rapida, pensata per club e organizzatori che devono aggiornare il contesto in pochi tocchi.'),
                               style: Theme.of(context).textTheme.bodyLarge
                                   ?.copyWith(color: AppColors.steel),
                             ),
@@ -245,12 +246,12 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Le tue piste in preparazione',
+                            tr('Le tue piste in preparazione'),
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Qui trovi le bozze pista e le schede inviate in approvazione, così puoi seguirne lo stato senza uscire da Gestione.',
+                            tr('Qui trovi le bozze pista e le schede inviate in approvazione, così puoi seguirne lo stato senza uscire da Gestione.'),
                             style: Theme.of(context).textTheme.bodyLarge
                                 ?.copyWith(color: AppColors.steel),
                           ),
@@ -277,12 +278,12 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Le tue piste approvate',
+                            tr('Le tue piste approvate'),
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Queste schede sono state approvate e sono visibili nel catalogo. Puoi modificarle e aggiornarne i contenuti.',
+                            tr('Queste schede sono state approvate e sono visibili nel catalogo. Puoi modificarle e aggiornarne i contenuti.'),
                             style: Theme.of(context).textTheme.bodyLarge
                                 ?.copyWith(color: AppColors.steel),
                           ),
@@ -309,12 +310,12 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'I tuoi negozi in gestione',
+                            tr('I tuoi negozi in gestione'),
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Bozze, negozi in approvazione e schede già preparate dal tuo account.',
+                            tr('Bozze, negozi in approvazione e schede già preparate dal tuo account.'),
                             style: Theme.of(context).textTheme.bodyLarge
                                 ?.copyWith(color: AppColors.steel),
                           ),
@@ -338,12 +339,12 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Piste già in PitLap',
+                          tr('Piste già in PitLap'),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Nel frattempo puoi aprire le schede pista già online, verificare il tono dei contenuti e capire come si presenterà la tua area quando verrà collegata.',
+                          tr('Nel frattempo puoi aprire le schede pista già online, verificare il tono dei contenuti e capire come si presenterà la tua area quando verrà collegata.'),
                           style: Theme.of(context).textTheme.bodyLarge
                               ?.copyWith(color: AppColors.steel),
                         ),
@@ -351,10 +352,10 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                         publicTracksAsync.when(
                           data: (tracks) {
                             if (tracks.isEmpty) {
-                              return const EmptyStatePanel(
+                              return EmptyStatePanel(
                                 icon: Icons.flag_outlined,
-                                title: 'Nessuna pista pubblica',
-                                subtitle: 'Non ci sono ancora piste pubbliche da mostrare.',
+                                title: tr('Nessuna pista pubblica'),
+                                subtitle: tr('Non ci sono ancora piste pubbliche da mostrare.'),
                                 compact: true,
                               );
                             }
@@ -386,7 +387,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                             child: Center(child: CircularProgressIndicator()),
                           ),
                           error: (_, errorStack) => Text(
-                            'Non siamo riusciti a caricare l\'anteprima delle piste pubbliche.',
+                            tr('Non siamo riusciti a caricare l\'anteprima delle piste pubbliche.'),
                             style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(color: AppColors.steel),
                           ),
@@ -538,12 +539,12 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Bozze e in approvazione',
+                                tr('Bozze e in approvazione'),
                                 style: Theme.of(context).textTheme.titleLarge,
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Piste che hai inviato in revisione o che sono ancora in bozza.',
+                                tr('Piste che hai inviato in revisione o che sono ancora in bozza.'),
                                 style: Theme.of(context).textTheme.bodyLarge
                                     ?.copyWith(color: AppColors.steel),
                               ),
@@ -571,12 +572,12 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'I tuoi negozi in gestione',
+                          tr('I tuoi negozi in gestione'),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Qui trovi i negozi creati dal tuo account e puoi riaprire subito l\'editor.',
+                          tr('Qui trovi i negozi creati dal tuo account e puoi riaprire subito l\'editor.'),
                           style: Theme.of(context).textTheme.bodyLarge
                               ?.copyWith(color: AppColors.steel),
                         ),
@@ -600,12 +601,12 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Ultimi aggiornamenti',
+                        tr('Ultimi aggiornamenti'),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Timeline operativa degli ultimi salvataggi eseguiti su questa pista.',
+                        tr('Timeline operativa degli ultimi salvataggi eseguiti su questa pista.'),
                         style: Theme.of(
                           context,
                         ).textTheme.bodyLarge?.copyWith(color: AppColors.steel),
@@ -614,10 +615,10 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                       recentUpdatesAsync.when(
                         data: (updates) {
                           if (updates.isEmpty) {
-                            return const EmptyStatePanel(
+                            return EmptyStatePanel(
                               icon: Icons.history_outlined,
-                              title: 'Nessun aggiornamento storico',
-                              subtitle: 'Nessun aggiornamento storico disponibile per ora.',
+                              title: tr('Nessun aggiornamento storico'),
+                              subtitle: tr('Nessun aggiornamento storico disponibile per ora.'),
                               compact: true,
                             );
                           }
@@ -634,7 +635,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                                       ),
                                       message: update.message,
                                       timeLabel: update.updatedAt == null
-                                          ? 'Orario non disponibile'
+                                          ? tr('Orario non disponibile')
                                           : _formatDateTime(
                                               context,
                                               update.updatedAt!,
@@ -653,7 +654,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Timeline non disponibile: $error',
+                              trf('Timeline non disponibile: {0}', [error]),
                               style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(color: AppColors.steel),
                             ),
@@ -667,7 +668,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                                 );
                               },
                               icon: const Icon(Icons.refresh_outlined),
-                              label: const Text('Riprova'),
+                              label: Text(tr('Riprova')),
                             ),
                           ],
                         ),
@@ -704,8 +705,8 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                             status: _trackStatus,
                           ),
                           if (_hasUnsavedChanges)
-                            const _StatusPill(
-                              label: 'Modifiche non salvate',
+                            _StatusPill(
+                              label: tr('Modifiche non salvate'),
                               status: 'draft',
                             ),
                           if (_lastSavedAt != null)
@@ -718,7 +719,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Preset rapidi',
+                        tr('Preset rapidi'),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 8),
@@ -731,11 +732,11 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                                 ? null
                                 : () => _applyPreset(
                                     status: 'open',
-                                    message: 'Pronta per sessioni libere.',
+                                    message: tr('Pronta per sessioni libere.'),
                                     compressorAvailable: true,
                                     bathroomsAvailable: true,
                                   ),
-                            child: const Text('Pronta gara'),
+                            child: Text(tr('Pronta gara')),
                           ),
                           OutlinedButton(
                             onPressed: _saving
@@ -743,22 +744,22 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                                 : () => _applyPreset(
                                     status: 'wet',
                                     message:
-                                        'Fondo bagnato, guida consigliata con prudenza.',
+                                        tr('Fondo bagnato, guida consigliata con prudenza.'),
                                     compressorAvailable: true,
                                     bathroomsAvailable: true,
                                   ),
-                            child: const Text('Bagnata ma aperta'),
+                            child: Text(tr('Bagnata ma aperta')),
                           ),
                           OutlinedButton(
                             onPressed: _saving
                                 ? null
                                 : () => _applyPreset(
                                     status: 'closed',
-                                    message: 'Pista chiusa per manutenzione.',
+                                    message: tr('Pista chiusa per manutenzione.'),
                                     compressorAvailable: false,
                                     bathroomsAvailable: false,
                                   ),
-                            child: const Text('Chiusa manutenzione'),
+                            child: Text(tr('Chiusa manutenzione')),
                           ),
                         ],
                       ),
@@ -854,10 +855,10 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                                 : const Icon(Icons.save_outlined),
                             label: Text(
                               _saving
-                                  ? 'Salvataggio...'
+                                  ? tr('Salvataggio...')
                                   : _hasUnsavedChanges
                                   ? l10n.managerSaveAction
-                                  : 'Nessuna modifica da salvare',
+                                  : tr('Nessuna modifica da salvare'),
                             ),
                           ),
                           OutlinedButton.icon(
@@ -876,7 +877,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                                     );
                                   },
                             icon: const Icon(Icons.refresh_outlined),
-                            label: const Text('Ricarica dati'),
+                            label: Text(tr('Ricarica dati')),
                           ),
                         ],
                       ),
@@ -892,12 +893,12 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Azioni rapide',
+                        tr('Azioni rapide'),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Tutte le operazioni disponibili per la tua pista.',
+                        tr('Tutte le operazioni disponibili per la tua pista.'),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppColors.steel,
                         ),
@@ -912,17 +913,17 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
                               '/manager/tracks/${primaryTrack.slug}/edit',
                             ),
                             icon: const Icon(Icons.edit_outlined),
-                            label: const Text('Modifica scheda pista'),
+                            label: Text(tr('Modifica scheda pista')),
                           ),
                           OutlinedButton.icon(
                             onPressed: () => context.go('/events'),
                             icon: const Icon(Icons.event_outlined),
-                            label: const Text('Gestisci eventi'),
+                            label: Text(tr('Gestisci eventi')),
                           ),
                           OutlinedButton.icon(
                             onPressed: () => context.go('/track/${primaryTrack.slug}'),
                             icon: const Icon(Icons.open_in_new_outlined),
-                            label: const Text('Vedi scheda pubblica'),
+                            label: Text(tr('Vedi scheda pubblica')),
                           ),
                         ],
                       ),
@@ -945,7 +946,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
       'open' => l10n.statusOpen,
       'wet' => l10n.statusWet,
       'closed' => l10n.statusClosed,
-      'info' => 'Aggiornamento scheda',
+      'info' => tr('Aggiornamento scheda'),
       _ => l10n.statusUnknown,
     };
   }
@@ -1094,7 +1095,7 @@ class _ManagerScreenState extends ConsumerState<ManagerScreen> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Salvataggio non riuscito: $error')),
+        SnackBar(content: Text(trf('Salvataggio non riuscito: {0}', [error]))),
       );
     } finally {
       if (mounted) {
@@ -1275,7 +1276,7 @@ class _AvailableTrackCard extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: onOpen,
               icon: const Icon(Icons.open_in_new_outlined),
-              label: const Text('Apri pista'),
+              label: Text(tr('Apri pista')),
             ),
           ],
         ),
@@ -1398,7 +1399,7 @@ class _ManagedTrackCard extends StatelessWidget {
       'open' => l10n.statusOpen,
       'wet' => l10n.statusWet,
       'closed' => l10n.statusClosed,
-      'info' => 'Aggiornamento scheda',
+      'info' => tr('Aggiornamento scheda'),
       _ => l10n.statusUnknown,
     };
     return InkWell(
@@ -1438,12 +1439,12 @@ class _ManagedTrackCard extends StatelessWidget {
                 OutlinedButton.icon(
                   onPressed: onOpen,
                   icon: const Icon(Icons.open_in_new_outlined),
-                  label: const Text('Apri pista'),
+                  label: Text(tr('Apri pista')),
                 ),
                 FilledButton.icon(
                   onPressed: onEdit,
                   icon: const Icon(Icons.edit_outlined),
-                  label: const Text('Modifica scheda'),
+                  label: Text(tr('Modifica scheda')),
                 ),
               ],
             ),
@@ -1460,10 +1461,10 @@ class _DraftTrackCard extends StatelessWidget {
   final SubmittedTrack draft;
 
   String get _statusLabel => switch (draft.approvalStatus) {
-    'pending' => 'In approvazione',
-    'approved' => 'Approvata',
-    'rejected' => 'Da rivedere',
-    _ => 'Bozza',
+    'pending' => tr('In approvazione'),
+    'approved' => tr('Approvata'),
+    'rejected' => tr('Da rivedere'),
+    _ => tr('Bozza'),
   };
 
   String get _statusKey => switch (draft.approvalStatus) {
@@ -1607,7 +1608,7 @@ class _DraftTrackActions extends StatelessWidget {
               extra: draft,
             ),
             icon: const Icon(Icons.edit_outlined, size: 18),
-            label: const Text('Modifica scheda'),
+            label: Text(tr('Modifica scheda')),
           ),
         ],
       );
@@ -1618,7 +1619,7 @@ class _DraftTrackActions extends StatelessWidget {
         const Icon(Icons.hourglass_top_outlined, size: 16, color: AppColors.steel),
         const SizedBox(width: 6),
         Text(
-          'In attesa di revisione admin',
+          tr('In attesa di revisione admin'),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
             color: AppColors.steel,
           ),
@@ -1636,10 +1637,10 @@ class _ManagedShopDraftCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusLabel = switch (draft.approvalStatus) {
-      'pending' => 'In approvazione',
-      'approved' => 'Approvato',
-      'rejected' => 'Da rivedere',
-      _ => 'Bozza negozio',
+      'pending' => tr('In approvazione'),
+      'approved' => tr('Approvato'),
+      'rejected' => tr('Da rivedere'),
+      _ => tr('Bozza negozio'),
     };
     final compact = MediaQuery.sizeOf(context).width < 980;
 
@@ -1731,13 +1732,13 @@ class _ManagedShopDraftCard extends StatelessWidget {
                     FilledButton.tonalIcon(
                       onPressed: () => context.go('/shop/${draft.slug}/edit'),
                       icon: const Icon(Icons.edit_outlined),
-                      label: const Text('Modifica negozio'),
+                      label: Text(tr('Modifica negozio')),
                     ),
                     if (draft.approvalStatus == 'approved')
                       OutlinedButton.icon(
                         onPressed: () => context.go('/shop/${draft.slug}'),
                         icon: const Icon(Icons.open_in_new_outlined),
-                        label: const Text('Apri scheda'),
+                        label: Text(tr('Apri scheda')),
                       ),
                   ],
                 ),

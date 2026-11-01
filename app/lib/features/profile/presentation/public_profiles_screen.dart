@@ -6,6 +6,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../application/public_profiles_provider.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class PublicProfilesScreen extends ConsumerStatefulWidget {
   const PublicProfilesScreen({super.key});
@@ -38,14 +39,14 @@ class _PublicProfilesScreenState extends ConsumerState<PublicProfilesScreen> {
     final profilesAsync = ref.watch(publicProfilesProvider);
 
     return ContentScaffold(
-      title: 'Profili pubblici',
-      description: 'Piloti, gestori e creator che hanno scelto di mostrarsi su PitLap.',
+      title: tr('Profili pubblici'),
+      description: tr('Piloti, gestori e creator che hanno scelto di mostrarsi su PitLap.'),
       child: profilesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => const _ProfilesEmptyState(
+        error: (error, _) => _ProfilesEmptyState(
           icon: Icons.error_outline,
-          title: 'Profili non disponibili',
-          body: 'Non riesco a caricare i profili pubblici in questo momento.',
+          title: tr('Profili non disponibili'),
+          body: tr('Non riesco a caricare i profili pubblici in questo momento.'),
         ),
         data: (profiles) {
           final filtered = _filterProfiles(profiles, _query);
@@ -53,17 +54,17 @@ class _PublicProfilesScreenState extends ConsumerState<PublicProfilesScreen> {
             children: [
               _SearchField(
                 controller: _searchController,
-                hint: 'Cerca pilota, ruolo o handle...',
+                hint: tr('Cerca pilota, ruolo o handle...'),
               ),
               const SizedBox(height: 18),
               _ProfilesSummary(total: profiles.length, visible: filtered.length),
               const SizedBox(height: 18),
               if (filtered.isEmpty)
-                const _ProfilesEmptyState(
+                _ProfilesEmptyState(
                   icon: Icons.people_outline,
-                  title: 'Nessun profilo pubblico',
+                  title: tr('Nessun profilo pubblico'),
                   body:
-                      'Quando gli utenti renderanno pubblico il profilo, appariranno qui.',
+                      tr('Quando gli utenti renderanno pubblico il profilo, appariranno qui.'),
                 )
               else
                 LayoutBuilder(
@@ -121,8 +122,8 @@ class _ProfilesSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = total == visible
-        ? '$total ${total == 1 ? 'profilo pubblico' : 'profili pubblici'}'
-        : '$visible di $total ${total == 1 ? 'profilo pubblico' : 'profili pubblici'}';
+        ? '$total ${tr(total == 1 ? 'profilo pubblico' : 'profili pubblici')}'
+        : '$visible ${tr('di')} $total ${tr(total == 1 ? 'profilo pubblico' : 'profili pubblici')}';
     return Row(
       children: [
         const Icon(Icons.people_alt_outlined, color: AppColors.signalOrange),

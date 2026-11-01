@@ -61,3 +61,15 @@ guest_probe_home.png
 *.tmp
 *.temp
 *.swp
+
+# Pagine SEO generate da tools/build_seo_pages.py (rigenerate a ogni build prod)
+app/web/piste/
+app/web/negozi/
+app/web/spot-rc/
+app/web/eventi/
+app/web/modellismo-rc/
+app/web/piste-rc/
+app/web/en/
+app/web/sitemap.xml
+app/web/robots.txt
+app/web/llms.txt

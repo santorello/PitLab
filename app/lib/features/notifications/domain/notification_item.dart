@@ -1,3 +1,4 @@
+import 'package:pitlap_app/app/l10n/tr.dart';
 /// Domain model for a notification as seen by the current user.
 class NotificationItem {
   const NotificationItem({
@@ -6,12 +7,13 @@ class NotificationItem {
     required this.kind,
     required this.entityType,
     required this.entityId,
-    required this.title,
-    this.body,
+    required String title,
+    String? body,
     required this.payload,
     required this.createdAt,
     this.readAt,
-  });
+  })  : _title = title,
+        _body = body;
 
   /// notification_id (UUID) — identifies the recipient row for the current
   /// user (notification_recipients has a composite PK, no own id); used to mark read.
@@ -29,8 +31,11 @@ class NotificationItem {
   /// notifications.entity_id (UUID string)
   final String entityId;
 
-  final String title;
-  final String? body;
+  // Testi scritti in italiano dai trigger: tradotti alla lettura.
+  final String _title;
+  final String? _body;
+  String get title => trDb(_title);
+  String? get body => _body == null ? null : trDb(_body);
 
   /// notifications.payload (raw JSON map)
   final Map<String, dynamic> payload;
@@ -49,8 +54,8 @@ class NotificationItem {
       kind: kind,
       entityType: entityType,
       entityId: entityId,
-      title: title,
-      body: body,
+      title: _title,
+      body: _body,
       payload: payload,
       createdAt: createdAt,
       readAt: readAt ?? this.readAt,

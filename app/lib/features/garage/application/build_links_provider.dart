@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../tracks/application/tracks_providers.dart';
 import 'public_builds_provider.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 /// Un luogo a cui si puo' collegare una build (vista `link_targets`,
 /// delta 2026-09-23-build-links).
@@ -31,10 +32,10 @@ class LinkTarget {
   String get key => '$entityType:$entityId';
 
   String get kindLabel => switch (entityType) {
-        'track' => 'Pista',
-        'shop' => 'Negozio',
-        'spot' => 'Spot',
-        _ => 'Evento',
+        'track' => tr('Pista'),
+        'shop' => tr('Negozio'),
+        'spot' => tr('Spot'),
+        _ => tr('Evento'),
       };
 
   String get route => switch (entityType) {
@@ -87,7 +88,7 @@ class BuildLinksNotifier extends AsyncNotifier<List<LinkTarget>> {
   Future<String?> add(LinkTarget target) async {
     final client = ref.read(supabaseClientProvider);
     final current = state.value ?? const [];
-    if (client == null) return 'Connessione non disponibile.';
+    if (client == null) return tr('Connessione non disponibile.');
     if (current.any((t) => t.key == target.key)) return null;
     try {
       await client.from('build_links').insert({
@@ -102,16 +103,16 @@ class BuildLinksNotifier extends AsyncNotifier<List<LinkTarget>> {
     } catch (error) {
       final text = error.toString();
       if (text.contains('build_links_limit') || text.contains('al massimo 8')) {
-        return 'Una build puo\' essere collegata al massimo a 8 luoghi.';
+        return tr('Una build puo\' essere collegata al massimo a 8 luoghi.');
       }
-      return 'Collegamento non salvato. Riprova.';
+      return tr('Collegamento non salvato. Riprova.');
     }
   }
 
   Future<String?> remove(LinkTarget target) async {
     final client = ref.read(supabaseClientProvider);
     final current = state.value ?? const [];
-    if (client == null) return 'Connessione non disponibile.';
+    if (client == null) return tr('Connessione non disponibile.');
     try {
       await client
           .from('build_links')
@@ -124,7 +125,7 @@ class BuildLinksNotifier extends AsyncNotifier<List<LinkTarget>> {
           (entityType: target.entityType, entityId: target.entityId)));
       return null;
     } catch (_) {
-      return 'Collegamento non rimosso. Riprova.';
+      return tr('Collegamento non rimosso. Riprova.');
     }
   }
 }

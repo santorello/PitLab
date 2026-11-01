@@ -11,6 +11,7 @@ import '../../auth/application/auth_providers.dart';
 import '../../comments/presentation/comments_section.dart';
 import '../application/build_links_provider.dart';
 import '../application/public_builds_provider.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 /// Pagina di una build pubblica: galleria stile Instagram, like, commenti.
 /// Rotta: /build/:buildId (pubblica, visibile anche agli ospiti).
@@ -68,7 +69,7 @@ class _BuildDetail extends ConsumerWidget {
                       _LikeButton(listing: listing),
                       const SizedBox(width: 4),
                       IconButton(
-                        tooltip: 'Condividi',
+                        tooltip: tr('Condividi'),
                         onPressed: () => shareEntity(
                           context: context,
                           entityType: 'user_build',
@@ -79,7 +80,7 @@ class _BuildDetail extends ConsumerWidget {
                       const Spacer(),
                       if (listing.imageUrls.length > 1)
                         Text(
-                          '${listing.imageUrls.length} foto',
+                          trf('{0} foto', [listing.imageUrls.length]),
                           style: theme.textTheme.labelLarge
                               ?.copyWith(color: AppColors.steel),
                         ),
@@ -107,7 +108,7 @@ class _BuildDetail extends ConsumerWidget {
                           ),
                           if (canOpenAuthor)
                             Text(
-                              'Vedi garage',
+                              tr('Vedi garage'),
                               style: theme.textTheme.labelLarge?.copyWith(
                                 color: AppColors.signalOrange,
                                 fontWeight: FontWeight.w800,
@@ -126,7 +127,7 @@ class _BuildDetail extends ConsumerWidget {
                   if (listing.specs.isNotEmpty) ...[
                     const SizedBox(height: 16),
                     Text(
-                      'Specifiche',
+                      tr('Specifiche'),
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
@@ -177,9 +178,9 @@ class _LikeButton extends ConsumerWidget {
       if (userId == null) {
         messenger.showSnackBar(
           SnackBar(
-            content: const Text('Accedi per mettere like alle build.'),
+            content: Text(tr('Accedi per mettere like alle build.')),
             action: SnackBarAction(
-              label: 'Accedi',
+              label: tr('Accedi'),
               onPressed: () => context.push(
                 '/login?redirect=${Uri.encodeComponent('/build/${listing.id}')}',
               ),
@@ -201,8 +202,8 @@ class _LikeButton extends ConsumerWidget {
 
     return Tooltip(
       message: isOwner
-          ? 'Like ricevuti dalla tua build'
-          : (liked ? 'Togli il like' : 'Mi piace'),
+          ? tr('Like ricevuti dalla tua build')
+          : (liked ? tr('Togli il like') : tr('Mi piace')),
       child: TextButton.icon(
         onPressed: isOwner || state == null ? null : onTap,
         icon: AnimatedSwitcher(
@@ -231,7 +232,7 @@ class _AuthorAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = author?.displayName ?? 'Pilota PitLap';
+    final name = author?.displayName ?? tr('Pilota PitLap');
     final initial = name.trim().isEmpty ? 'P' : name.trim().characters.first;
     final fallback = Text(
       initial.toUpperCase(),
@@ -297,14 +298,14 @@ class _Unavailable extends StatelessWidget {
           children: [
             const Icon(Icons.lock_outline, size: 42, color: AppColors.steel),
             const SizedBox(height: 12),
-            const Text(
-              'Questa build non esiste o non e\' piu\' pubblica.',
+            Text(
+              tr('Questa build non esiste o non e\' piu\' pubblica.'),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             FilledButton(
               onPressed: () => context.go('/builds'),
-              child: const Text('Vedi tutte le build'),
+              child: Text(tr('Vedi tutte le build')),
             ),
           ],
         ),
@@ -342,7 +343,7 @@ class _BuildPlaces extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Dove gira',
+          tr('Dove gira'),
           style: Theme.of(context)
               .textTheme
               .titleSmall
@@ -360,14 +361,14 @@ class _BuildPlaces extends ConsumerWidget {
                 tooltip: '${t.kindLabel} · ${t.city}',
                 onPressed: () => context.push(t.route),
                 onDeleted: isOwner ? () => remove(t) : null,
-                deleteButtonTooltipMessage: 'Scollega',
+                deleteButtonTooltipMessage: tr('Scollega'),
               ),
             if (isOwner)
               ActionChip(
                 avatar: const Icon(Icons.add_location_alt_outlined, size: 18),
                 label: Text(links.isEmpty
-                    ? 'Collega una pista, un negozio, uno spot o un evento'
-                    : 'Collega un luogo'),
+                    ? tr('Collega una pista, un negozio, uno spot o un evento')
+                    : tr('Collega un luogo')),
                 onPressed: () => _openLinkPicker(context, ref, listing.id),
               ),
           ],
@@ -375,7 +376,7 @@ class _BuildPlaces extends ConsumerWidget {
         if (isOwner && links.isEmpty) ...[
           const SizedBox(height: 6),
           Text(
-            'La build comparira\' tra le "Build viste qui" della scheda.',
+            tr('La build comparira\' tra le "Build viste qui" della scheda.'),
             style: Theme.of(context)
                 .textTheme
                 .bodySmall
@@ -425,7 +426,7 @@ class _LinkPickerDialogState extends ConsumerState<_LinkPickerDialog> {
   Widget build(BuildContext context) {
     final results = ref.watch(linkTargetSearchProvider(_query));
     return AlertDialog(
-      title: const Text('Dove gira questa build?'),
+      title: Text(tr('Dove gira questa build?')),
       content: SizedBox(
         width: 440,
         height: 380,
@@ -433,23 +434,23 @@ class _LinkPickerDialogState extends ConsumerState<_LinkPickerDialog> {
           children: [
             TextField(
               autofocus: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search),
-                hintText: 'Nome di pista, negozio, spot, evento o citta\'',
+                hintText: tr('Nome di pista, negozio, spot, evento o citta\''),
               ),
               onChanged: (v) => setState(() => _query = v),
             ),
             const SizedBox(height: 8),
             Expanded(
               child: _query.trim().length < 2
-                  ? const Center(child: Text('Scrivi almeno 2 lettere.'))
+                  ? Center(child: Text(tr('Scrivi almeno 2 lettere.')))
                   : results.when(
                       loading: () =>
                           const Center(child: CircularProgressIndicator()),
                       error: (_, _) =>
-                          const Center(child: Text('Ricerca non riuscita.')),
+                          Center(child: Text(tr('Ricerca non riuscita.'))),
                       data: (items) => items.isEmpty
-                          ? const Center(child: Text('Nessun luogo trovato.'))
+                          ? Center(child: Text(tr('Nessun luogo trovato.')))
                           : ListView.builder(
                               itemCount: items.length,
                               itemBuilder: (context, i) {

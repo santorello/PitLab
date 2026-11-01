@@ -22,6 +22,7 @@ import '../../auth/application/auth_providers.dart';
 import '../../comments/presentation/comments_section.dart';
 import '../../garage/presentation/builds_seen_here.dart';
 import '../application/tracks_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class TrackDetailScreen extends ConsumerStatefulWidget {
   const TrackDetailScreen({
@@ -278,15 +279,15 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                                   _HeroQuickFact(
                                     compact: isPhone,
                                     icon: Icons.schedule_outlined,
-                                    label: 'Orari',
-                                    value: track.hours,
+                                    label: tr('Orari'),
+                                    value: trHours(track.hours),
                                     color: AppColors.wetBlue,
                                   ),
                                 if (track.websiteUrl.isNotEmpty)
                                   _HeroQuickFact(
                                     compact: isPhone,
                                     icon: Icons.language_outlined,
-                                    label: 'Sito',
+                                    label: tr('Sito'),
                                     value: _hostOf(track.websiteUrl),
                                     color: AppColors.wetBlue,
                                     onTap: () => _openUrl(track.websiteUrl),
@@ -457,7 +458,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
     final messenger = ScaffoldMessenger.of(context);
     if (user == null) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Accedi per rivendicare la scheda.')),
+        SnackBar(content: Text(tr('Accedi per rivendicare la scheda.'))),
       );
       return;
     }
@@ -468,19 +469,19 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
       builder: (dialogContext) => DialogControllerScope(
         controllers: [messageController, contactController],
         child: AlertDialog(
-          title: Text('Rivendica ${track.name}'),
+          title: Text(trf('Rivendica {0}', [track.name])),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Verifichiamo a mano che tu gestisca davvero questa pista, '
-                'poi la scheda passa sotto il tuo controllo.',
+              Text(
+                tr('Verifichiamo a mano che tu gestisca davvero questa pista, '
+                'poi la scheda passa sotto il tuo controllo.'),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: contactController,
-                decoration: const InputDecoration(
-                  labelText: 'Come ti ricontattiamo (email o telefono)',
+                decoration: InputDecoration(
+                  labelText: tr('Come ti ricontattiamo (email o telefono)'),
                 ),
               ),
               const SizedBox(height: 12),
@@ -488,8 +489,8 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                 controller: messageController,
                 minLines: 2,
                 maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Due righe su di te e sulla pista',
+                decoration: InputDecoration(
+                  labelText: tr('Due righe su di te e sulla pista'),
                 ),
               ),
             ],
@@ -497,11 +498,11 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Annulla'),
+              child: Text(tr('Annulla')),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('Invia richiesta'),
+              child: Text(tr('Invia richiesta')),
             ),
           ],
         ),
@@ -519,13 +520,13 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
         'contact': contactController.text.trim(),
       });
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Richiesta inviata: ti ricontattiamo per la verifica.'),
+        SnackBar(
+          content: Text(tr('Richiesta inviata: ti ricontattiamo per la verifica.')),
         ),
       );
     } catch (e) {
       messenger.showSnackBar(
-        SnackBar(content: Text('Richiesta non inviata: $e')),
+        SnackBar(content: Text(trf('Richiesta non inviata: {0}', [e]))),
       );
     }
   }
@@ -616,7 +617,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
 
   static String _heroPresenceLabel(BuildContext context) {
     return Localizations.localeOf(context).languageCode == 'it'
-        ? 'Presenze'
+        ? tr('Presenze')
         : 'Attendance';
   }
 
@@ -626,7 +627,7 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
   ) {
     final isItalian = Localizations.localeOf(context).languageCode == 'it';
     if (summary.activeCount <= 0) {
-      return isItalian ? 'Nessun segnale oggi' : 'No signals today';
+      return isItalian ? tr('Nessun segnale oggi') : 'No signals today';
     }
 
     return isItalian
@@ -807,8 +808,8 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Questa pista non è ancora disponibile online: registrazione presenze non attiva.'),
+          SnackBar(
+            content: Text(tr('Questa pista non è ancora disponibile online: registrazione presenze non attiva.')),
           ),
         );
       }
@@ -895,7 +896,7 @@ class _TodayAtTrackCard extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               Localizations.localeOf(context).languageCode == 'it'
-                  ? 'Il tuo stato personale'
+                  ? tr('Il tuo stato personale')
                   : 'Your personal status',
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 color: AppColors.steel,
@@ -907,7 +908,7 @@ class _TodayAtTrackCard extends StatelessWidget {
                 if (!isAuthenticated) {
                   return Text(
                     Localizations.localeOf(context).languageCode == 'it'
-                        ? 'Accedi per segnalare la tua presenza personale di oggi. Le informazioni pubbliche qui sopra restano aggregate.'
+                        ? tr('Accedi per segnalare la tua presenza personale di oggi. Le informazioni pubbliche qui sopra restano aggregate.')
                         : 'Sign in to report your personal attendance for today. Public information above remains aggregated.',
                     style: Theme.of(context).textTheme.bodyLarge,
                   );
@@ -1034,7 +1035,7 @@ class _TodayAtTrackCard extends StatelessWidget {
           children: [
             Text(
               isItalian
-                  ? 'Presenza aggregata di oggi'
+                  ? tr('Presenza aggregata di oggi')
                   : 'Aggregated attendance today',
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 color: AppColors.steel,
@@ -1049,7 +1050,7 @@ class _TodayAtTrackCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             Text(
               isItalian
-                  ? 'Questa sezione mostra solo conteggi aggregati (nessun nominativo pubblico).'
+                  ? tr('Questa sezione mostra solo conteggi aggregati (nessun nominativo pubblico).')
                   : 'This section shows aggregated counts only (no public names).',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppColors.steel,
@@ -1059,10 +1060,10 @@ class _TodayAtTrackCard extends StatelessWidget {
             Text(
               summary.activeCount > 0
                   ? (isItalian
-                        ? '${summary.activeCount} ${summary.activeCount == 1 ? 'persona ha' : 'persone hanno'} già segnalato una presenza possibile per oggi.'
+                        ? trf('{0} {1} già segnalato una presenza possibile per oggi.', [summary.activeCount, summary.activeCount == 1 ? 'persona ha' : 'persone hanno'])
                         : '${summary.activeCount} ${summary.activeCount == 1 ? 'person has' : 'people have'} already signaled they may be at the track today.')
                   : (isItalian
-                        ? 'Nessuna presenza segnalata per oggi al momento.'
+                        ? tr('Nessuna presenza segnalata per oggi al momento.')
                         : 'No attendance has been reported for today yet.'),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppColors.steel,
@@ -1073,7 +1074,7 @@ class _TodayAtTrackCard extends StatelessWidget {
       },
       loading: () => Text(
         Localizations.localeOf(context).languageCode == 'it'
-            ? 'Caricamento presenze aggregate'
+            ? tr('Caricamento presenze aggregate')
             : 'Loading aggregate attendance',
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           color: AppColors.steel,
@@ -1081,7 +1082,7 @@ class _TodayAtTrackCard extends StatelessWidget {
       ),
       error: (error, stackTrace) => Text(
         Localizations.localeOf(context).languageCode == 'it'
-            ? 'Le presenze aggregate non sono disponibili in questo momento.'
+            ? tr('Le presenze aggregate non sono disponibili in questo momento.')
             : 'Aggregate attendance is unavailable right now.',
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           color: AppColors.steel,
@@ -1563,10 +1564,10 @@ class _CategoryTag extends StatelessWidget {
       'bashing' => ('Bashing', const Color(0xFFE74C3C)),
       'indoor' => ('Indoor', const Color(0xFF27AE60)),
       'outdoor' => ('Outdoor', const Color(0xFFF39C12)),
-      'droni' || 'drone' => ('Droni', const Color(0xFF8E44AD)),
-      'treni' || 'train' => ('Treni', const Color(0xFF16A085)),
-      'movimento_terra' => ('Movimento terra', const Color(0xFF95A5A6)),
-      'militare' => ('Militare', const Color(0xFF6B8E23)),
+      'droni' || 'drone' => (tr('Droni'), const Color(0xFF8E44AD)),
+      'treni' || 'train' => (tr('Treni'), const Color(0xFF16A085)),
+      'movimento_terra' => (tr('Movimento terra'), const Color(0xFF95A5A6)),
+      'militare' => (tr('Militare'), const Color(0xFF6B8E23)),
       'mini4wd' || 'mini_4wd' => ('Mini 4WD', const Color(0xFF4A90D9)),
       'francobolli' => ('Francobolli', const Color(0xFF95A5A6)),
       // FR-13: fallback leggibile (title-case) invece dello slug grezzo.

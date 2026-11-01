@@ -8,6 +8,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../application/notifications_providers.dart';
 import '../domain/notification_item.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
@@ -262,11 +263,11 @@ class _NotificationTile extends StatelessWidget {
 
   String _relativeTime(DateTime dt) {
     final diff = DateTime.now().difference(dt);
-    if (diff.inSeconds < 60) return 'adesso';
-    if (diff.inMinutes < 60) return '${diff.inMinutes} min fa';
-    if (diff.inHours < 24) return '${diff.inHours} h fa';
-    if (diff.inDays < 7) return '${diff.inDays} g fa';
-    return intl.DateFormat('d MMM', 'it').format(dt);
+    if (diff.inSeconds < 60) return tr('adesso');
+    if (diff.inMinutes < 60) return trf('{0} min fa', [diff.inMinutes]);
+    if (diff.inHours < 24) return trf('{0} h fa', [diff.inHours]);
+    if (diff.inDays < 7) return trf('{0} g fa', [diff.inDays]);
+    return intl.DateFormat('d MMM', AppLang.code).format(dt);
   }
 }
 

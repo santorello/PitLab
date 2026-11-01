@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../auth/application/auth_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 /// Apre il dialog di feedback. Disponibile a chiunque (anche guest).
 Future<void> showFeedbackDialog(BuildContext context) {
@@ -64,12 +65,12 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
       });
       navigator.pop();
       messenger.showSnackBar(
-        const SnackBar(content: Text('Grazie per il feedback!')),
+        SnackBar(content: Text(tr('Grazie per il feedback!'))),
       );
     } catch (error) {
       if (!mounted) return;
       messenger.showSnackBar(
-        SnackBar(content: Text('Invio non riuscito: $error')),
+        SnackBar(content: Text(trf('Invio non riuscito: {0}', [error]))),
       );
       setState(() => _sending = false);
     }
@@ -78,20 +79,20 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Invia feedback'),
+      title: Text(tr('Invia feedback')),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Raccontaci cosa ne pensi o segnala un problema.'),
+          Text(tr('Raccontaci cosa ne pensi o segnala un problema.')),
           const SizedBox(height: 16),
           TextField(
             controller: _messageController,
             maxLines: 4,
             autofocus: true,
             textInputAction: TextInputAction.newline,
-            decoration: const InputDecoration(
-              hintText: 'Il tuo messaggio',
+            decoration: InputDecoration(
+              hintText: tr('Il tuo messaggio'),
               border: OutlineInputBorder(),
             ),
           ),
@@ -99,8 +100,8 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
           TextField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              labelText: 'Email (opzionale, se vuoi risposta)',
+            decoration: InputDecoration(
+              labelText: tr('Email (opzionale, se vuoi risposta)'),
               border: OutlineInputBorder(),
             ),
           ),
@@ -109,11 +110,11 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
       actions: [
         TextButton(
           onPressed: _sending ? null : () => Navigator.of(context).pop(),
-          child: const Text('Annulla'),
+          child: Text(tr('Annulla')),
         ),
         FilledButton(
           onPressed: _sending ? null : _send,
-          child: Text(_sending ? 'Invio…' : 'Invia'),
+          child: Text(_sending ? 'Invio…' : tr('Invia')),
         ),
       ],
     );

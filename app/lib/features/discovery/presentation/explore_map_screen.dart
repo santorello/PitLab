@@ -14,6 +14,7 @@ import '../../events/application/public_events_provider.dart';
 import '../../shops/application/public_shops_provider.dart';
 import '../../spots/application/spots_providers.dart';
 import '../../tracks/application/tracks_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 /// Esplora (proposta B, mockup "PitLap Esplora Mappa" del 23/09/2026):
 /// mappa a tutto schermo, ricerca e una sola riga di filtri, segnaposti
@@ -45,10 +46,10 @@ IconData _kindIcon(_Kind kind) => switch (kind) {
     };
 
 String _kindLabel(_Kind kind) => switch (kind) {
-      _Kind.track => 'Pista',
-      _Kind.spot => 'Spot',
-      _Kind.shop => 'Negozio',
-      _Kind.event => 'Evento',
+      _Kind.track => tr('Pista'),
+      _Kind.spot => tr('Spot'),
+      _Kind.shop => tr('Negozio'),
+      _Kind.event => tr('Evento'),
     };
 
 /// Un luogo qualsiasi, ridotto a quello che serve a mappa, scheda ed elenco.
@@ -111,8 +112,8 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
           point: LatLng(t.latitude, t.longitude),
           route: '/track/${t.slug}',
           status: switch (t.status) {
-            'open' => (label: 'Aperta oggi', color: AppColors.openGreen),
-            'closed' => (label: 'Chiusa oggi', color: AppColors.closedRed),
+            'open' => (label: tr('Aperta oggi'), color: AppColors.openGreen),
+            'closed' => (label: tr('Chiusa oggi'), color: AppColors.closedRed),
             _ => null,
           },
         ),
@@ -128,7 +129,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
             imageUrl: s.imageUrls.isEmpty ? '' : s.imageUrls.first,
             status: (s.videoUrl ?? '').trim().isEmpty
                 ? null
-                : (label: 'Video disponibile', color: AppColors.wetBlue),
+                : (label: tr('Video disponibile'), color: AppColors.wetBlue),
           ),
       for (final s in shops)
         if (s.latitude != null && s.longitude != null)
@@ -216,8 +217,8 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
       if (!mounted) return;
       _map.move(LatLng(pos.latitude, pos.longitude), 11);
     } catch (_) {
-      messenger.showSnackBar(const SnackBar(
-        content: Text('Posizione non disponibile: sposta la mappa a mano.'),
+      messenger.showSnackBar(SnackBar(
+        content: Text(tr('Posizione non disponibile: sposta la mappa a mano.')),
       ));
     } finally {
       if (mounted) setState(() => _locating = false);
@@ -450,7 +451,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
       _Kind.shop => n == 1 ? 'negozio' : 'negozi',
       _Kind.event => n == 1 ? 'evento' : 'eventi',
     };
-    return '$n $what';
+    return '$n ${tr(what)}';
   }
 
   Widget _buildMap(List<_Place> visible) {
@@ -553,7 +554,7 @@ class _SearchField extends StatelessWidget {
         onChanged: onChanged,
         textInputAction: TextInputAction.search,
         decoration: InputDecoration(
-          hintText: 'Cerca pista, spot, negozio, città…',
+          hintText: tr('Cerca pista, spot, negozio, città…'),
           prefixIcon: const Icon(Icons.search),
           isDense: true,
           border: OutlineInputBorder(
@@ -615,11 +616,11 @@ class _Filters extends StatelessWidget {
     }
 
     final chips = [
-      chip('Tutto', null),
-      chip('Piste', _Kind.track),
-      chip('Spot', _Kind.spot),
-      chip('Negozi', _Kind.shop),
-      chip('Eventi', _Kind.event),
+      chip(tr('Tutto'), null),
+      chip(tr('Piste'), _Kind.track),
+      chip(tr('Spot'), _Kind.spot),
+      chip(tr('Negozi'), _Kind.shop),
+      chip(tr('Eventi'), _Kind.event),
     ];
     // Nella colonna PC i filtri vanno a capo invece di nascondersi a destra.
     if (wrap) {
@@ -657,7 +658,7 @@ class _ListHeader extends StatelessWidget {
           ),
           const Spacer(),
           Text(
-            'più vicini al centro mappa',
+            tr('più vicini al centro mappa'),
             style: Theme.of(context)
                 .textTheme
                 .bodySmall
@@ -685,9 +686,9 @@ class _PlaceList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (places.isEmpty) {
-      return const Padding(
+      return Padding(
         padding: EdgeInsets.all(24),
-        child: Text('Nessun luogo con questi filtri.'),
+        child: Text(tr('Nessun luogo con questi filtri.')),
       );
     }
     return ListView.separated(
@@ -909,7 +910,7 @@ class _PlaceCard extends StatelessWidget {
                         children: [
                           FilledButton(
                             onPressed: () => context.push(place.route),
-                            child: const Text('Apri'),
+                            child: Text(tr('Apri')),
                           ),
                           OutlinedButton.icon(
                             onPressed: () => launchUrl(
@@ -920,7 +921,7 @@ class _PlaceCard extends StatelessWidget {
                               mode: LaunchMode.externalApplication,
                             ),
                             icon: const Icon(Icons.directions, size: 18),
-                            label: const Text('Indicazioni'),
+                            label: Text(tr('Indicazioni')),
                           ),
                         ],
                       ),
@@ -934,7 +935,7 @@ class _PlaceCard extends StatelessWidget {
             top: 4,
             right: 4,
             child: IconButton(
-              tooltip: 'Chiudi',
+              tooltip: tr('Chiudi'),
               visualDensity: VisualDensity.compact,
               onPressed: onClose,
               icon: const Icon(Icons.close, size: 18),
@@ -1022,7 +1023,7 @@ class _ClusterBubble extends StatelessWidget {
     }
     return Center(
       child: Tooltip(
-        message: '$n luoghi: tocca per avvicinarti',
+        message: trf('{0} luoghi: tocca per avvicinarti', [n]),
         child: GestureDetector(
           onTap: onTap,
           child: Container(
@@ -1089,12 +1090,12 @@ class _MapButtons extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (onZoom != null) ...[
-          btn(Icons.add, 'Ingrandisci', () => onZoom!(1)),
+          btn(Icons.add, tr('Ingrandisci'), () => onZoom!(1)),
           const SizedBox(height: 8),
-          btn(Icons.remove, 'Riduci', () => onZoom!(-1)),
+          btn(Icons.remove, tr('Riduci'), () => onZoom!(-1)),
           const SizedBox(height: 8),
         ],
-        btn(Icons.fit_screen_outlined, 'Mostra tutti', onFit),
+        btn(Icons.fit_screen_outlined, tr('Mostra tutti'), onFit),
         const SizedBox(height: 8),
         locating
             ? const SizedBox(
@@ -1105,7 +1106,7 @@ class _MapButtons extends StatelessWidget {
                   child: CircularProgressIndicator(strokeWidth: 2.5),
                 ),
               )
-            : btn(Icons.my_location, 'La mia posizione', onLocate),
+            : btn(Icons.my_location, tr('La mia posizione'), onLocate),
       ],
     );
   }

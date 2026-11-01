@@ -15,6 +15,7 @@ import '../../../shared/widgets/image_transfer_progress_card.dart';
 import '../../auth/application/auth_providers.dart';
 import '../application/track_taxonomy_option.dart';
 import '../application/tracks_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class TrackEditorScreen extends ConsumerStatefulWidget {
   const TrackEditorScreen({super.key, this.initialDraft});
@@ -199,9 +200,9 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
     final attributionUserId = ref.watch(effectiveUserIdProvider) ?? currentUser?.id;
 
     return ContentScaffold(
-      title: _isEditMode ? 'Modifica bozza pista' : 'Crea pista',
+      title: _isEditMode ? tr('Modifica bozza pista') : tr('Crea pista'),
       description:
-          'Editor completo per scheda pista, servizi, card pubblica e invio in approvazione.',
+          tr('Editor completo per scheda pista, servizi, card pubblica e invio in approvazione.'),
       child: ListView(
         children: [
           Card(
@@ -212,7 +213,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Scheda pista completa',
+                    tr('Scheda pista completa'),
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w800,
@@ -220,7 +221,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Qui costruiamo davvero la tua pista: identità, posizione, servizi, contatti e preview della card.',
+                    tr('Qui costruiamo davvero la tua pista: identità, posizione, servizi, contatti e preview della card.'),
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: AppColors.concrete,
                     ),
@@ -230,9 +231,9 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
                     spacing: 10,
                     runSpacing: 10,
                     children: [
-                      const _DarkHeroChip(label: 'Card pubblica'),
-                      const _DarkHeroChip(label: 'Categorie e servizi'),
-                      const _DarkHeroChip(label: 'Invio approvazione'),
+                      _DarkHeroChip(label: tr('Card pubblica')),
+                      _DarkHeroChip(label: tr('Categorie e servizi')),
+                      _DarkHeroChip(label: tr('Invio approvazione')),
                       _DarkHeroChip(
                         label:
                             'Prontezza ${(_readinessProgress * 100).round()}%',
@@ -251,7 +252,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Checklist invio',
+                    tr('Checklist invio'),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
@@ -263,7 +264,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Completati $_requiredChecklistCompleted/5 requisiti minimi per inviare in approvazione.',
+                    trf('Completati {0}/5 requisiti minimi per inviare in approvazione.', [_requiredChecklistCompleted]),
                     style: Theme.of(
                       context,
                     ).textTheme.bodyMedium?.copyWith(color: AppColors.steel),
@@ -372,12 +373,12 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Azioni',
+                    tr('Azioni'),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Salva in bozza quando stai lavorando. Invia in approvazione quando la scheda è pronta per la revisione admin.',
+                    tr('Salva in bozza quando stai lavorando. Invia in approvazione quando la scheda è pronta per la revisione admin.'),
                     style: Theme.of(
                       context,
                     ).textTheme.bodyMedium?.copyWith(color: AppColors.steel),
@@ -397,14 +398,14 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Icon(Icons.save_outlined),
-                        label: const Text('Salva bozza'),
+                        label: Text(tr('Salva bozza')),
                       ),
                       OutlinedButton.icon(
                         onPressed: attributionUserId == null || !_canSubmitForApproval || _isSaving
                             ? null
                             : () => _submitForApproval(attributionUserId),
                         icon: const Icon(Icons.rule_outlined),
-                        label: const Text('Invia in approvazione'),
+                        label: Text(tr('Invia in approvazione')),
                       ),
                     ],
                   ),
@@ -425,8 +426,8 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
 
     if (uploadService == null || userId == null) {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Devi essere autenticato per caricare immagini.'),
+        SnackBar(
+          content: Text(tr('Devi essere autenticato per caricare immagini.')),
         ),
       );
       return;
@@ -434,7 +435,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
 
     final uploadController = MediaUploadController(
       totalItems: 1,
-      initialStageLabel: 'Sto preparando la cover pista',
+      initialStageLabel: tr('Sto preparando la cover pista'),
     );
     setState(() {
       _uploadingCover = true;
@@ -494,7 +495,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
         _coverTransferState = uploadController.snapshot;
       });
       messenger.showSnackBar(
-        SnackBar(content: Text('Errore caricamento cover pista: $e')),
+        SnackBar(content: Text(trf('Errore caricamento cover pista: {0}', [e]))),
       );
     }
   }
@@ -514,7 +515,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
     final repository = ref.read(tracksRepositoryProvider);
     if (repository == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Connessione al server non disponibile.')),
+        SnackBar(content: Text(tr('Connessione al server non disponibile.'))),
       );
       return;
     }
@@ -535,13 +536,13 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
       ref.invalidate(submittedTracksProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bozza pista salvata in Gestione.')),
+          SnackBar(content: Text(tr('Bozza pista salvata in Gestione.'))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Errore nel salvataggio: $e')),
+          SnackBar(content: Text(trf('Errore nel salvataggio: {0}', [e]))),
         );
       }
     } finally {
@@ -552,9 +553,9 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
   Future<void> _submitForApproval(String userId) async {
     if (!_canSubmitForApproval) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Completa nome, città, descrizione breve, cover e almeno un servizio prima di inviare.',
+            tr('Completa nome, città, descrizione breve, cover e almeno un servizio prima di inviare.'),
           ),
         ),
       );
@@ -563,7 +564,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
     final repository = ref.read(tracksRepositoryProvider);
     if (repository == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Connessione al server non disponibile.')),
+        SnackBar(content: Text(tr('Connessione al server non disponibile.'))),
       );
       return;
     }
@@ -583,14 +584,14 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
       ref.invalidate(submittedTracksProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Pista inviata alla coda approvazioni admin.')),
+          SnackBar(content: Text(tr('Pista inviata alla coda approvazioni admin.'))),
         );
         context.go('/manager');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Errore nell\'invio: $e')),
+          SnackBar(content: Text(trf('Errore nell\'invio: {0}', [e]))),
         );
       }
     } finally {
@@ -683,7 +684,7 @@ class _TrackEditorScreenState extends ConsumerState<TrackEditorScreen> {
       id: _persistedDraft?.id ?? widget.initialDraft?.id ?? '',
       slug: slug,
       name: _nameController.text.trim().isEmpty
-          ? 'Nuova pista'
+          ? tr('Nuova pista')
           : _nameController.text.trim(),
       city: _cityController.text.trim(),
       shortDescription: _shortDescriptionController.text.trim(),
@@ -776,38 +777,38 @@ class _EditorSections extends StatelessWidget {
     return Column(
       children: [
         _SectionCard(
-          title: 'Identità pista',
-          body: 'Nome, slug, città e copy breve per la card pubblica.',
+          title: tr('Identità pista'),
+          body: tr('Nome, slug, città e copy breve per la card pubblica.'),
           child: Column(
             children: [
-              TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Nome pista')),
+              TextField(controller: nameController, decoration: InputDecoration(labelText: tr('Nome pista'))),
               const SizedBox(height: 12),
-              TextField(controller: slugController, decoration: const InputDecoration(labelText: 'Slug pubblico')),
+              TextField(controller: slugController, decoration: InputDecoration(labelText: tr('Slug pubblico'))),
               const SizedBox(height: 12),
-              TextField(controller: cityController, decoration: const InputDecoration(labelText: 'Città')),
+              TextField(controller: cityController, decoration: InputDecoration(labelText: tr('Città'))),
               const SizedBox(height: 12),
               TextField(
                 controller: shortDescriptionController,
                 maxLines: 3,
-                decoration: const InputDecoration(labelText: 'Descrizione breve card'),
+                decoration: InputDecoration(labelText: tr('Descrizione breve card')),
               ),
             ],
           ),
         ),
         const SizedBox(height: 18),
         _SectionCard(
-          title: 'Posizione e media',
-          body: 'Indirizzo completo e cover per la card pista.',
+          title: tr('Posizione e media'),
+          body: tr('Indirizzo completo e cover per la card pista.'),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextField(controller: addressController, decoration: const InputDecoration(labelText: 'Indirizzo')),
+              TextField(controller: addressController, decoration: InputDecoration(labelText: tr('Indirizzo'))),
               const SizedBox(height: 12),
               TextField(
                 controller: coverImageUrlController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'URL cover (https://…)',
-                  helperText: 'Incolla un link diretto all\'immagine. Consigliato rispetto al caricamento locale.',
+                  helperText: tr('Incolla un link diretto all\'immagine. Consigliato rispetto al caricamento locale.'),
                 ),
                 keyboardType: TextInputType.url,
               ),
@@ -815,12 +816,12 @@ class _EditorSections extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: onPickCover,
                 icon: const Icon(Icons.upload_file_outlined),
-                label: const Text('Oppure carica da file (anteprima locale)'),
+                label: Text(tr('Oppure carica da file (anteprima locale)')),
               ),
               if (uploadingCover) ...[
                 const SizedBox(height: 10),
                 ImageTransferProgressCard(
-                  label: 'Preparazione cover pista',
+                  label: tr('Preparazione cover pista'),
                   stageLabel: coverStageLabel,
                   progress: coverProgress,
                   completedCount: coverCompletedCount,
@@ -848,8 +849,8 @@ class _EditorSections extends StatelessWidget {
         ),
         const SizedBox(height: 18),
         _SectionCard(
-          title: 'Categoria pista',
-          body: 'Seleziona il tipo di pista — usato nei filtri di ricerca.',
+          title: tr('Categoria pista'),
+          body: tr('Seleziona il tipo di pista — usato nei filtri di ricerca.'),
           child: categoryOptions.isEmpty
               ? const _TaxonomyLoadingHint()
               : Wrap(
@@ -871,8 +872,8 @@ class _EditorSections extends StatelessWidget {
         ),
         const SizedBox(height: 18),
         _SectionCard(
-          title: 'Servizi disponibili',
-          body: 'Seleziona i servizi confermati presenti in pista.',
+          title: tr('Servizi disponibili'),
+          body: tr('Seleziona i servizi confermati presenti in pista.'),
           child: serviceOptions.isEmpty
               ? const _TaxonomyLoadingHint()
               : Wrap(
@@ -891,23 +892,23 @@ class _EditorSections extends StatelessWidget {
         ),
         const SizedBox(height: 18),
         _SectionCard(
-          title: 'Contatti e dettaglio',
-          body: 'Descrizione lunga, contatti e riferimenti dell\'organizzazione.',
+          title: tr('Contatti e dettaglio'),
+          body: tr('Descrizione lunga, contatti e riferimenti dell\'organizzazione.'),
           child: Column(
             children: [
               TextField(
                 controller: descriptionController,
                 maxLines: 4,
-                decoration: const InputDecoration(labelText: 'Descrizione completa'),
+                decoration: InputDecoration(labelText: tr('Descrizione completa')),
               ),
               const SizedBox(height: 12),
-              TextField(controller: organizationController, decoration: const InputDecoration(labelText: 'Società o club')),
+              TextField(controller: organizationController, decoration: InputDecoration(labelText: tr('Società o club'))),
               const SizedBox(height: 12),
-              TextField(controller: contactEmailController, decoration: const InputDecoration(labelText: 'Email contatto')),
+              TextField(controller: contactEmailController, decoration: InputDecoration(labelText: tr('Email contatto'))),
               const SizedBox(height: 12),
-              TextField(controller: phoneController, decoration: const InputDecoration(labelText: 'Telefono')),
+              TextField(controller: phoneController, decoration: InputDecoration(labelText: tr('Telefono'))),
               const SizedBox(height: 12),
-              TextField(controller: websiteController, decoration: const InputDecoration(labelText: 'Sito web')),
+              TextField(controller: websiteController, decoration: InputDecoration(labelText: tr('Sito web'))),
             ],
           ),
         ),
@@ -983,12 +984,12 @@ class _TrackPreviewCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    name.isEmpty ? 'Nome pista' : name,
+                    name.isEmpty ? tr('Nome pista') : name,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    city.isEmpty ? 'Città' : city,
+                    city.isEmpty ? tr('Città') : city,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.steel,
                     ),
@@ -996,7 +997,7 @@ class _TrackPreviewCard extends StatelessWidget {
                   const SizedBox(height: 10),
                   Text(
                     shortDescription.isEmpty
-                        ? 'La descrizione breve comparirà qui.'
+                        ? tr('La descrizione breve comparirà qui.')
                         : shortDescription,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
@@ -1081,25 +1082,25 @@ class _ReadinessCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Pronta per approvazione',
+              tr('Pronta per approvazione'),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             Text(
-              'Checklist minima prima dell\'invio admin.',
+              tr('Checklist minima prima dell\'invio admin.'),
               style: Theme.of(
                 context,
               ).textTheme.bodyMedium?.copyWith(color: AppColors.steel),
             ),
             const SizedBox(height: 12),
-            _ReadinessRow(label: 'Nome pista', done: nameReady),
-            _ReadinessRow(label: 'Città', done: cityReady),
+            _ReadinessRow(label: tr('Nome pista'), done: nameReady),
+            _ReadinessRow(label: tr('Città'), done: cityReady),
             _ReadinessRow(
-              label: 'Descrizione breve',
+              label: tr('Descrizione breve'),
               done: descriptionReady,
             ),
             _ReadinessRow(label: 'Cover', done: coverReady),
-            _ReadinessRow(label: 'Almeno un servizio', done: servicesReady),
+            _ReadinessRow(label: tr('Almeno un servizio'), done: servicesReady),
           ],
         ),
       ),
@@ -1181,7 +1182,7 @@ class _TaxonomyLoadingHint extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Text(
-          'Caricamento opzioni…',
+          tr('Caricamento opzioni…'),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
             color: AppColors.steel,
           ),

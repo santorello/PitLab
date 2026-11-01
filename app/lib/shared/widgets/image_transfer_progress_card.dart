@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/theme/app_colors.dart';
 import '../media/media_upload_state.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class ImageTransferProgressCard extends StatelessWidget {
   const ImageTransferProgressCard({
@@ -35,7 +36,7 @@ class ImageTransferProgressCard extends StatelessWidget {
     final resolvedDetailsLabel =
         batchState?.detailsLabel ??
         detailsLabel ??
-        '$resolvedCompletedCount di $resolvedTotalCount immagini pronte';
+        trf('{0} di {1} immagini pronte', [resolvedCompletedCount, resolvedTotalCount]);
     final normalized = resolvedProgress.clamp(0, 1).toDouble();
     final percent = (normalized * 100).round();
 

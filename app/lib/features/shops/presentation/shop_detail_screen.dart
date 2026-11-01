@@ -20,6 +20,7 @@ import '../application/public_shops_provider.dart';
 import '../application/shop_follows_providers.dart';
 import '../application/shop_permissions_providers.dart';
 import '../../auth/application/auth_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class ShopDetailScreen extends ConsumerWidget {
   const ShopDetailScreen({required this.slug, super.key});
@@ -101,8 +102,8 @@ class _ShopDetailBody extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             child: CommunityClaimStrip(
-              label: 'Segnalato dalla community · dati non confermati dal titolare',
-              action: 'Sei il titolare?',
+              label: tr('Segnalato dalla community · dati non confermati dal titolare'),
+              action: tr('Sei il titolare?'),
               onClaim: () => _openShopClaimDialog(context, ref, shop),
             ),
           ),
@@ -148,7 +149,7 @@ class _ShopDetailBody extends ConsumerWidget {
         // ── Note ─────────────────────────────────────────────────────
         if (shop.notes.trim().isNotEmpty) ...[
           _DetailSection(
-            title: 'Note dal negozio',
+            title: tr('Note dal negozio'),
             icon: Icons.info_outline,
             child: Text(
               shop.notes,
@@ -382,7 +383,7 @@ class _ShopHero extends StatelessWidget {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      '$followerCount ${followerCount == 1 ? 'persona salva' : 'persone salvano'} questo negozio',
+                      trf('{0} {1} questo negozio', [followerCount, followerCount == 1 ? tr('persona salva') : tr('persone salvano')]),
                       style: Theme.of(context).textTheme.bodySmall
                           ?.copyWith(color: AppColors.steel),
                     ),
@@ -510,7 +511,7 @@ class _ContactsSection extends StatelessWidget {
                     );
                   },
                   icon: const Icon(Icons.open_in_new_outlined, size: 18),
-                  label: const Text('Sito web'),
+                  label: Text(tr('Sito web')),
                 ),
             ],
           ),
@@ -564,12 +565,12 @@ class _ContactRow extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.copy_outlined, size: 16),
               color: AppColors.steel,
-              tooltip: 'Copia',
+              tooltip: tr('Copia'),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: entry.copyValue!));
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Copiato negli appunti'),
+                  SnackBar(
+                    content: Text(tr('Copiato negli appunti')),
                     duration: Duration(seconds: 1),
                   ),
                 );
@@ -590,7 +591,7 @@ class _HoursDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lines = hours
+    final lines = trHours(hours)
         .split('\n')
         .map((l) => l.trim())
         .where((l) => l.isNotEmpty)
@@ -894,7 +895,7 @@ class _EmptyShopState extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Il negozio cercato non è disponibile o non è ancora stato pubblicato.',
+            tr('Il negozio cercato non è disponibile o non è ancora stato pubblicato.'),
             style: Theme.of(context).textTheme.bodyMedium
                 ?.copyWith(color: AppColors.steel),
             textAlign: TextAlign.center,
@@ -917,7 +918,7 @@ Future<void> _openShopClaimDialog(
   final messenger = ScaffoldMessenger.of(context);
   if (user == null) {
     messenger.showSnackBar(
-      const SnackBar(content: Text('Accedi per rivendicare la scheda.')),
+      SnackBar(content: Text(tr('Accedi per rivendicare la scheda.'))),
     );
     return;
   }
@@ -928,19 +929,19 @@ Future<void> _openShopClaimDialog(
     builder: (dialogContext) => DialogControllerScope(
       controllers: [messageController, contactController],
       child: AlertDialog(
-        title: Text('Rivendica ${shop.name}'),
+        title: Text(trf('Rivendica {0}', [shop.name])),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Verifichiamo a mano che tu gestisca davvero questo negozio, '
-              'poi la scheda passa sotto il tuo controllo.',
+            Text(
+              tr('Verifichiamo a mano che tu gestisca davvero questo negozio, '
+              'poi la scheda passa sotto il tuo controllo.'),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: contactController,
-              decoration: const InputDecoration(
-                labelText: 'Come ti ricontattiamo (email o telefono)',
+              decoration: InputDecoration(
+                labelText: tr('Come ti ricontattiamo (email o telefono)'),
               ),
             ),
             const SizedBox(height: 12),
@@ -948,8 +949,8 @@ Future<void> _openShopClaimDialog(
               controller: messageController,
               minLines: 2,
               maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'Due righe su di te e sul negozio',
+              decoration: InputDecoration(
+                labelText: tr('Due righe su di te e sul negozio'),
               ),
             ),
           ],
@@ -957,11 +958,11 @@ Future<void> _openShopClaimDialog(
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Annulla'),
+            child: Text(tr('Annulla')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Invia richiesta'),
+            child: Text(tr('Invia richiesta')),
           ),
         ],
       ),
@@ -979,13 +980,13 @@ Future<void> _openShopClaimDialog(
       'contact': contactController.text.trim(),
     });
     messenger.showSnackBar(
-      const SnackBar(
-        content: Text('Richiesta inviata: ti ricontattiamo per la verifica.'),
+      SnackBar(
+        content: Text(tr('Richiesta inviata: ti ricontattiamo per la verifica.')),
       ),
     );
   } catch (e) {
     messenger.showSnackBar(
-      SnackBar(content: Text('Richiesta non inviata: $e')),
+      SnackBar(content: Text(trf('Richiesta non inviata: {0}', [e]))),
     );
   }
 }

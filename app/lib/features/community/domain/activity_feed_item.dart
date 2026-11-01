@@ -1,3 +1,4 @@
+import 'package:pitlap_app/app/l10n/tr.dart';
 /// Modello per un singolo elemento del community feed.
 /// Mappa le colonne della VIEW `activity_feed` su Supabase.
 class ActivityFeedItem {
@@ -7,12 +8,13 @@ class ActivityFeedItem {
     required this.actorName,
     required this.actorCity,
     required this.eventType,
-    required this.title,
-    required this.subtitle,
+    required String title,
+    required String subtitle,
     required this.payload,
     required this.createdAt,
     this.actorSlug,
-  });
+  })  : _title = title,
+        _subtitle = subtitle;
 
   /// 'track' | 'spot' | 'community'
   final String actorType;
@@ -24,8 +26,11 @@ class ActivityFeedItem {
   /// 'track_status' | 'track_event' | 'community_event' | 'new_spot'
   final String eventType;
 
-  final String title;
-  final String subtitle;
+  // Titoli composti dalla vista activity_feed in italiano: tradotti alla lettura.
+  final String _title;
+  final String _subtitle;
+  String get title => trDb(_title);
+  String get subtitle => trDb(_subtitle);
   final Map<String, dynamic> payload;
   final DateTime createdAt;
 

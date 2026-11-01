@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../application/build_links_provider.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 /// "Build viste qui": build pubbliche collegate a una pista, un negozio,
 /// uno spot o un evento. Si nasconde se non ce ne sono.
@@ -40,7 +41,7 @@ class BuildsSeenHere extends ConsumerWidget {
                   size: 20, color: AppColors.signalOrange),
               const SizedBox(width: 8),
               Text(
-                'Build viste qui',
+                tr('Build viste qui'),
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.w800),
               ),

@@ -17,6 +17,7 @@ import '../../shops/application/public_shops_provider.dart';
 import '../../spots/application/spots_providers.dart';
 import '../../spots/domain/spot_tags.dart';
 import '../../tracks/application/tracks_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class NearbyScreen extends ConsumerStatefulWidget {
   const NearbyScreen({super.key});
@@ -42,7 +43,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
 
   Future<void> _useGps() async {
     final messenger = ScaffoldMessenger.of(context);
-    final denied = _t(context, 'Posizione non disponibile: uso la tua città di casa.',
+    final denied = _t(context, tr('Posizione non disponibile: uso la tua città di casa.'),
         'Location unavailable: using your home city.');
     setState(() => _locating = true);
     try {
@@ -84,7 +85,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
             ? (lat: home.latitude!, lon: home.longitude!)
             : null);
     final originLabel = _gps != null
-        ? _t(context, 'dalla tua posizione', 'from your location')
+        ? _t(context, tr('dalla tua posizione'), 'from your location')
         : origin != null
             ? _t(context, 'da ${home!.label}', 'from ${home.label}')
             : null;
@@ -117,7 +118,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
         (spot) => _NearbyItem(
           title: spot.title,
           subtitle: spot.city,
-          badge: 'Spot',
+          badge: tr('Spot'),
           note: spot.note,
           type: 'spot',
           route: '/spot/${spot.slug}',
@@ -130,7 +131,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                   .firstOrNull
                   ?.label(context) ??
               '',
-          actionLabel: _t(context, 'Apri spot', 'Open spot'),
+          actionLabel: _t(context, tr('Apri spot'), 'Open spot'),
           latitude: spot.latitude,
           longitude: spot.longitude,
         ),
@@ -139,14 +140,14 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
         (event) => _NearbyItem(
           title: event.title,
           subtitle: event.location,
-          badge: _t(context, 'Evento', 'Event'),
+          badge: _t(context, tr('Evento'), 'Event'),
           note: event.note,
           type: 'event',
           route: '/event/${event.id}',
           imageUrl: event.imageSource ?? '',
           primaryMeta: event.date,
           secondaryMeta: event.venue ?? '',
-          actionLabel: _t(context, 'Apri evento', 'Open event'),
+          actionLabel: _t(context, tr('Apri evento'), 'Open event'),
           latitude: event.latitude,
           longitude: event.longitude,
         ),
@@ -244,8 +245,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
               for (final (key, label) in [
                 ('all', l10n.nearbyFilterAll),
                 ('track', l10n.nearbyFilterTracks),
-                ('spot', 'Spot'),
-                ('event', _t(context, 'Eventi', 'Events')),
+                ('spot', tr('Spot')),
+                ('event', _t(context, tr('Eventi'), 'Events')),
                 ('shop', l10n.nearbyFilterShops),
               ])
                 _TypeChip(
@@ -265,7 +266,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                 for (final km in <double?>[10, 25, 50, null])
                   _TypeChip(
                     label: km == null
-                        ? _t(context, 'Ovunque', 'Anywhere')
+                        ? _t(context, tr('Ovunque'), 'Anywhere')
                         : '${km.toInt()} km',
                     selected: _radiusKm == km,
                     onTap: () => setState(() => _radiusKm = km),
@@ -283,7 +284,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
             Text(
               _t(
                 context,
-                'Imposta la città nel profilo o usa "Vicino a me" per vedere le distanze.',
+                tr('Imposta la città nel profilo o usa "Vicino a me" per vedere le distanze.'),
                 'Set your city in your profile or use "Near me" to see distances.',
               ),
               style: Theme.of(context)

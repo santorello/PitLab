@@ -8,6 +8,7 @@ import '../media/media_upload_labels.dart';
 import '../media/media_upload_service.dart';
 import '../media/media_upload_state.dart';
 import 'image_transfer_progress_card.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 /// Campo copertina: URL a mano oppure foto dal dispositivo.
 ///
@@ -50,8 +51,8 @@ class _CoverImageFieldState extends ConsumerState<CoverImageField> {
     final userId = ref.read(effectiveUserIdProvider);
     if (uploadService == null || userId == null) {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Devi essere autenticato per caricare immagini.'),
+        SnackBar(
+          content: Text(tr('Devi essere autenticato per caricare immagini.')),
         ),
       );
       return;
@@ -66,7 +67,7 @@ class _CoverImageFieldState extends ConsumerState<CoverImageField> {
 
     final uploadController = MediaUploadController(
       totalItems: 1,
-      initialStageLabel: widget.progressLabel,
+      initialStageLabel: tr(widget.progressLabel),
     );
     setState(() {
       _uploading = true;
@@ -114,7 +115,7 @@ class _CoverImageFieldState extends ConsumerState<CoverImageField> {
         _transferState = uploadController.snapshot;
       });
       messenger.showSnackBar(
-        SnackBar(content: Text('Errore caricamento copertina: $e')),
+        SnackBar(content: Text(trf('Errore caricamento copertina: {0}', [e]))),
       );
     }
   }
@@ -128,7 +129,7 @@ class _CoverImageFieldState extends ConsumerState<CoverImageField> {
           controller: widget.controller,
           onChanged: (_) => setState(() {}),
           decoration: InputDecoration(
-            labelText: widget.label,
+            labelText: tr(widget.label),
             hintText: 'https://...',
           ),
         ),
@@ -136,12 +137,12 @@ class _CoverImageFieldState extends ConsumerState<CoverImageField> {
         OutlinedButton.icon(
           onPressed: _uploading ? null : _pickAndUpload,
           icon: const Icon(Icons.upload_file_outlined),
-          label: Text(widget.uploadLabel),
+          label: Text(tr(widget.uploadLabel)),
         ),
         if (_uploading || _transferState != null) ...[
           const SizedBox(height: 10),
           ImageTransferProgressCard(
-            label: widget.progressLabel,
+            label: tr(widget.progressLabel),
             batchState: _transferState,
             icon: Icons.image_outlined,
           ),

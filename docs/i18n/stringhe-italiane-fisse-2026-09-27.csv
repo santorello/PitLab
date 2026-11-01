@@ -1,0 +1,677 @@
+﻿area;file;riga;testo
+app/bootstrap;app/lib/app/bootstrap/bootstrap.dart;141;[AuthFlow] Ignoro $callbackErrorCode: sessione gia\' valida per ${currentUser.id}
+core/widgets;app/lib/core/widgets/app_scaffold.dart;38;Build
+core/widgets;app/lib/core/widgets/app_scaffold.dart;58;Garage
+core/widgets;app/lib/core/widgets/app_scaffold.dart;156;Invia feedback
+core/widgets;app/lib/core/widgets/app_scaffold.dart;400;Esci
+core/widgets;app/lib/core/widgets/app_scaffold.dart;500;Lingua: Italiano
+core/widgets;app/lib/core/widgets/app_scaffold.dart;509;Invia feedback
+core/widgets;app/lib/core/widgets/app_scaffold.dart;518;Offri un caffè
+core/widgets;app/lib/core/widgets/app_scaffold.dart;563;Build
+core/widgets;app/lib/core/widgets/environment_banner.dart;25;Supabase non configurato. Avvia l\'app con --dart-define=SUPABASE_URL e --dart-define=SUPA
+core/widgets;app/lib/core/widgets/not_found_screen.dart;54;Pagina non trovata
+core/widgets;app/lib/core/widgets/not_found_screen.dart;65;La pagina che stai cercando non esiste o è stata spostata.
+admin;app/lib/features/admin/application/admin_providers.dart;24;Utente
+admin;app/lib/features/admin/application/admin_providers.dart;37;Utente
+admin;app/lib/features/admin/application/admin_providers.dart;54;Utente
+admin;app/lib/features/admin/application/admin_providers.dart;498;Pista
+admin;app/lib/features/admin/application/admin_providers.dart;550;Negozio
+admin;app/lib/features/admin/presentation/admin_control_room.dart;25;Dati non disponibili
+admin;app/lib/features/admin/presentation/admin_control_room.dart;26;Riprova ad aggiornare la pagina. ($error)
+admin;app/lib/features/admin/presentation/admin_control_room.dart;34;Panoramica non disponibile
+admin;app/lib/features/admin/presentation/admin_control_room.dart;35;"Ricarica la pagina; se resta vuota, rifai l\'accesso."
+admin;app/lib/features/admin/presentation/admin_control_room.dart;89;Niente da approvare, niente da moderare, nessun feedback da leggere.
+admin;app/lib/features/admin/presentation/admin_control_room.dart;96;C\'è da lavorare · $open ${open == 1 ? 
+admin;app/lib/features/admin/presentation/admin_control_room.dart;98;La più vecchia aspetta da $oldest ${oldest == 1 ? 
+admin;app/lib/features/admin/presentation/admin_control_room.dart;99;Tutte arrivate oggi.
+admin;app/lib/features/admin/presentation/admin_control_room.dart;187;}$delta rispetto ai 7 giorni prima
+admin;app/lib/features/admin/presentation/admin_control_room.dart;195;Piste
+admin;app/lib/features/admin/presentation/admin_control_room.dart;200;Eventi futuri
+admin;app/lib/features/admin/presentation/admin_control_room.dart;275;Piste e negozi da approvare
+admin;app/lib/features/admin/presentation/admin_control_room.dart;277;Nessuna richiesta in coda
+admin;app/lib/features/admin/presentation/admin_control_room.dart;284;Chi approvi diventa gestore della scheda
+admin;app/lib/features/admin/presentation/admin_control_room.dart;293;Feedback dagli utenti
+admin;app/lib/features/admin/presentation/admin_control_room.dart;294;"Sezione ""Feedback utenti"""
+admin;app/lib/features/admin/presentation/admin_control_room.dart;298;Richieste di cancellazione account
+admin;app/lib/features/admin/presentation/admin_control_room.dart;300;Nessuna richiesta aperta
+admin;app/lib/features/admin/presentation/admin_control_room.dart;301;La più vecchia da ${data.todo(
+admin;app/lib/features/admin/presentation/admin_control_room.dart;307;Senza coordinate o senza foto, ed eventi scaduti
+admin;app/lib/features/admin/presentation/admin_control_room.dart;473;Email ancora dal mittente di prova Supabase
+admin;app/lib/features/admin/presentation/admin_control_room.dart;527;Iscritti al giorno · ultimi 30 giorni
+admin;app/lib/features/admin/presentation/admin_control_room.dart;537;Nessuna iscrizione negli ultimi 30 giorni.
+admin;app/lib/features/admin/presentation/admin_control_room.dart;579;Creati negli ultimi 7 giorni:
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;25;Organizzatore pista
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;26;Gestore negozio
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;127;Coda di lavoro per spot, piste e negozi da validare.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;135;Rivendicazioni piste
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;137;Utenti che dichiarano di gestire una pista segnalata dalla community. 
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;138;Verifica tu prima di approvare: chi approvi diventa gestore della scheda.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;146;Rivendicazioni negozi
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;148;Titolari che dichiarano di gestire un negozio segnalato dalla community. 
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;149;Stessa verifica delle piste: chi approvi diventa gestore della scheda.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;157;Piste
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;159;Lista completa: modifica stato approvazione, naviga all\'editor, elimina.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;168;Aggiungi pista segnalata dalla community
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;170;Dati pubblici raccolti da te. La scheda nasce senza gestore, 
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;171;senza stato pista e senza PitCoin per nessuno.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;177;Nuova scheda community
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;182;Negozi
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;184;Lista completa: modifica stato approvazione, visibilità pubblica, elimina.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;195;Commenti segnalati dagli utenti e ancora da gestire.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;205;Modifiche proposte dagli utenti su spot che non possono editare. 
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;214;Eventi
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;218;Eventi ufficiali e della community. La visibilità si può 
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;219;"cambiare solo sugli eventi ufficiali; quelli creati dagli "
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;220;utenti si possono solo eliminare.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;231;Utenti
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;233;Cerca, filtra per ruolo, modifica o osserva l\'app come un utente specifico.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;242;Richieste ex art. 17 GDPR. L\'informativa promette la 
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;243;cancellazione entro 30 giorni: la rimozione va eseguita a 
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;251;Feedback utenti
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;253;Messaggi inviati dagli utenti (anche guest). Visibili solo a te.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;264;Categorie pista
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;265;Le categorie alimentano card e filtri senza hardcode.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;270;Nuova categoria
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;271;Aggiungi
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;278;Servizi negozio
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;279;Tag usati in card e dettaglio negozio.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;285;Nuova label negozio
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;286;Aggiungi
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;348;Conferma eliminazione
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;349;"Eliminare ""$label""? L\'operazione non è reversibile."
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;353;Annulla
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;360;Elimina
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;398;Errore: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;436;Re: il tuo feedback su PitLap
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;437;Ciao,\ngrazie per la segnalazione.\n\n
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;438;\n\n--- Il tuo messaggio ---\n$quoted\n\n
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;443;Nessun client di posta disponibile: scrivi a $to
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;483;Nuova scheda community
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;496;Città *
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;500;Indirizzo
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;511;Sito
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;516;Orari
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;525;Descrizione breve
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;534;Annulla
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;546;Nome e città sono obbligatori
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;564;"Scheda creata: ora è visibile come ""segnalata dalla community"""
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;577;Connessione al server non disponibile.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;587;Errore nell\'aggiornamento: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;604;Errore nell\'aggiornamento: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;647;Annulla
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;651;Salva
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;675;Errore: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;686;Modifica display name
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;695;Annulla
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;699;Salva
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;726;Errore: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;745;Errore: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;761;Errore: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;779;Errore: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;794;Errore: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;810;Errore: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;827;Errore: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;842;Errore: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;914;Tutti
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;914;Gestore negozio
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;935;Cerca per nome...
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;997;Errore: ${state.error}
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1004;Nessun utente trovato.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1052;Carica altri 30
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1089; · iscritto il ${two(date.day)}/${two(date.month)}/${date.year}
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1174;Osserva come questo utente\n⚠️ Solo UI — non modifica JWT né policy RLS
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1214;Nessuna pista trovata.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1253;Impossibile caricare le piste.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1285;Nessun negozio trovato.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1328;Impossibile caricare i negozi.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1364;Nessun evento nel database.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1410;Evento community
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1411;Evento ufficiale
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1446;Elimina
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1461;Impossibile caricare gli eventi.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1496;Errore nel caricamento feedback: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1500;Nessun feedback da leggere.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1585;Nessuna rivendicazione in attesa.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1636;Rifiuta
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1641;Approva: diventa gestore
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1671;Errore nel caricamento segnalazioni: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1675;Nessuna segnalazione da gestire.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1727;Nascondi commento
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1831;Apri
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1842;Approva
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1849;Rifiuta
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1858;Nascondi
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1863;Elimina
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;1994;Nessun elemento in approvazione al momento.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;2060;Apri
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;2066;Approva
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;2071;Rifiuta
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;2281;Nessuna richiesta in attesa.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;2368;Impossibile leggere le richieste: $error
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;2386;Impostazioni
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;2464;Errore nel caricamento proposte: $e
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;2468;Nessuna proposta in attesa.
+admin;app/lib/features/admin/presentation/admin_settings_screen.dart;2523;Rifiuta
+comments;app/lib/features/comments/application/comments_providers.dart;97;Connessione al server non disponibile.
+community;app/lib/features/community/presentation/community_home_screen.dart;323;Oggi risulta 1 pista aperta su PitLap.
+community;app/lib/features/community/presentation/community_home_screen.dart;324;Oggi risultano $openTracks piste aperte su PitLap.
+community;app/lib/features/community/presentation/community_home_screen.dart;325;Dove il modellismo si incontra.
+community;app/lib/features/community/presentation/community_home_screen.dart;356;Meteo alle tue piste
+community;app/lib/features/community/presentation/community_home_screen.dart;497;+$recentDelta ultimi 7 giorni
+community;app/lib/features/community/presentation/community_home_screen.dart;551;Vicino a te
+community;app/lib/features/community/presentation/community_home_screen.dart;552;mappa intera
+community;app/lib/features/community/presentation/community_home_screen.dart;635;Apri la mappa PitLap
+community;app/lib/features/community/presentation/community_home_screen.dart;648;Piste, spot e negozi RC
+community;app/lib/features/community/presentation/community_home_screen.dart;820;Build della settimana
+community;app/lib/features/community/presentation/community_home_screen.dart;821;tutte le build
+community;app/lib/features/community/presentation/community_home_screen.dart;889;TROFEO BUILD
+community;app/lib/features/community/presentation/community_home_screen.dart;920;by ${_authorLabel(build)}
+community;app/lib/features/community/presentation/community_home_screen.dart;922;+${build.awardedPoints} PC
+community;app/lib/features/community/presentation/community_home_screen.dart;1118;Accedi per vedere PitCoin, streak e garage collegati al tuo profilo.
+community;app/lib/features/community/presentation/community_home_screen.dart;1137;Vado oggi
+community;app/lib/features/community/presentation/community_home_screen.dart;1138;Cerca pista
+community;app/lib/features/community/presentation/community_home_screen.dart;1139;Eventi
+community;app/lib/features/community/presentation/community_home_screen.dart;1140;Garage
+community;app/lib/features/community/presentation/community_home_screen.dart;1141;Aggiungi spot
+community;app/lib/features/community/presentation/community_home_screen.dart;1142;Negozi
+community;app/lib/features/community/presentation/community_home_screen.dart;1191;Pista del giorno
+community;app/lib/features/community/presentation/community_home_screen.dart;1241;Apri scheda
+community;app/lib/features/community/presentation/community_home_screen.dart;1281;Piste aperte
+community;app/lib/features/community/presentation/community_home_screen.dart;1288;Eventi
+community;app/lib/features/community/presentation/community_home_screen.dart;1290;30 giorni
+community;app/lib/features/community/presentation/community_home_screen.dart;1297;30 giorni
+community;app/lib/features/community/presentation/community_home_screen.dart;1302;Negozi
+community;app/lib/features/community/presentation/community_home_screen.dart;1309;Build
+community;app/lib/features/community/presentation/community_home_screen.dart;1353;Piste in trend
+community;app/lib/features/community/presentation/community_home_screen.dart;1452;tutti i profili
+community;app/lib/features/community/presentation/community_home_screen.dart;1460;Il ranking apparira quando i profili pubblici avranno punti reali.
+community;app/lib/features/community/presentation/community_home_screen.dart;2195;Pista
+community;app/lib/features/community/presentation/community_home_screen.dart;2232;Stato non noto
+community;app/lib/features/community/presentation/community_home_screen.dart;2294;scheda aggiornata
+community;app/lib/features/community/presentation/community_home_screen.dart;2295;evento pista
+community;app/lib/features/community/presentation/community_home_screen.dart;2296;evento community
+community;app/lib/features/community/presentation/community_home_screen.dart;2297;nuovo spot
+community;app/lib/features/community/presentation/community_home_screen.dart;2298;novità
+community;app/lib/features/community/presentation/community_home_screen.dart;2305;Apri pista
+community;app/lib/features/community/presentation/community_home_screen.dart;2306;Apri spot
+community;app/lib/features/community/presentation/community_home_screen.dart;2307;Apri
+community;app/lib/features/community/presentation/community_home_screen.dart;2361;@${build.authorSlug.trim()}
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;48;Pista
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;50;Negozio
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;51;Evento
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;114;Aperta oggi
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;115;Chiusa oggi
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;220;Posizione non disponibile: sposta la mappa a mano.
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;556;Cerca pista, spot, negozio, città…
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;619;Piste
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;621;Negozi
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;622;Eventi
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;660;più vicini al centro mappa
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;690;Nessun luogo con questi filtri.
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;912;Apri
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;937;Chiudi
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;1097;Mostra tutti
+discovery;app/lib/features/discovery/presentation/explore_map_screen.dart;1108;La mia posizione
+discovery;app/lib/features/discovery/presentation/nearby_screen.dart;45;Posizione non disponibile: uso la tua città di casa.
+discovery;app/lib/features/discovery/presentation/nearby_screen.dart;133;Apri spot
+discovery;app/lib/features/discovery/presentation/nearby_screen.dart;142;Evento
+discovery;app/lib/features/discovery/presentation/nearby_screen.dart;149;Apri evento
+discovery;app/lib/features/discovery/presentation/nearby_screen.dart;248;Eventi
+discovery;app/lib/features/discovery/presentation/nearby_screen.dart;286;"Imposta la città nel profilo o usa ""Vicino a me"" per vedere le distanze."
+events;app/lib/features/events/application/public_events_provider.dart;199;Evento
+events;app/lib/features/events/presentation/event_detail_screen.dart;60;Evento non trovato.
+events;app/lib/features/events/presentation/events_screen.dart;123;Una selezione rapida per capire dove c\'è movimento e cosa vale la pena aprire.
+events;app/lib/features/events/presentation/events_screen.dart;157;Accedi per vedere il dettaglio
+events;app/lib/features/events/presentation/events_screen.dart;175;Nessun evento in programma al momento.
+events;app/lib/features/events/presentation/events_screen.dart;254;Accedi per vedere il dettaglio
+events;app/lib/features/events/presentation/events_screen.dart;400;Hai raggiunto il massimo di 5 foto per evento.
+events;app/lib/features/events/presentation/events_screen.dart;402;You reached the maximum of 5 photos per event.
+events;app/lib/features/events/presentation/events_screen.dart;415;Devi essere autenticato per caricare immagini.
+events;app/lib/features/events/presentation/events_screen.dart;430;Sto caricando le foto evento
+events;app/lib/features/events/presentation/events_screen.dart;505;Errore caricamento foto ${index + 1}
+events;app/lib/features/events/presentation/events_screen.dart;552;Preparazione foto evento
+events;app/lib/features/events/presentation/events_screen.dart;804;Modifica evento
+events;app/lib/features/events/presentation/events_screen.dart;981;Evento aggiornato con successo.
+events;app/lib/features/events/presentation/events_screen.dart;1006;Evento non ancora pubblicato: non condivisibile.
+events;app/lib/features/events/presentation/events_screen.dart;1057;Caricamento storico...
+events;app/lib/features/events/presentation/events_screen.dart;1062;Storico eventi pubblici
+events;app/lib/features/events/presentation/events_screen.dart;1076;Eventi passati
+events;app/lib/features/events/presentation/events_screen.dart;1101;Non riesco a caricare gli eventi passati.
+events;app/lib/features/events/presentation/events_screen.dart;1116;Nessun evento passato disponibile.
+events;app/lib/features/events/presentation/events_screen.dart;1151;Accedi per vedere il dettaglio
+events;app/lib/features/events/presentation/events_screen.dart;1231;Modifica evento
+events;app/lib/features/events/presentation/events_screen.dart;1252;Evento
+events;app/lib/features/events/presentation/events_screen.dart;1352;Evento NON salvato: controlla la connessione e riprova.
+feedback;app/lib/features/feedback/presentation/feedback_dialog.dart;67;Grazie per il feedback!
+feedback;app/lib/features/feedback/presentation/feedback_dialog.dart;72;Invio non riuscito: $error
+feedback;app/lib/features/feedback/presentation/feedback_dialog.dart;81;Invia feedback
+feedback;app/lib/features/feedback/presentation/feedback_dialog.dart;94;Il tuo messaggio
+feedback;app/lib/features/feedback/presentation/feedback_dialog.dart;112;Annulla
+feedback;app/lib/features/feedback/presentation/feedback_dialog.dart;116;Invia
+garage;app/lib/features/garage/application/build_links_provider.dart;34;Pista
+garage;app/lib/features/garage/application/build_links_provider.dart;35;Negozio
+garage;app/lib/features/garage/application/build_links_provider.dart;37;Evento
+garage;app/lib/features/garage/application/build_links_provider.dart;90;Connessione non disponibile.
+garage;app/lib/features/garage/application/build_links_provider.dart;105;Una build puo\' essere collegata al massimo a 8 luoghi.
+garage;app/lib/features/garage/application/build_links_provider.dart;107;Collegamento non salvato. Riprova.
+garage;app/lib/features/garage/application/build_links_provider.dart;114;Connessione non disponibile.
+garage;app/lib/features/garage/application/build_links_provider.dart;127;Collegamento non rimosso. Riprova.
+garage;app/lib/features/garage/application/public_builds_provider.dart;78;Build PitLap
+garage;app/lib/features/garage/application/public_builds_provider.dart;265;Accedi per mettere like alle build.
+garage;app/lib/features/garage/application/public_builds_provider.dart;289;Like non salvato. Riprova tra poco.
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;28;Build
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;110;Vedi garage
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;180;Accedi per mettere like alle build.
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;182;Accedi
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;204;Like ricevuti dalla tua build
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;205;Togli il like
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;292;Build
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;301;Questa build non esiste o non e\' piu\' pubblica.
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;307;Vedi tutte le build
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;369;Collega una pista, un negozio, uno spot o un evento
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;378;"La build comparira\' tra le ""Build viste qui"" della scheda."
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;428;Dove gira questa build?
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;438;Nome di pista, negozio, spot, evento o citta\'
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;450;Ricerca non riuscita.
+garage;app/lib/features/garage/presentation/build_detail_screen.dart;452;Nessun luogo trovato.
+garage;app/lib/features/garage/presentation/builds_seen_here.dart;43;Build viste qui
+garage;app/lib/features/garage/presentation/garage_screen.dart;43;Accedi per accedere al tuo garage.
+garage;app/lib/features/garage/presentation/garage_screen.dart;49;Accedi
+garage;app/lib/features/garage/presentation/garage_screen.dart;87;Errore nel caricamento del garage.
+garage;app/lib/features/garage/presentation/garage_screen.dart;93;Riprova
+garage;app/lib/features/garage/presentation/garage_screen.dart;170;Nessuna build ancora. Aggiungi il tuo primo modello!
+garage;app/lib/features/garage/presentation/garage_screen.dart;524;Errore nel salvataggio. Riprova.
+garage;app/lib/features/garage/presentation/garage_screen.dart;538;Elimina build
+garage;app/lib/features/garage/presentation/garage_screen.dart;539;"Eliminare ""${build.title}""? L\'operazione non è reversibile."
+garage;app/lib/features/garage/presentation/garage_screen.dart;543;Annulla
+garage;app/lib/features/garage/presentation/garage_screen.dart;549;Elimina
+garage;app/lib/features/garage/presentation/garage_screen.dart;688;Pagina e luoghi
+garage;app/lib/features/garage/presentation/garage_screen.dart;710;Elimina
+garage;app/lib/features/garage/presentation/public_builds_screen.dart;40;Build PitLap
+garage;app/lib/features/garage/presentation/public_builds_screen.dart;41;Marketplace pubblico delle build condivise dalla community.
+garage;app/lib/features/garage/presentation/public_builds_screen.dart;51;Cerca build, autore o specifiche...
+garage;app/lib/features/garage/presentation/public_builds_screen.dart;59;Nessuna build pubblica
+garage;app/lib/features/garage/presentation/public_builds_screen.dart;61;Quando gli utenti renderanno pubbliche le build del garage, appariranno qui.
+garage;app/lib/features/garage/presentation/public_builds_screen.dart;120;build pubbliche
+garage;app/lib/features/garage/presentation/public_builds_screen.dart;121;build pubbliche
+garage;app/lib/features/garage/presentation/public_builds_screen.dart;419;Build non disponibili
+garage;app/lib/features/garage/presentation/public_builds_screen.dart;420;Non riesco a caricare le build pubbliche in questo momento.
+legal;app/lib/features/legal/presentation/legal_document_screen.dart;195;termini-di-servizio.html
+manager;app/lib/features/manager/presentation/manager_screen.dart;144;Crea la tua pista
+manager;app/lib/features/manager/presentation/manager_screen.dart;150;Crea negozio
+manager;app/lib/features/manager/presentation/manager_screen.dart;155;Apri le piste
+manager;app/lib/features/manager/presentation/manager_screen.dart;162;Apri configuratore admin
+manager;app/lib/features/manager/presentation/manager_screen.dart;171;Quando una pista verrà collegata al tuo account, qui potrai aggiornare stato del fondo, se
+manager;app/lib/features/manager/presentation/manager_screen.dart;192;Abbiamo già preparato il pannello per una gestione rapida, pensata per club e organizzator
+manager;app/lib/features/manager/presentation/manager_screen.dart;248;Le tue piste in preparazione
+manager;app/lib/features/manager/presentation/manager_screen.dart;253;Qui trovi le bozze pista e le schede inviate in approvazione, così puoi seguirne lo stato 
+manager;app/lib/features/manager/presentation/manager_screen.dart;280;Le tue piste approvate
+manager;app/lib/features/manager/presentation/manager_screen.dart;285;Queste schede sono state approvate e sono visibili nel catalogo. Puoi modificarle e aggior
+manager;app/lib/features/manager/presentation/manager_screen.dart;312;I tuoi negozi in gestione
+manager;app/lib/features/manager/presentation/manager_screen.dart;317;Bozze, negozi in approvazione e schede già preparate dal tuo account.
+manager;app/lib/features/manager/presentation/manager_screen.dart;341;Piste già in PitLap
+manager;app/lib/features/manager/presentation/manager_screen.dart;346;Nel frattempo puoi aprire le schede pista già online, verificare il tono dei contenuti e c
+manager;app/lib/features/manager/presentation/manager_screen.dart;356;Nessuna pista pubblica
+manager;app/lib/features/manager/presentation/manager_screen.dart;357;Non ci sono ancora piste pubbliche da mostrare.
+manager;app/lib/features/manager/presentation/manager_screen.dart;389;Non siamo riusciti a caricare l\'anteprima delle piste pubbliche.
+manager;app/lib/features/manager/presentation/manager_screen.dart;546;Piste che hai inviato in revisione o che sono ancora in bozza.
+manager;app/lib/features/manager/presentation/manager_screen.dart;574;I tuoi negozi in gestione
+manager;app/lib/features/manager/presentation/manager_screen.dart;579;Qui trovi i negozi creati dal tuo account e puoi riaprire subito l\'editor.
+manager;app/lib/features/manager/presentation/manager_screen.dart;608;Timeline operativa degli ultimi salvataggi eseguiti su questa pista.
+manager;app/lib/features/manager/presentation/manager_screen.dart;619;Nessun aggiornamento storico
+manager;app/lib/features/manager/presentation/manager_screen.dart;620;Nessun aggiornamento storico disponibile per ora.
+manager;app/lib/features/manager/presentation/manager_screen.dart;637;Orario non disponibile
+manager;app/lib/features/manager/presentation/manager_screen.dart;656;Timeline non disponibile: $error
+manager;app/lib/features/manager/presentation/manager_screen.dart;670;Riprova
+manager;app/lib/features/manager/presentation/manager_screen.dart;708;Modifiche non salvate
+manager;app/lib/features/manager/presentation/manager_screen.dart;734;Pronta per sessioni libere.
+manager;app/lib/features/manager/presentation/manager_screen.dart;746;Fondo bagnato, guida consigliata con prudenza.
+manager;app/lib/features/manager/presentation/manager_screen.dart;757;Pista chiusa per manutenzione.
+manager;app/lib/features/manager/presentation/manager_screen.dart;857;Salvataggio...
+manager;app/lib/features/manager/presentation/manager_screen.dart;860;Nessuna modifica da salvare
+manager;app/lib/features/manager/presentation/manager_screen.dart;900;Tutte le operazioni disponibili per la tua pista.
+manager;app/lib/features/manager/presentation/manager_screen.dart;915;Modifica scheda pista
+manager;app/lib/features/manager/presentation/manager_screen.dart;920;Gestisci eventi
+manager;app/lib/features/manager/presentation/manager_screen.dart;925;Vedi scheda pubblica
+manager;app/lib/features/manager/presentation/manager_screen.dart;948;Aggiornamento scheda
+manager;app/lib/features/manager/presentation/manager_screen.dart;1097;Salvataggio non riuscito: $error
+manager;app/lib/features/manager/presentation/manager_screen.dart;1278;Apri pista
+manager;app/lib/features/manager/presentation/manager_screen.dart;1401;Aggiornamento scheda
+manager;app/lib/features/manager/presentation/manager_screen.dart;1441;Apri pista
+manager;app/lib/features/manager/presentation/manager_screen.dart;1446;Modifica scheda
+manager;app/lib/features/manager/presentation/manager_screen.dart;1466;Bozza
+manager;app/lib/features/manager/presentation/manager_screen.dart;1610;Modifica scheda
+manager;app/lib/features/manager/presentation/manager_screen.dart;1621;In attesa di revisione admin
+manager;app/lib/features/manager/presentation/manager_screen.dart;1642;Bozza negozio
+manager;app/lib/features/manager/presentation/manager_screen.dart;1734;Modifica negozio
+manager;app/lib/features/manager/presentation/manager_screen.dart;1740;Apri scheda
+onboarding;app/lib/features/onboarding/application/location_search_service.dart;76;geocoding-api.open-meteo.com
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;48;Pratico modellismo RC su pista. Voglio scoprire piste, tracciare le mie presenze e trovare
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;53;Gestore pista
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;55;Gestisco una pista RC. Voglio aggiornare lo stato, pubblicare eventi e comunicare con i pi
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;60;Gestore negozio
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;62;Gestisco un negozio di modellismo RC. Voglio pubblicare la mia scheda e farmi trovare dagl
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;262;Benvenuto in PitLap! Il tuo profilo è pronto.
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;277;Errore durante il salvataggio: $error
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;316;Scegli il profilo che ti descrive meglio. Puoi aggiornarlo in qualsiasi momento dal tuo pr
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;329;E\' il nome con cui ti vedono gli altri piloti. Puoi cambiarlo dal profilo.
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;460;Che tipo di pista gestisci?
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;461;Cosa vende il tuo negozio?
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;466;Seleziona le categorie della tua pista. Aiutiamo i piloti giusti a trovarti.
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;467;Seleziona le specialità del tuo negozio. Mostriamo la tua scheda agli appassionati rilevan
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;468;Seleziona una o più categorie. Usiamo questi dati per mostrarti contenuti rilevanti nel tu
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;518;Puoi saltare questo step — potrai sempre aggiornare gli interessi dal profilo.
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;628;La tua zona
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;636;Indicaci la tua città o provincia. La usiamo per mostrarti piste e negozi vicini.
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;645;Città o provincia
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;648;Usiamo questa informazione solo per migliorare la tua esperienza di discovery. Non la cond
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;650;Località verificata: ${selection.label}.
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;675;Puoi saltare questo step — potrai aggiornare la zona in qualsiasi momento dal profilo.
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;725;Controlla i dati e conferma per entrare in PitLap.
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;744;Profilo
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;787;Sei dentro — esplora la community
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;795;Novità dalla community in tempo reale
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;799;Piste RC con stato aggiornato e servizi reali
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;803;Spot e negozi sul territorio
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;807;Eventi e gare aperti a tutti
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;1003;Indietro
+onboarding;app/lib/features/onboarding/presentation/onboarding_screen.dart;1017;Avanti
+profile;app/lib/features/profile/application/public_profiles_provider.dart;28;Organizzatore pista
+profile;app/lib/features/profile/application/public_profiles_provider.dart;29;Gestore negozio
+profile;app/lib/features/profile/presentation/profile_screen.dart;53;Profilo impersonato
+profile;app/lib/features/profile/presentation/profile_screen.dart;153;Nessuna pista salvata.
+profile;app/lib/features/profile/presentation/profile_screen.dart;154;Apri l\'elenco delle piste che segui.
+profile;app/lib/features/profile/presentation/profile_screen.dart;176;Nessun negozio salvato.
+profile;app/lib/features/profile/presentation/profile_screen.dart;177;Apri l\'elenco dei negozi salvati.
+profile;app/lib/features/profile/presentation/profile_screen.dart;199;Nessun evento creato.
+profile;app/lib/features/profile/presentation/profile_screen.dart;200;Apri gli eventi che hai pubblicato.
+profile;app/lib/features/profile/presentation/profile_screen.dart;219;Nessuna build nel garage.
+profile;app/lib/features/profile/presentation/profile_screen.dart;220;Apri il garage per gestire le tue build.
+profile;app/lib/features/profile/presentation/profile_screen.dart;222;No builds in your garage yet.
+profile;app/lib/features/profile/presentation/profile_screen.dart;223;Open the garage to manage your builds.
+profile;app/lib/features/profile/presentation/profile_screen.dart;276;Il tuo spazio personale per profilo, garage, eventi e attività dentro PitLap.
+profile;app/lib/features/profile/presentation/profile_screen.dart;278;Your personal space for profile, garage, events, and activity inside PitLap.
+profile;app/lib/features/profile/presentation/profile_screen.dart;333;Stai vedendo il profilo dell\'utente impersonato. Le azioni sensibili dell\'account reale 
+profile;app/lib/features/profile/presentation/profile_screen.dart;349;Una lettura rapida di ciò che segui, salvi e pubblichi dentro PitLap.
+profile;app/lib/features/profile/presentation/profile_screen.dart;399;Identità
+profile;app/lib/features/profile/presentation/profile_screen.dart;454;Impostazioni
+profile;app/lib/features/profile/presentation/profile_screen.dart;551;Impostazioni
+profile;app/lib/features/profile/presentation/profile_screen.dart;640;Email attuale: $currentEmail\n\nInserisci la nuova email. Riceverai un link di conferma su
+profile;app/lib/features/profile/presentation/profile_screen.dart;651;Nuova email
+profile;app/lib/features/profile/presentation/profile_screen.dart;682;Conferma inviata a $newEmail. Controlla la casella e clicca il link per completare il camb
+profile;app/lib/features/profile/presentation/profile_screen.dart;693;Errore: $e
+profile;app/lib/features/profile/presentation/profile_screen.dart;703;Invia conferma
+profile;app/lib/features/profile/presentation/profile_screen.dart;730;Ti invieremo un nuovo magic link all\'indirizzo $currentEmail per rientrare nell\'account.
+profile;app/lib/features/profile/presentation/profile_screen.dart;755;Magic link inviato a $currentEmail.
+profile;app/lib/features/profile/presentation/profile_screen.dart;765;Errore: $e
+profile;app/lib/features/profile/presentation/profile_screen.dart;775;Invia magic link
+profile;app/lib/features/profile/presentation/profile_screen.dart;801;Stai richiedendo l\'eliminazione del tuo account PitLap.\n\nI tuoi dati personali verranno
+profile;app/lib/features/profile/presentation/profile_screen.dart;817;⚠️ Accessi, dati di sessione e preferiti verranno eliminati definitivamente.
+profile;app/lib/features/profile/presentation/profile_screen.dart;838;Sì, elimina account
+profile;app/lib/features/profile/presentation/profile_screen.dart;859;Richiesta di eliminazione inviata. Verrai contattato entro 30 giorni.
+profile;app/lib/features/profile/presentation/profile_screen.dart;870;Errore: $e
+profile;app/lib/features/profile/presentation/profile_screen.dart;1045;Identità
+profile;app/lib/features/profile/presentation/profile_screen.dart;1046;Identità
+profile;app/lib/features/profile/presentation/profile_screen.dart;1057;Impostazioni
+profile;app/lib/features/profile/presentation/profile_screen.dart;1058;Impostazioni
+profile;app/lib/features/profile/presentation/profile_screen.dart;1067;Accessi rapidi alle aree principali del tuo account.
+profile;app/lib/features/profile/presentation/profile_screen.dart;1360;Carica da dispositivo
+profile;app/lib/features/profile/presentation/profile_screen.dart;1370;Preparazione foto profilo
+profile;app/lib/features/profile/presentation/profile_screen.dart;1386;Puoi usare un link immagine oppure caricare una foto direttamente dal tuo dispositivo.
+profile;app/lib/features/profile/presentation/profile_screen.dart;1397;In vista impersonata puoi consultare il profilo, ma le modifiche restano bloccate per evit
+profile;app/lib/features/profile/presentation/profile_screen.dart;1455;Puoi aggiornare nome visibile, foto profilo e lingua del tuo account.
+profile;app/lib/features/profile/presentation/profile_screen.dart;1468;Sto preparando la foto profilo
+profile;app/lib/features/profile/presentation/profile_screen.dart;1473;Errore imprevisto durante il caricamento.
+profile;app/lib/features/profile/presentation/profile_screen.dart;1491;Devi essere autenticato per caricare immagini.
+profile;app/lib/features/profile/presentation/profile_screen.dart;1819;Inserisci uno slug per attivare il profilo pubblico.
+profile;app/lib/features/profile/presentation/profile_screen.dart;1839;Impostazioni profilo pubblico aggiornate.
+profile;app/lib/features/profile/presentation/profile_screen.dart;1845;Errore nel salvataggio: $e
+profile;app/lib/features/profile/presentation/profile_screen.dart;1875;Profilo pubblico
+profile;app/lib/features/profile/presentation/profile_screen.dart;1892;Slug profilo
+profile;app/lib/features/profile/presentation/profile_screen.dart;1912;Salva
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;27;Profilo pilota
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;29;Profilo organizzatore
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;30;Profilo gestore negozio
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;31;Profilo staff PitLap
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;32;Profilo pilota
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;34;Profilo pubblico
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;39;Profilo pubblico PitLap
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;67;Organizzatore pista
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;68;Gestore negozio
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;192;Garage
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;209;Nessuna build pubblica
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;438;Profilo non trovato
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;444;"Il profilo ""$slug"" non esiste o non è pubblico."
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;473;Errore nel caricamento
+profile;app/lib/features/profile/presentation/public_profile_screen.dart;479;Impossibile caricare il profilo. Riprova più tardi.
+profile;app/lib/features/profile/presentation/public_profiles_screen.dart;42;Piloti, gestori e creator che hanno scelto di mostrarsi su PitLap.
+profile;app/lib/features/profile/presentation/public_profiles_screen.dart;47;Profili non disponibili
+profile;app/lib/features/profile/presentation/public_profiles_screen.dart;48;Non riesco a caricare i profili pubblici in questo momento.
+profile;app/lib/features/profile/presentation/public_profiles_screen.dart;56;Cerca pilota, ruolo o handle...
+profile;app/lib/features/profile/presentation/public_profiles_screen.dart;64;Nessun profilo pubblico
+profile;app/lib/features/profile/presentation/public_profiles_screen.dart;66;Quando gli utenti renderanno pubblico il profilo, appariranno qui.
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;104;Segnalato dalla community · dati non confermati dal titolare
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;105;Sei il titolare?
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;151;Note dal negozio
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;513;Sito web
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;897;Il negozio cercato non è disponibile o non è ancora stato pubblicato.
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;920;Accedi per rivendicare la scheda.
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;931;Rivendica ${shop.name}
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;936;Verifichiamo a mano che tu gestisca davvero questo negozio, 
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;937;poi la scheda passa sotto il tuo controllo.
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;943;Come ti ricontattiamo (email o telefono)
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;952;Due righe su di te e sul negozio
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;960;Annulla
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;964;Invia richiesta
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;983;Richiesta inviata: ti ricontattiamo per la verifica.
+shops;app/lib/features/shops/presentation/shop_detail_screen.dart;988;Richiesta non inviata: $e
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;236;Nuovo negozio
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;238;Compila i campi e invia il negozio in approvazione.
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;304;Città
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;309;Indirizzo
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;314;Sito web
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;320;Società o negozio
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;327;Immagine di copertina
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;336;Preparazione cover negozio
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;343;Galleria foto
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;352;Un URL per riga
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;374;Devi essere autenticato per caricare immagini.
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;415;Sto caricando la galleria negozio
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;459;Errore caricamento foto $i
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;501;Preparazione galleria negozio
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;519;Uno per riga oppure separati da virgola.
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;601;Bozza negozio salvata su Supabase.
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;603;Bozza negozio salvata solo in locale.
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;615;Errore nel salvataggio del negozio: $error
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;624;Salva bozza
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;672;Negozio inviato alla coda approvazioni admin.
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;673;Negozio salvato solo in locale: Supabase non disponibile.
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;683;Errore nell\'invio del negozio: $error
+shops;app/lib/features/shops/presentation/shop_editor_screen.dart;690;Invia in approvazione
+shops;app/lib/features/shops/presentation/shops_screen.dart;99;Gestione negozio
+shops;app/lib/features/shops/presentation/shops_screen.dart;105;Crea una nuova scheda negozio, salvala in bozza o inviala in approvazione.
+shops;app/lib/features/shops/presentation/shops_screen.dart;118;Crea negozio
+shops;app/lib/features/shops/presentation/shops_screen.dart;139;I tuoi negozi
+shops;app/lib/features/shops/presentation/shops_screen.dart;144;Bozze, schede in approvazione e negozi già preparati dal tuo account.
+shops;app/lib/features/shops/presentation/shops_screen.dart;310;Bozza negozio
+shops;app/lib/features/shops/presentation/shops_screen.dart;379;Modifica
+shops;app/lib/features/shops/presentation/shops_screen.dart;385;Apri scheda
+shops;app/lib/features/shops/presentation/shops_screen.dart;504;Negozio
+shops;app/lib/features/shops/presentation/shops_screen.dart;578;Negozio
+spots;app/lib/features/spots/domain/spot_tags.dart;22;On-road / Pista
+spots;app/lib/features/spots/domain/spot_tags.dart;23;Mini e Micro (1:24 e più piccoli)
+spots;app/lib/features/spots/domain/spot_tags.dart;53;Evitare dopo la pioggia
+spots;app/lib/features/spots/presentation/spot_detail_screen.dart;46;Spot non trovato.
+spots;app/lib/features/spots/presentation/spot_detail_screen.dart;176;Modifica spot
+spots;app/lib/features/spots/presentation/spot_detail_screen.dart;233;Le immagini reali non sono ancora caricate, ma lo spot ha già un archivio foto dichiarato.
+spots;app/lib/features/spots/presentation/spot_detail_screen.dart;239;Foto condivise dalla community per capire fondo, spazio e accessi.
+spots;app/lib/features/spots/presentation/spot_detail_screen.dart;331;Apri il link condiviso per vedere il punto e il tipo di terreno.
+spots;app/lib/features/spots/presentation/spot_detail_screen.dart;345;Apri video
+spots;app/lib/features/spots/presentation/spot_detail_screen.dart;392;Volo: rispetta le regole ENAC, verifica la zona su d-flight
+spots;app/lib/features/spots/presentation/spot_detail_screen.dart;400;Usa lo spot con buon senso
+spots;app/lib/features/spots/presentation/spots_screen.dart;72;Filtra per
+spots;app/lib/features/spots/presentation/spots_screen.dart;135;Apri spot
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;141;Modifica spot
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;144;Proponi una modifica
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;152;Aggiorna foto, posizione e dettagli del tuo spot.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;157;Correggi posizione, tag o descrizione: la proposta va in coda agli admin.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;169;Non sei l\'owner di questo spot: le tue modifiche saranno inviate come proposta e un admin
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;200;Invia una segnalazione
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;256;Indirizzo / punto mappa
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;261;Cerca un luogo reale e scegli dalla lista
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;266;Puoi cercare un luogo canonico oppure compilare manualmente e usare la posizione attuale.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;271;Luogo verificato: ${selection.label}. Coordinate pronte per la mappa.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;343;Recupero coordinate e indirizzo in corso
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;365;Ideale per
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;375;Per droni e aerei valgono le regole ENAC: verifica la zona su d-flight prima di indicarla.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;433;Foto dal dispositivo
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;442;Carica fino a 5 foto locali. La prima foto verra\' usata anche come cover della card spot.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;456;Carica foto
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;465;${_pickedImages.length}/5 foto selezionate
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;477;Preparazione foto in corso
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;574;Salva modifiche spot
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;646;Spot aggiornato con successo.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;680;Accedi per proporre una modifica.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;715;Proposta inviata: la vedra un admin.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;721;Proposta non inviata. Forse ne hai gia una in attesa su questo spot.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;775;Nuovo spot condiviso dalla community PitLap.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;794;Supabase non disponibile: lo spot non e stato salvato in modo permanente.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;838;Nuova pista inserita dal gestore e pronta per il completamento.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;852;Errore nel salvataggio pista: $e
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;884;Hai già raggiunto il massimo di 5 foto.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;903;Devi essere autenticato per caricare immagini.
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;920;Sto caricando le foto selezionate
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;995;Errore caricamento foto ${index + 1}
+submissions;app/lib/features/submissions/presentation/submit_place_screen.dart;1025;Permesso posizione non concesso.
+support;app/lib/features/support/presentation/coffee_button.dart;37;Impossibile aprire la pagina di donazione
+support;app/lib/features/support/presentation/coffee_button.dart;59;Offri un caffè allo sviluppatore
+tracks;app/lib/features/tracks/infrastructure/open_meteo_weather_repository.dart;22;api.open-meteo.com
+tracks;app/lib/features/tracks/infrastructure/open_meteo_weather_repository.dart;37;Open-Meteo request failed (${response.statusCode})
+tracks;app/lib/features/tracks/infrastructure/open_meteo_weather_repository.dart;72;Open-Meteo returned an invalid date
+tracks;app/lib/features/tracks/infrastructure/supabase_tracks_repository.dart;654;Scheda pista aggiornata dal pannello gestione.
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;87;Modifica pista
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;89;Editor operativo per aggiornare la scheda pubblica della pista assegnata.
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;94;Questa pista non risulta assegnata al tuo account.
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;104;Scheda pubblica
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;105;Nome, posizione e testi visibili nel dettaglio pista.
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;111;Nome pista
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;123;Città
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;133;Indirizzo
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;139;URL mappa esterna
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;147;Preparazione copertina pista
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;156;Descrizione breve
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;164;Descrizione completa
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;175;Categoria pista
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;176;Seleziona il tipo di pista — usato nei filtri di ricerca.
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;200;Seleziona i servizi confermati presenti in pista.
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;264;Salvataggio...
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;264;Salva su PitLap
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;269;Apri dettaglio pubblico
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;283;Non siamo riusciti a caricare la pista: $error
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;343;Nome pista e città sono obbligatori.
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;378;Scheda pista aggiornata correttamente.
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;387;Salvataggio non riuscito: $error
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;471;Nome pista
+tracks;app/lib/features/tracks/presentation/managed_track_editor_screen.dart;477;Città
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;281;Orari
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;289;Sito
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;460;Accedi per rivendicare la scheda.
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;471;Rivendica ${track.name}
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;476;Verifichiamo a mano che tu gestisca davvero questa pista, 
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;477;poi la scheda passa sotto il tuo controllo.
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;483;Come ti ricontattiamo (email o telefono)
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;492;Due righe su di te e sulla pista
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;500;Annulla
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;504;Invia richiesta
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;523;Richiesta inviata: ti ricontattiamo per la verifica.
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;528;Richiesta non inviata: $e
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;629;Nessun segnale oggi
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;811;Questa pista non è ancora disponibile online: registrazione presenze non attiva.
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;898;Il tuo stato personale
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;910;Accedi per segnalare la tua presenza personale di oggi. Le informazioni pubbliche qui sopr
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;1037;Presenza aggregata di oggi
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;1052;Questa sezione mostra solo conteggi aggregati (nessun nominativo pubblico).
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;1065;Nessuna presenza segnalata per oggi al momento.
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;1076;Caricamento presenze aggregate
+tracks;app/lib/features/tracks/presentation/track_detail_screen.dart;1084;Le presenze aggregate non sono disponibili in questo momento.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;202;Modifica bozza pista
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;202;Crea pista
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;204;Editor completo per scheda pista, servizi, card pubblica e invio in approvazione.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;215;Scheda pista completa
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;223;Qui costruiamo davvero la tua pista: identità, posizione, servizi, contatti e preview dell
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;266;Completati $_requiredChecklistCompleted/5 requisiti minimi per inviare in approvazione.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;380;Salva in bozza quando stai lavorando. Invia in approvazione quando la scheda è pronta per 
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;400;Salva bozza
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;407;Invia in approvazione
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;429;Devi essere autenticato per caricare immagini.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;437;Sto preparando la cover pista
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;497;Errore caricamento cover pista: $e
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;517;Connessione al server non disponibile.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;538;Bozza pista salvata in Gestione.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;544;Errore nel salvataggio: $e
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;557;Completa nome, città, descrizione breve, cover e almeno un servizio prima di inviare.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;566;Connessione al server non disponibile.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;586;Pista inviata alla coda approvazioni admin.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;593;Errore nell\'invio: $e
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;686;Nuova pista
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;779;Identità pista
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;780;Nome, slug, città e copy breve per la card pubblica.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;783;Nome pista
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;787;Città
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;792;Descrizione breve card
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;800;Indirizzo completo e cover per la card pista.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;804;Indirizzo
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;810;Incolla un link diretto all\'immagine. Consigliato rispetto al caricamento locale.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;818;Oppure carica da file (anteprima locale)
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;823;Preparazione cover pista
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;851;Categoria pista
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;852;Seleziona il tipo di pista — usato nei filtri di ricerca.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;875;Seleziona i servizi confermati presenti in pista.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;894;Contatti e dettaglio
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;895;Descrizione lunga, contatti e riferimenti dell\'organizzazione.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;901;Descrizione completa
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;904;Società o club
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;908;Telefono
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;910;Sito web
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;986;Nome pista
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;991;Città
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;999;La descrizione breve comparirà qui.
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;1084;Pronta per approvazione
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;1095;Nome pista
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;1096;Città
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;1098;Descrizione breve
+tracks;app/lib/features/tracks/presentation/track_editor_screen.dart;1184;Caricamento opzioni…
+tracks;app/lib/features/tracks/presentation/tracks_home_screen.dart;257;Città
+tracks;app/lib/features/tracks/presentation/tracks_home_screen.dart;262;Tutte le città
+tracks;app/lib/features/tracks/presentation/tracks_home_screen.dart;587;Nessun segnale oggi
+tracks;app/lib/features/tracks/presentation/tracks_home_screen.dart;603;Caricamento presenze…
+tracks;app/lib/features/tracks/presentation/tracks_home_screen.dart;610;Nessun servizio attivo
+tracks;app/lib/features/tracks/presentation/tracks_home_screen.dart;752;Segnalata dalla community
+tracks;app/lib/features/tracks/presentation/tracks_home_screen.dart;797;Pista RC
+shared/media;app/lib/shared/media/media_upload_labels.dart;14;Sto preparando il file
+shared/media;app/lib/shared/media/media_upload_labels.dart;17;Caricamento in corso
+shared/media;app/lib/shared/media/media_upload_labels.dart;20;Sto ottimizzando il file
+shared/media;app/lib/shared/media/media_upload_labels.dart;23;Errore file
+shared/media;app/lib/shared/media/media_upload_service.dart;97;Devi essere autenticato per caricare immagini.
+shared/media;app/lib/shared/media/media_upload_service.dart;104;L\'immagine supera il limite di 5 MB. Scegli un file più piccolo.
+shared/media;app/lib/shared/media/media_upload_service.dart;114;Non è stato possibile leggere l\'immagine selezionata.
+shared/media;app/lib/shared/media/media_upload_service.dart;135;L\'immagine elaborata supera ancora 5 MB. Prova con un\'immagine più piccola.
+shared/media;app/lib/shared/media/media_upload_service.dart;159;Errore durante il caricamento dell\'immagine (${e.statusCode ?? e.message}). Riprova.
+shared/media;app/lib/shared/media/media_upload_service.dart;164;Errore imprevisto durante il caricamento. Riprova.
+shared/places;app/lib/shared/places/duplicate_place_check.dart;132;Abbiamo trovato luoghi simili. Se e\' uno di questi, aprilo: puoi proporre modifiche o agg
+shared/places;app/lib/shared/places/duplicate_place_check.dart;162;No, e\' un luogo nuovo
+shared/places;app/lib/shared/places/place_search_service.dart;148;geocoding-api.open-meteo.com
+shared/utils;app/lib/shared/utils/moderation_message.dart;31;Il testo inserito non rispetta le regole della community PitLap
+shared/utils;app/lib/shared/utils/moderation_message.dart;35;Questo tipo di contenuto viene sempre bloccato.
+shared/utils;app/lib/shared/utils/moderation_message.dart;75;Troppe azioni in poco tempo: riprova tra qualche minuto.
+shared/widgets;app/lib/shared/widgets/community_claim_strip.dart;11;Segnalata dalla community · dati non confermati dal gestore
+shared/widgets;app/lib/shared/widgets/community_claim_strip.dart;12;Sei il gestore?
+shared/widgets;app/lib/shared/widgets/cover_image_field.dart;21;URL immagine di copertina
+shared/widgets;app/lib/shared/widgets/cover_image_field.dart;22;Carica foto dal dispositivo
+shared/widgets;app/lib/shared/widgets/cover_image_field.dart;23;Preparazione copertina
+shared/widgets;app/lib/shared/widgets/cover_image_field.dart;54;Devi essere autenticato per caricare immagini.
+shared/widgets;app/lib/shared/widgets/cover_image_field.dart;117;Errore caricamento copertina: $e
+shared/widgets;app/lib/shared/widgets/place_map_preview_card.dart;72;Punto scelto sulla mappa
+shared/widgets;app/lib/shared/widgets/place_map_preview_card.dart;140;Tocca la mappa per mettere il segnaposto nel punto esatto.
+shared/widgets;app/lib/shared/widgets/place_picker_field.dart;131;Ricerca luogo non disponibile in questo momento. Puoi comunque compilare manualmente.
+shared/widgets;app/lib/shared/widgets/place_picker_field.dart;197;Sto cercando il luogo corretto...

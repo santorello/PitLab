@@ -11,6 +11,7 @@ import '../domain/entity_comment.dart';
 import '../infrastructure/comments_repository.dart';
 import '../../../shared/utils/moderation_message.dart';
 import '../../../shared/utils/moderation_log.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 // ── Repository provider ───────────────────────────────────────────────────
 
@@ -94,7 +95,7 @@ class CommentsNotifier extends AsyncNotifier<List<EntityComment>> {
     required String body,
   }) async {
     final repo = ref.read(commentsRepositoryProvider);
-    if (repo == null) return 'Connessione al server non disponibile.';
+    if (repo == null) return tr('Connessione al server non disponibile.');
     try {
       final newComment = await repo.postComment(
         entityType: _key.entityType,

@@ -9,6 +9,7 @@ import '../../app/theme/app_radius.dart';
 import '../../app/theme/app_spacing.dart';
 import '../../features/auth/application/auth_providers.dart';
 import 'language_toggle.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class ContentScaffoldHeader extends ConsumerWidget {
   const ContentScaffoldHeader({
@@ -171,7 +172,7 @@ class ContentScaffoldHeader extends ConsumerWidget {
                             color: AppColors.orange900,
                           ),
                       children: [
-                        const TextSpan(text: 'Vista come '),
+                        TextSpan(text: tr('Vista come ')),
                         TextSpan(
                           text: impersonation.displayName.isNotEmpty
                               ? impersonation.displayName

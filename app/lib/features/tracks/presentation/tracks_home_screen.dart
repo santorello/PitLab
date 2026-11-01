@@ -36,6 +36,7 @@ import '../../auth/application/auth_providers.dart';
 import '../application/track_taxonomy_option.dart';
 import '../application/tracks_providers.dart';
 import 'tracks_home_filters.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
 
@@ -254,12 +255,12 @@ class _TracksHomeScreenState extends ConsumerState<TracksHomeScreen> {
 
   static String _cityFilterLabel(BuildContext context) {
     final languageCode = Localizations.localeOf(context).languageCode;
-    return languageCode == 'it' ? 'Città' : 'City';
+    return languageCode == 'it' ? tr('Città') : 'City';
   }
 
   static String _allCitiesLabel(BuildContext context) {
     final languageCode = Localizations.localeOf(context).languageCode;
-    return languageCode == 'it' ? 'Tutte le città' : 'All cities';
+    return languageCode == 'it' ? tr('Tutte le città') : 'All cities';
   }
 
   static String _statusLabel(BuildContext context, String status) {
@@ -584,7 +585,7 @@ class _TrackCardV2 {
     final isIt = Localizations.localeOf(context).languageCode == 'it';
     if (summary.activeCount <= 0) {
       return isIt
-          ? 'Nessun segnale oggi'
+          ? tr('Nessun segnale oggi')
           : 'No signals today';
     }
     final parts = <String>[
@@ -600,17 +601,17 @@ class _TrackCardV2 {
 
   static String _loadingArrivalLabel(BuildContext context) {
     return Localizations.localeOf(context).languageCode == 'it'
-        ? 'Caricamento presenze…'
+        ? tr('Caricamento presenze…')
         : 'Loading arrivals…';
   }
 
   static String _servicesLabel(BuildContext context, int count) {
     final isIt = Localizations.localeOf(context).languageCode == 'it';
     if (count <= 0) {
-      return isIt ? 'Nessun servizio attivo' : 'No services active';
+      return isIt ? tr('Nessun servizio attivo') : 'No services active';
     }
     return isIt
-        ? '$count servizi disponibili'
+        ? trf('{0} servizi disponibili', [count])
         : '$count available services';
   }
 }
@@ -747,9 +748,9 @@ class _TrackCardV3 extends ConsumerWidget {
       CardStatRow(
         stats: [
           if (isCommunity)
-            const CardStat(
+            CardStat(
               icon: Icons.groups_outlined,
-              text: 'Segnalata dalla community',
+              text: tr('Segnalata dalla community'),
             )
           else
             CardStat(
@@ -794,7 +795,7 @@ class _TrackCardV3 extends ConsumerWidget {
       bodyText = '$servicesLabel · ${l10n.entitySavedCount(followerCount)}';
     }
 
-    final overline = city.isNotEmpty ? '$city · Pista RC' : 'Pista RC';
+    final overline = city.isNotEmpty ? trf('{0} · Pista RC', [city]) : tr('Pista RC');
 
     return PlaceCard(
       media: media,

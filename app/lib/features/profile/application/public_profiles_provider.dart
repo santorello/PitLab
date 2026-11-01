@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../shared/utils/db_list_parser.dart';
 import '../../tracks/application/tracks_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class PublicProfileListing {
   const PublicProfileListing({
@@ -25,10 +26,10 @@ class PublicProfileListing {
   final String? previewImageUrl;
 
   String get roleLabel => switch (role) {
-        'track_organizer' => 'Organizzatore pista',
-        'shop_owner' || 'shop_manager' => 'Gestore negozio',
+        'track_organizer' => tr('Organizzatore pista'),
+        'shop_owner' || 'shop_manager' => tr('Gestore negozio'),
         'admin' => 'Admin PitLap',
-        _ => 'Pilota',
+        _ => tr('Pilota'),
       };
 
   factory PublicProfileListing.fromMap(
@@ -39,7 +40,7 @@ class PublicProfileListing {
     return PublicProfileListing(
       id: map['id'] as String? ?? '',
       publicSlug: map['public_slug'] as String? ?? '',
-      displayName: map['display_name'] as String? ?? 'Pilota PitLap',
+      displayName: map['display_name'] as String? ?? tr('Pilota PitLap'),
       role: map['role'] as String? ?? 'user',
       avatarUrl: map['avatar_url'] as String?,
       publicBuildCount: publicBuildCount,

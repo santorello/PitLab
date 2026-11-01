@@ -6,6 +6,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/content_scaffold.dart';
 import '../../../shared/widgets/adaptive_image.dart';
 import '../application/public_builds_provider.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class PublicBuildsScreen extends ConsumerStatefulWidget {
   const PublicBuildsScreen({super.key});
@@ -37,8 +38,8 @@ class _PublicBuildsScreenState extends ConsumerState<PublicBuildsScreen> {
     final buildsAsync = ref.watch(publicBuildsProvider);
 
     return ContentScaffold(
-      title: 'Build PitLap',
-      description: 'Marketplace pubblico delle build condivise dalla community.',
+      title: tr('Build PitLap'),
+      description: tr('Marketplace pubblico delle build condivise dalla community.'),
       child: buildsAsync.when(
         loading: () => const _LoadingState(),
         error: (error, _) => const _ErrorState(),
@@ -48,17 +49,17 @@ class _PublicBuildsScreenState extends ConsumerState<PublicBuildsScreen> {
             children: [
               _SearchField(
                 controller: _searchController,
-                hint: 'Cerca build, autore o specifiche...',
+                hint: tr('Cerca build, autore o specifiche...'),
               ),
               const SizedBox(height: 18),
               _BuildsSummary(total: builds.length, visible: filtered.length),
               const SizedBox(height: 18),
               if (filtered.isEmpty)
-                const _EmptyState(
+                _EmptyState(
                   icon: Icons.precision_manufacturing_outlined,
-                  title: 'Nessuna build pubblica',
+                  title: tr('Nessuna build pubblica'),
                   body:
-                      'Quando gli utenti renderanno pubbliche le build del garage, appariranno qui.',
+                      tr('Quando gli utenti renderanno pubbliche le build del garage, appariranno qui.'),
                 )
               else
                 LayoutBuilder(
@@ -117,8 +118,8 @@ class _BuildsSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = total == visible
-        ? '$total ${total == 1 ? 'build pubblica' : 'build pubbliche'}'
-        : '$visible di $total ${total == 1 ? 'build pubblica' : 'build pubbliche'}';
+        ? '$total ${tr(total == 1 ? 'build pubblica' : 'build pubbliche')}'
+        : '$visible ${tr('di')} $total ${tr(total == 1 ? 'build pubblica' : 'build pubbliche')}';
     return Row(
       children: [
         const Icon(Icons.view_module_outlined, color: AppColors.signalOrange),
@@ -255,7 +256,7 @@ class _AuthorAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = author?.displayName ?? 'Pilota PitLap';
+    final name = author?.displayName ?? tr('Pilota PitLap');
     final initial = name.trim().isEmpty ? 'P' : name.trim().characters.first;
     final avatarUrl = author?.avatarUrl;
 
@@ -414,10 +415,10 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _EmptyState(
+    return _EmptyState(
       icon: Icons.error_outline,
-      title: 'Build non disponibili',
-      body: 'Non riesco a caricare le build pubbliche in questo momento.',
+      title: tr('Build non disponibili'),
+      body: tr('Non riesco a caricare le build pubbliche in questo momento.'),
     );
   }
 }

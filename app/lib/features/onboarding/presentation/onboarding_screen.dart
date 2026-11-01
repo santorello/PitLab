@@ -10,6 +10,7 @@ import '../../../shared/places/place_selection.dart';
 import '../../../shared/widgets/place_map_preview_card.dart';
 import '../../../shared/widgets/place_picker_field.dart';
 import '../../auth/application/auth_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Costanti
@@ -39,31 +40,31 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   PlaceSelection? _selectedLocation;
   bool _saving = false;
 
-  static const _accountTypes = <_AccountTypeOption>[
+  static List<_AccountTypeOption> get _accountTypes => <_AccountTypeOption>[
     _AccountTypeOption(
       key: 'modellista',
       emoji: '🏎',
-      title: 'Modellista',
+      title: tr('Modellista'),
       description:
-          'Pratico modellismo RC su pista. Voglio scoprire piste, tracciare le mie presenze e trovare negozi.',
+          tr('Pratico modellismo RC su pista. Voglio scoprire piste, tracciare le mie presenze e trovare negozi.'),
     ),
     _AccountTypeOption(
       key: 'gestore_pista',
       emoji: '🏁',
-      title: 'Gestore pista',
+      title: tr('Gestore pista'),
       description:
-          'Gestisco una pista RC. Voglio aggiornare lo stato, pubblicare eventi e comunicare con i piloti.',
+          tr('Gestisco una pista RC. Voglio aggiornare lo stato, pubblicare eventi e comunicare con i piloti.'),
     ),
     _AccountTypeOption(
       key: 'gestore_negozio',
       emoji: '🏪',
-      title: 'Gestore negozio',
+      title: tr('Gestore negozio'),
       description:
-          'Gestisco un negozio di modellismo RC. Voglio pubblicare la mia scheda e farmi trovare dagli appassionati.',
+          tr('Gestisco un negozio di modellismo RC. Voglio pubblicare la mia scheda e farmi trovare dagli appassionati.'),
     ),
   ];
 
-  static const _interestOptions = <_InterestOption>[
+  static List<_InterestOption> get _interestOptions => <_InterestOption>[
     _InterestOption(key: 'buggy',    emoji: '🏎', label: 'Buggy'),
     _InterestOption(key: 'touring',  emoji: '🚗', label: 'Touring'),
     _InterestOption(key: 'drift',    emoji: '💨', label: 'Drift'),
@@ -72,10 +73,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     _InterestOption(key: 'mini_z',   emoji: '🔵', label: 'Mini-Z'),
     _InterestOption(key: 'indoor',   emoji: '🏠', label: 'Indoor'),
     _InterestOption(key: 'outdoor',  emoji: '☀️', label: 'Outdoor / Offroad'),
-    _InterestOption(key: 'droni',    emoji: '🚁', label: 'Droni FPV'),
-    _InterestOption(key: 'treni',    emoji: '🚂', label: 'Treni'),
-    _InterestOption(key: 'elettrico',emoji: '⚡', label: 'Elettrico'),
-    _InterestOption(key: 'nitro',    emoji: '🔥', label: 'Nitro / Termico'),
+    _InterestOption(key: 'droni',    emoji: '🚁', label: tr('Droni FPV')),
+    _InterestOption(key: 'treni',    emoji: '🚂', label: tr('Treni')),
+    _InterestOption(key: 'elettrico',emoji: '⚡', label: tr('Elettrico')),
+    _InterestOption(key: 'nitro',    emoji: '🔥', label: tr('Nitro / Termico')),
   ];
 
   @override
@@ -258,8 +259,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       if (!mounted) return;
 
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Benvenuto in PitLap! Il tuo profilo è pronto.'),
+        SnackBar(
+          content: Text(tr('Benvenuto in PitLap! Il tuo profilo è pronto.')),
           duration: Duration(seconds: 3),
         ),
       );
@@ -274,7 +275,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     } catch (error) {
       if (!mounted) return;
       messenger.showSnackBar(
-        SnackBar(content: Text('Errore durante il salvataggio: $error')),
+        SnackBar(content: Text(trf('Errore durante il salvataggio: {0}', [error]))),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -305,7 +306,7 @@ class _StepAccountType extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Chi sei?',
+          tr('Chi sei?'),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             color: AppColors.graphite,
             fontWeight: FontWeight.w800,
@@ -313,7 +314,7 @@ class _StepAccountType extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Scegli il profilo che ti descrive meglio. Puoi aggiornarlo in qualsiasi momento dal tuo profilo.',
+          tr('Scegli il profilo che ti descrive meglio. Puoi aggiornarlo in qualsiasi momento dal tuo profilo.'),
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             color: AppColors.steel,
           ),
@@ -323,10 +324,10 @@ class _StepAccountType extends StatelessWidget {
           controller: nameController,
           textInputAction: TextInputAction.next,
           maxLength: 40,
-          decoration: const InputDecoration(
-            labelText: 'Nome o soprannome',
+          decoration: InputDecoration(
+            labelText: tr('Nome o soprannome'),
             helperText:
-                'E\' il nome con cui ti vedono gli altri piloti. Puoi cambiarlo dal profilo.',
+                tr('E\' il nome con cui ti vedono gli altri piloti. Puoi cambiarlo dal profilo.'),
             prefixIcon: Icon(Icons.badge_outlined),
             border: OutlineInputBorder(),
           ),
@@ -457,15 +458,15 @@ class _StepInterests extends StatelessWidget {
   final ValueChanged<String> onToggle;
 
   String get _headline => switch (accountType) {
-    'gestore_pista'   => 'Che tipo di pista gestisci?',
-    'gestore_negozio' => 'Cosa vende il tuo negozio?',
-    _                 => 'Cosa ti appassiona?',
+    'gestore_pista'   => tr('Che tipo di pista gestisci?'),
+    'gestore_negozio' => tr('Cosa vende il tuo negozio?'),
+    _                 => tr('Cosa ti appassiona?'),
   };
 
   String get _subtitle => switch (accountType) {
-    'gestore_pista'   => 'Seleziona le categorie della tua pista. Aiutiamo i piloti giusti a trovarti.',
-    'gestore_negozio' => 'Seleziona le specialità del tuo negozio. Mostriamo la tua scheda agli appassionati rilevanti.',
-    _                 => 'Seleziona una o più categorie. Usiamo questi dati per mostrarti contenuti rilevanti nel tuo feed.',
+    'gestore_pista'   => tr('Seleziona le categorie della tua pista. Aiutiamo i piloti giusti a trovarti.'),
+    'gestore_negozio' => tr('Seleziona le specialità del tuo negozio. Mostriamo la tua scheda agli appassionati rilevanti.'),
+    _                 => tr('Seleziona una o più categorie. Usiamo questi dati per mostrarti contenuti rilevanti nel tuo feed.'),
   };
 
   @override
@@ -515,7 +516,7 @@ class _StepInterests extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Puoi saltare questo step — potrai sempre aggiornare gli interessi dal profilo.',
+                    tr('Puoi saltare questo step — potrai sempre aggiornare gli interessi dal profilo.'),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.graphite,
                     ),
@@ -527,7 +528,7 @@ class _StepInterests extends StatelessWidget {
         ] else ...[
           const SizedBox(height: 16),
           Text(
-            '${selected.length} ${selected.length == 1 ? 'interesse selezionato' : 'interessi selezionati'}',
+            '${selected.length} ${tr(selected.length == 1 ? 'interesse selezionato' : 'interessi selezionati')}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppColors.signalOrange,
               fontWeight: FontWeight.w600,
@@ -625,7 +626,7 @@ class _StepCityState extends ConsumerState<_StepCity> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'La tua zona',
+          tr('La tua zona'),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             color: AppColors.graphite,
             fontWeight: FontWeight.w800,
@@ -633,7 +634,7 @@ class _StepCityState extends ConsumerState<_StepCity> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Indicaci la tua città o provincia. La usiamo per mostrarti piste e negozi vicini.',
+          tr('Indicaci la tua città o provincia. La usiamo per mostrarti piste e negozi vicini.'),
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             color: AppColors.steel,
           ),
@@ -642,12 +643,12 @@ class _StepCityState extends ConsumerState<_StepCity> {
         PlacePickerField(
           controller: widget.controller,
           initialSelection: _selectedLocation,
-          labelText: 'Città o provincia',
+          labelText: tr('Città o provincia'),
           hintText: 'es. Parma, Milano, Bologna...',
           emptyInfoText:
-              'Usiamo questa informazione solo per migliorare la tua esperienza di discovery. Non la condividiamo con terze parti.',
+              tr('Usiamo questa informazione solo per migliorare la tua esperienza di discovery. Non la condividiamo con terze parti.'),
           verifiedInfoBuilder: (selection) =>
-              'Località verificata: ${selection.label}.',
+              trf('Località verificata: {0}.', [selection.label]),
           types: const <String>['municipality', 'locality', 'place', 'region'],
           onSelected: (selection) {
             setState(() => _selectedLocation = selection);
@@ -672,7 +673,7 @@ class _StepCityState extends ConsumerState<_StepCity> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Puoi saltare questo step — potrai aggiornare la zona in qualsiasi momento dal profilo.',
+                  tr('Puoi saltare questo step — potrai aggiornare la zona in qualsiasi momento dal profilo.'),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.steel,
                   ),
@@ -722,7 +723,7 @@ class _StepSummary extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Controlla i dati e conferma per entrare in PitLap.',
+          tr('Controlla i dati e conferma per entrare in PitLap.'),
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             color: AppColors.steel,
           ),
@@ -741,7 +742,7 @@ class _StepSummary extends StatelessWidget {
             children: [
               _SummaryRow(
                 icon: Icons.person_outline,
-                label: 'Profilo',
+                label: tr('Profilo'),
                 value: '${accountType.emoji} ${accountType.title}',
               ),
               if (interestLabels.isNotEmpty) ...[
@@ -750,7 +751,7 @@ class _StepSummary extends StatelessWidget {
                 const SizedBox(height: 14),
                 _SummaryRow(
                   icon: Icons.interests_outlined,
-                  label: 'Interessi',
+                  label: tr('Interessi'),
                   value: interestLabels.join(' · '),
                 ),
               ],
@@ -760,7 +761,7 @@ class _StepSummary extends StatelessWidget {
                 const SizedBox(height: 14),
                 _SummaryRow(
                   icon: Icons.place_outlined,
-                  label: 'Zona',
+                  label: tr('Zona'),
                   value: city,
                 ),
               ],
@@ -784,27 +785,27 @@ class _StepSummary extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Sei dentro — esplora la community',
+                tr('Sei dentro — esplora la community'),
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 12),
-              const _NextStepRow(
+              _NextStepRow(
                 icon: Icons.dynamic_feed_outlined,
-                text: 'Novità dalla community in tempo reale',
+                text: tr('Novità dalla community in tempo reale'),
               ),
-              const _NextStepRow(
+              _NextStepRow(
                 icon: Icons.flag_outlined,
-                text: 'Piste RC con stato aggiornato e servizi reali',
+                text: tr('Piste RC con stato aggiornato e servizi reali'),
               ),
-              const _NextStepRow(
+              _NextStepRow(
                 icon: Icons.place_outlined,
-                text: 'Spot e negozi sul territorio',
+                text: tr('Spot e negozi sul territorio'),
               ),
-              const _NextStepRow(
+              _NextStepRow(
                 icon: Icons.event_outlined,
-                text: 'Eventi e gare aperti a tutti',
+                text: tr('Eventi e gare aperti a tutti'),
               ),
             ],
           ),
@@ -913,7 +914,7 @@ class _StepProgressBar extends StatelessWidget {
   final int currentStep;
   final int totalSteps;
 
-  static const _stepLabels = ['Chi sei', 'Interessi', 'Zona', 'Riepilogo'];
+  static List<String> get _stepLabels => [tr('Chi sei'), tr('Interessi'), tr('Zona'), tr('Riepilogo')];
 
   @override
   Widget build(BuildContext context) {
@@ -1000,7 +1001,7 @@ class _OnboardingNav extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: onBack,
             icon: const Icon(Icons.arrow_back_outlined),
-            label: const Text('Indietro'),
+            label: Text(tr('Indietro')),
           ),
         const Spacer(),
         FilledButton.icon(
@@ -1014,7 +1015,7 @@ class _OnboardingNav extends StatelessWidget {
               : Icon(
                   isLast ? Icons.check_outlined : Icons.arrow_forward_outlined,
                 ),
-          label: Text(isLast ? 'Inizia a usare PitLap' : 'Avanti'),
+          label: Text(isLast ? tr('Inizia a usare PitLap') : tr('Avanti')),
         ),
       ],
     );

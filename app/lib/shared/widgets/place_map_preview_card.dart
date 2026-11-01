@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import '../../app/bootstrap/app_config.dart';
 import '../../app/theme/app_colors.dart';
 import '../places/place_selection.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 class PlaceMapPreviewCard extends StatelessWidget {
   const PlaceMapPreviewCard({
@@ -69,7 +70,7 @@ class PlaceMapPreviewCard extends StatelessWidget {
                                   provider: mapPinProvider,
                                   providerPlaceId: mapPinProvider,
                                   title: selection.title,
-                                  subtitle: 'Punto scelto sulla mappa',
+                                  subtitle: tr('Punto scelto sulla mappa'),
                                   countryCode: selection.countryCode,
                                   country: selection.country,
                                   region: selection.region,
@@ -137,7 +138,7 @@ class PlaceMapPreviewCard extends StatelessWidget {
                       if (onPointPicked != null) ...[
                         const SizedBox(height: 2),
                         Text(
-                          'Tocca la mappa per mettere il segnaposto nel punto esatto.',
+                          tr('Tocca la mappa per mettere il segnaposto nel punto esatto.'),
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.steel,
                           ),

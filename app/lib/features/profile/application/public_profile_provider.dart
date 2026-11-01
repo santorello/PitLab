@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../shared/utils/db_list_parser.dart';
 import '../../tracks/application/tracks_providers.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 // ── Model ─────────────────────────────────────────────────────────────────────
 
@@ -57,7 +58,7 @@ class PublicProfileRecord {
     return PublicProfileRecord(
       id: map['id'] as String? ?? '',
       publicSlug: map['public_slug'] as String? ?? '',
-      displayName: map['display_name'] as String? ?? 'Pilota',
+      displayName: map['display_name'] as String? ?? tr('Pilota'),
       avatarUrl: map['avatar_url'] as String?,
       role: map['role'] as String? ?? 'user',
       builds: builds,

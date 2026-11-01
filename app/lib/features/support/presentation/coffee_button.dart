@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 /// URL della pagina di donazione (es. `https://paypal.me/tuohandle`).
 ///
@@ -33,8 +34,8 @@ Future<void> openDonationPage(BuildContext context) async {
   }
   if (!opened) {
     messenger.showSnackBar(
-      const SnackBar(
-        content: Text('Impossibile aprire la pagina di donazione'),
+      SnackBar(
+        content: Text(tr('Impossibile aprire la pagina di donazione')),
       ),
     );
   }
@@ -56,7 +57,7 @@ class CoffeeButton extends StatelessWidget {
     return IconButton(
       onPressed: () => openDonationPage(context),
       icon: Icon(Icons.local_cafe_outlined, color: color),
-      tooltip: 'Offri un caffè allo sviluppatore',
+      tooltip: tr('Offri un caffè allo sviluppatore'),
     );
   }
 }

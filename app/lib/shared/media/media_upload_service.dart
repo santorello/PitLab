@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/auth/application/auth_providers.dart';
 import 'media_upload_state.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 // ── Bucket e path convention ───────────────────────────────────────────────────
 //
@@ -93,15 +94,15 @@ class MediaUploadService {
   }) async {
     // ── Guard: utente autenticato ─────────────────────────────────────────────
     if (userId.trim().isEmpty) {
-      throw const MediaUploadException(
-        'Devi essere autenticato per caricare immagini.',
+      throw MediaUploadException(
+        tr('Devi essere autenticato per caricare immagini.'),
       );
     }
 
     // ── Validazione dimensione input ───────────────────────────────────────────
     if (bytes.lengthInBytes > _maxInputBytes) {
-      throw const MediaUploadException(
-        'L\'immagine supera il limite di 5 MB. Scegli un file più piccolo.',
+      throw MediaUploadException(
+        tr('L\'immagine supera il limite di 5 MB. Scegli un file più piccolo.'),
       );
     }
 
@@ -110,8 +111,8 @@ class MediaUploadService {
     // ── Decode + EXIF orientation fix ─────────────────────────────────────────
     final source = img.decodeImage(bytes);
     if (source == null) {
-      throw const MediaUploadException(
-        'Non è stato possibile leggere l\'immagine selezionata.',
+      throw MediaUploadException(
+        tr('Non è stato possibile leggere l\'immagine selezionata.'),
       );
     }
     onProgress?.call(MediaUploadStage.preparing, 0.20);
@@ -131,8 +132,8 @@ class MediaUploadService {
 
     // ── Validazione dimensione output ─────────────────────────────────────────
     if (encoded.lengthInBytes > _maxInputBytes) {
-      throw const MediaUploadException(
-        'L\'immagine elaborata supera ancora 5 MB. Prova con un\'immagine più piccola.',
+      throw MediaUploadException(
+        tr('L\'immagine elaborata supera ancora 5 MB. Prova con un\'immagine più piccola.'),
       );
     }
 
@@ -156,12 +157,12 @@ class MediaUploadService {
       );
     } on StorageException catch (e) {
       throw MediaUploadException(
-        'Errore durante il caricamento dell\'immagine (${e.statusCode ?? e.message}). Riprova.',
+        trf('Errore durante il caricamento dell\'immagine ({0}). Riprova.', [e.statusCode ?? e.message]),
         cause: e,
       );
     } catch (e) {
       throw MediaUploadException(
-        'Errore imprevisto durante il caricamento. Riprova.',
+        tr('Errore imprevisto durante il caricamento. Riprova.'),
         cause: e,
       );
     }

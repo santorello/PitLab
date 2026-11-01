@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pitlap_app/app/l10n/tr.dart';
 
 /// Un luogo gia' presente che somiglia a quello che l'utente sta inserendo.
 /// Arriva dalla RPC `find_similar_places` (delta 2026-09-23-controllo-duplicati-luoghi).
@@ -129,7 +130,7 @@ Future<DuplicateDecision> showDuplicatePlaceDialog(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(t(
-              'Abbiamo trovato luoghi simili. Se e\' uno di questi, aprilo: puoi proporre modifiche o aggiungere foto li\'.',
+              tr('Abbiamo trovato luoghi simili. Se e\' uno di questi, aprilo: puoi proporre modifiche o aggiungere foto li\'.'),
               'We found similar places. If it is one of these, open it: you can suggest edits or add photos there.',
             )),
             const SizedBox(height: 12),
@@ -155,11 +156,11 @@ Future<DuplicateDecision> showDuplicatePlaceDialog(
       actions: [
         TextButton(
           onPressed: () => Navigator.of(ctx).pop(const DuplicateCancel()),
-          child: Text(t('Torna al modulo', 'Back to form')),
+          child: Text(t(tr('Torna al modulo'), 'Back to form')),
         ),
         FilledButton(
           onPressed: () => Navigator.of(ctx).pop(const DuplicateProceed()),
-          child: Text(t('No, e\' un luogo nuovo', 'No, it is a new place')),
+          child: Text(t(tr('No, e\' un luogo nuovo'), 'No, it is a new place')),
         ),
       ],
     ),
