@@ -16,11 +16,13 @@ import '../../../shared/models/track_weather_day.dart';
 import '../../../shared/models/today_arrival_status.dart';
 import '../../../shared/widgets/community_claim_strip.dart';
 import '../../../shared/widgets/dialog_controller_scope.dart';
+import '../../../shared/widgets/fullscreen_gallery.dart';
 import '../../../shared/widgets/weather_visuals.dart';
 import '../../../shared/utils/share_entity.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../comments/presentation/comments_section.dart';
 import '../../garage/presentation/builds_seen_here.dart';
+import '../application/track_gallery_provider.dart';
 import '../application/tracks_providers.dart';
 import 'package:pitlap_app/app/l10n/tr.dart';
 
@@ -109,6 +111,12 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
           );
           final isPhone =
               AppBreakpoints.isPhone(MediaQuery.sizeOf(context).width);
+          final galleryUrls = [
+            for (final photo
+                in ref.watch(trackGalleryProvider(track.id)).asData?.value ??
+                    const <TrackGalleryPhoto>[])
+              photo.url,
+          ];
           final isFollowed = ref.watch(isTrackFollowedProvider(track.id));
           final followerCountAsync = ref.watch(trackFollowerCountProvider(track.id));
           final followerCount = followerCountAsync.maybeWhen(
@@ -408,6 +416,25 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                   ),
                 ),
               ),
+              // Galleria: compare solo se il gestore ha caricato foto;
+              // la copertina (se c'e') apre il carosello.
+              if (galleryUrls.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.lg),
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 760),
+                    child: InlineImageCarousel(
+                      images: [
+                        if ((track.imageUrl ?? '').trim().isNotEmpty)
+                          track.imageUrl!.trim(),
+                        ...galleryUrls,
+                      ],
+                      aspectRatio: 16 / 9,
+                      fallback: const ColoredBox(color: Colors.black12),
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: AppSpacing.lg),
               _WeatherVerdictCard(
                 days: weatherDays,

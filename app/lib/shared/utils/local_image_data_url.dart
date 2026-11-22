@@ -6,7 +6,7 @@ import 'package:image/image.dart' as img;
 import '../media/media_upload_state.dart';
 
 const int maxLocalImageBytes = 520 * 1024;
-const int maxLocalImageInputBytes = 5 * 1024 * 1024;
+const int maxLocalImageInputBytes = 25 * 1024 * 1024; // come MediaUploadService: conta il file ridimensionato
 const int maxLocalGalleryImages = 3;
 const int maxLocalImageDimension = 1200;
 const int maxShopGalleryImages = 10;

@@ -11,6 +11,7 @@ import '../../../shared/widgets/external_links_section.dart';
 import '../../auth/application/auth_providers.dart';
 import '../application/track_taxonomy_option.dart';
 import '../application/tracks_providers.dart';
+import 'track_gallery_editor.dart';
 import 'package:pitlap_app/app/l10n/tr.dart';
 
 class ManagedTrackEditorScreen extends ConsumerStatefulWidget {
@@ -236,6 +237,16 @@ class _ManagedTrackEditorScreenState
               ),
 
               const SizedBox(height: 18),
+
+              // ── Galleria foto ────────────────────────────────────
+              if (isPublishedTrackId(track.id)) ...[
+                _SectionCard(
+                  title: tr('Galleria foto'),
+                  body: tr('Foto della pista visibili nella scheda pubblica. Vengono salvate subito, senza premere Salva.'),
+                  child: TrackGalleryEditor(trackId: track.id),
+                ),
+                const SizedBox(height: 18),
+              ],
 
               // ── Link esterni ─────────────────────────────────────
               ExternalLinksSection(

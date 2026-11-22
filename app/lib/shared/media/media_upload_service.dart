@@ -14,8 +14,8 @@ import 'package:pitlap_app/app/l10n/tr.dart';
 //  entity_type ammessi: tracks | shops | events | spots | profiles | builds | places
 //  Filename: <prefix>-<timestamp_ms>.<ext>  es. cover-1718012345678.jpg
 //
-// ── Limiti bucket (applicati lato Supabase) ───────────────────────────────────
-//  Dimensione massima: 5 MB
+// ── Limiti ────────────────────────────────────────────────────────────────────
+//  In ingresso (client): 25 MB. Bucket (Supabase, sul file ridimensionato): 5 MB
 //  MIME ammessi: image/jpeg, image/png, image/webp, image/gif
 //
 // ── Progresso ─────────────────────────────────────────────────────────────────
@@ -28,7 +28,14 @@ import 'package:pitlap_app/app/l10n/tr.dart';
 //  [onProgress] con lo stage e il valore normalizzato [0, 1].
 
 const _mediaBucket = 'media';
-const _maxInputBytes = 5 * 1024 * 1024; // 5 MB — limite bucket
+// Il bucket accetta al massimo 5 MB, ma il limite vale per il file GIA'
+// ridimensionato (1600 px, ~300-600 KB). In ingresso accettiamo le foto da
+// telefono (10-15 MB); oltre i 25 MB la decodifica in Dart puro rischia di
+// esaurire la memoria della scheda del browser sui telefoni economici.
+// ponytail: decodifica col package `image`; se lenta su mobile, passare al
+// resize nativo del browser (canvas / createImageBitmap).
+const _maxInputBytes = 25 * 1024 * 1024; // 25 MB — limite in ingresso
+const _maxUploadBytes = 5 * 1024 * 1024; // 5 MB — limite bucket
 
 // Resize target: lato lungo 1600 px, qualità 82 JPEG.
 // TODO: se in futuro si aggiunge flutter_image_compress, sostituire
@@ -102,7 +109,7 @@ class MediaUploadService {
     // ── Validazione dimensione input ───────────────────────────────────────────
     if (bytes.lengthInBytes > _maxInputBytes) {
       throw MediaUploadException(
-        tr('L\'immagine supera il limite di 5 MB. Scegli un file più piccolo.'),
+        tr('L\'immagine supera il limite di 25 MB. Scegli un file più piccolo.'),
       );
     }
 
@@ -131,7 +138,7 @@ class MediaUploadService {
     onProgress?.call(MediaUploadStage.preparing, 0.50);
 
     // ── Validazione dimensione output ─────────────────────────────────────────
-    if (encoded.lengthInBytes > _maxInputBytes) {
+    if (encoded.lengthInBytes > _maxUploadBytes) {
       throw MediaUploadException(
         tr('L\'immagine elaborata supera ancora 5 MB. Prova con un\'immagine più piccola.'),
       );
