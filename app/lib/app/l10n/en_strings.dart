@@ -793,4 +793,7 @@ const Map<String, String> enStrings = {
   'Sposta prima': 'Move earlier',
   'Operazione non riuscita: {0}': 'Operation failed: {0}',
   'Errore caricamento galleria: {0}': 'Error loading gallery: {0}',
+  'Foto della pista': 'Track photos',
+  '{0} foto · tocca per ingrandire': '{0} photos · tap to enlarge',
+  'Vedi tutte': 'View all',
 };

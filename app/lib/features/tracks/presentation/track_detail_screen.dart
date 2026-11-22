@@ -157,6 +157,39 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
             });
           }
 
+          final photos = [
+            if ((track.imageUrl ?? '').trim().isNotEmpty)
+              track.imageUrl!.trim(),
+            ...galleryUrls,
+          ];
+
+          return LayoutBuilder(builder: (context, constraints) {
+          // Su PC (stile Strava): scheda a tutta larghezza, poi contenuti a
+          // sinistra e colonna laterale con meteo e "oggi in pista".
+          final wide = constraints.maxWidth >= 960;
+          final photosCard = galleryUrls.isEmpty
+              ? null
+              : _TrackPhotosCard(images: photos);
+          final weatherCard = _WeatherVerdictCard(
+            days: weatherDays,
+            loading: weatherForecastAsync.isLoading,
+            dense: wide,
+          );
+          final todayCard = _TodayAtTrackCard(
+            key: _todayKey,
+            arrivalStatusAsync: todayArrivalAsync,
+            arrivalSummaryAsync: todayArrivalSummaryAsync,
+            isAuthenticated: currentUser != null,
+          );
+          // Commenti: solo per piste già pubblicate su Supabase (UUID).
+          final community = <Widget>[
+            if (isPublishedTrackId(track.id)) ...[
+              BuildsSeenHere(entityType: 'track', entityId: track.id),
+              CommentsSection(entityType: 'track', entityId: track.id),
+            ],
+          ];
+          const gap = SizedBox(height: AppSpacing.lg);
+
           return ListView(
             controller: _scrollController,
             padding: const EdgeInsets.only(bottom: AppSpacing.xl),
@@ -417,41 +450,40 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                   ),
                 ),
               ),
-              // Galleria: miniature affiancate; un tocco apre la galleria a
-              // tutto schermo (zoom + scorrimento). Copertina per prima.
-              if (galleryUrls.isNotEmpty) ...[
-                const SizedBox(height: AppSpacing.lg),
-                _GalleryThumbs(
-                  images: [
-                    if ((track.imageUrl ?? '').trim().isNotEmpty)
-                      track.imageUrl!.trim(),
-                    ...galleryUrls,
+              gap,
+              if (wide)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (photosCard != null) ...[photosCard, gap],
+                          ...community,
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.lg),
+                    SizedBox(
+                      width: 380,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [weatherCard, gap, todayCard],
+                      ),
+                    ),
                   ],
-                ),
-              ],
-              const SizedBox(height: AppSpacing.lg),
-              _WeatherVerdictCard(
-                days: weatherDays,
-                loading: weatherForecastAsync.isLoading,
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              _TodayAtTrackCard(
-                key: _todayKey,
-                arrivalStatusAsync: todayArrivalAsync,
-                arrivalSummaryAsync: todayArrivalSummaryAsync,
-                isAuthenticated: currentUser != null,
-              ),
-              // Commenti: solo per piste già pubblicate su Supabase (UUID).
-              if (isPublishedTrackId(track.id)) ...[
-                const SizedBox(height: AppSpacing.lg),
-                BuildsSeenHere(entityType: 'track', entityId: track.id),
-                CommentsSection(
-                  entityType: 'track',
-                  entityId: track.id,
-                ),
+                )
+              else ...[
+                if (photosCard != null) ...[photosCard, gap],
+                weatherCard,
+                gap,
+                todayCard,
+                if (community.isNotEmpty) ...[gap, ...community],
               ],
             ],
           );
+          });
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(
@@ -1283,7 +1315,15 @@ class _ArrivalOptionTile extends StatelessWidget {
 }
 
 class _WeatherVerdictCard extends StatelessWidget {
-  const _WeatherVerdictCard({required this.days, this.loading = false});
+  const _WeatherVerdictCard({
+    required this.days,
+    this.loading = false,
+    this.dense = false,
+  });
+
+  /// Colonna laterale su PC: giorni affiancati come su telefono, niente
+  /// pill "Meteo live" (non ci sta accanto al verdetto).
+  final bool dense;
 
   /// Vuota quando Open-Meteo non ha risposto o la pista non ha coordinate.
   /// In quel caso la scheda lo dice, invece di mostrare previsioni inventate.
@@ -1357,7 +1397,7 @@ class _WeatherVerdictCard extends StatelessWidget {
                   ),
                   // "Meteo live" su telefono e' superfluo: l'attribuzione
                   // Open-Meteo in fondo dice gia' da dove vengono i dati.
-                  if (!isPhone) ...[
+                  if (!isPhone && !dense) ...[
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -1401,8 +1441,8 @@ class _WeatherVerdictCard extends StatelessWidget {
                   ),
                 ],
               )
-            else if (isPhone)
-              // Telefono: i tre giorni affiancati in una sola riga.
+            else if (isPhone || dense)
+              // Telefono e colonna laterale: i tre giorni in una sola riga.
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1804,38 +1844,150 @@ class _HeroIconAction extends StatelessWidget {
 
 /// Striscia mostrata al posto dello stato pista sulle schede senza gestore.
 
-class _GalleryThumbs extends StatelessWidget {
-  const _GalleryThumbs({required this.images});
+/// Card "Foto della pista": griglia di miniature quadrate che riempie la
+/// larghezza (tutte visibili, stile Amazon); un tocco apre la galleria a
+/// tutto schermo con zoom e scorrimento.
+class _TrackPhotosCard extends StatelessWidget {
+  const _TrackPhotosCard({required this.images});
 
   final List<String> images;
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        for (var i = 0; i < images.length; i++)
-          InkWell(
-            borderRadius: BorderRadius.circular(10),
-            onTap: () =>
-                openFullscreenGallery(context, images, initialIndex: i),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: AdaptiveImage(
-                source: images[i],
-                fit: BoxFit.cover,
-                width: 96,
-                height: 96,
-                fallback: const SizedBox(
-                  width: 96,
-                  height: 96,
-                  child: Icon(Icons.broken_image_outlined),
+    final theme = Theme.of(context);
+    final isPhone = AppBreakpoints.isPhone(MediaQuery.sizeOf(context).width);
+    return Card(
+      child: Padding(
+        padding: AppSpacing.card(context),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                if (!isPhone) ...[
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceCool,
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                    child: const Icon(
+                      Icons.photo_library_outlined,
+                      color: AppColors.graphite,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(tr('Foto della pista'),
+                          style: theme.textTheme.titleLarge),
+                      const SizedBox(height: 2),
+                      Text(
+                        trf('{0} foto · tocca per ingrandire', [images.length]),
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(color: AppColors.steel),
+                      ),
+                    ],
+                  ),
                 ),
+                TextButton.icon(
+                  onPressed: () => openFullscreenGallery(context, images),
+                  icon: const Icon(Icons.fullscreen, size: 20),
+                  label: Text(tr('Vedi tutte')),
+                ),
+              ],
+            ),
+            SizedBox(height: isPhone ? AppSpacing.md : AppSpacing.lg),
+            LayoutBuilder(builder: (context, constraints) {
+              const spacing = 8.0;
+              const minTile = 96.0;
+              final columns = ((constraints.maxWidth + spacing) /
+                      (minTile + spacing))
+                  .floor()
+                  .clamp(3, 8);
+              final tile =
+                  (constraints.maxWidth - spacing * (columns - 1)) / columns - 0.1; // margine contro arrotondamenti del Wrap
+              return Wrap(
+                spacing: spacing,
+                runSpacing: spacing,
+                children: [
+                  for (var i = 0; i < images.length; i++)
+                    _PhotoTile(
+                      source: images[i],
+                      size: tile,
+                      onTap: () => openFullscreenGallery(
+                        context,
+                        images,
+                        initialIndex: i,
+                      ),
+                    ),
+                ],
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PhotoTile extends StatefulWidget {
+  const _PhotoTile({
+    required this.source,
+    required this.size,
+    required this.onTap,
+  });
+
+  final String source;
+  final double size;
+  final VoidCallback onTap;
+
+  @override
+  State<_PhotoTile> createState() => _PhotoTileState();
+}
+
+class _PhotoTileState extends State<_PhotoTile> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.zoomIn,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          width: widget.size,
+          height: widget.size,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: Border.all(color: AppColors.borderSubtle),
+            color: AppColors.surfaceMuted,
+          ),
+          clipBehavior: Clip.antiAlias,
+          // Su PC leggero ingrandimento al passaggio del mouse.
+          child: AnimatedScale(
+            scale: _hover ? 1.06 : 1,
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+            child: AdaptiveImage(
+              source: widget.source,
+              fit: BoxFit.cover,
+              width: widget.size,
+              height: widget.size,
+              fallback: const Icon(
+                Icons.broken_image_outlined,
+                color: AppColors.steel,
               ),
             ),
           ),
-      ],
+        ),
+      ),
     );
   }
 }
