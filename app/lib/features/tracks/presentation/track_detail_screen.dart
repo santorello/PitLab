@@ -16,6 +16,7 @@ import '../../../shared/models/track_weather_day.dart';
 import '../../../shared/models/today_arrival_status.dart';
 import '../../../shared/widgets/community_claim_strip.dart';
 import '../../../shared/widgets/dialog_controller_scope.dart';
+import '../../../shared/widgets/adaptive_image.dart';
 import '../../../shared/widgets/fullscreen_gallery.dart';
 import '../../../shared/widgets/weather_visuals.dart';
 import '../../../shared/utils/share_entity.dart';
@@ -416,23 +417,16 @@ class _TrackDetailScreenState extends ConsumerState<TrackDetailScreen> {
                   ),
                 ),
               ),
-              // Galleria: compare solo se il gestore ha caricato foto;
-              // la copertina (se c'e') apre il carosello.
+              // Galleria: miniature affiancate; un tocco apre la galleria a
+              // tutto schermo (zoom + scorrimento). Copertina per prima.
               if (galleryUrls.isNotEmpty) ...[
                 const SizedBox(height: AppSpacing.lg),
-                Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 760),
-                    child: InlineImageCarousel(
-                      images: [
-                        if ((track.imageUrl ?? '').trim().isNotEmpty)
-                          track.imageUrl!.trim(),
-                        ...galleryUrls,
-                      ],
-                      aspectRatio: 16 / 9,
-                      fallback: const ColoredBox(color: Colors.black12),
-                    ),
-                  ),
+                _GalleryThumbs(
+                  images: [
+                    if ((track.imageUrl ?? '').trim().isNotEmpty)
+                      track.imageUrl!.trim(),
+                    ...galleryUrls,
+                  ],
                 ),
               ],
               const SizedBox(height: AppSpacing.lg),
@@ -1809,3 +1803,39 @@ class _HeroIconAction extends StatelessWidget {
 }
 
 /// Striscia mostrata al posto dello stato pista sulle schede senza gestore.
+
+class _GalleryThumbs extends StatelessWidget {
+  const _GalleryThumbs({required this.images});
+
+  final List<String> images;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (var i = 0; i < images.length; i++)
+          InkWell(
+            borderRadius: BorderRadius.circular(10),
+            onTap: () =>
+                openFullscreenGallery(context, images, initialIndex: i),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: AdaptiveImage(
+                source: images[i],
+                fit: BoxFit.cover,
+                width: 96,
+                height: 96,
+                fallback: const SizedBox(
+                  width: 96,
+                  height: 96,
+                  child: Icon(Icons.broken_image_outlined),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
